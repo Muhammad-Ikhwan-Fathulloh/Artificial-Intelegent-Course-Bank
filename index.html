@@ -1,0 +1,273 @@
+<!doctype html>
+<html lang="en">
+	<head>
+		<meta charset="utf-8">
+		<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+
+		<title>Muhammad Ikhwan Fathulloh - How to build Microservice for Model Machine Learning and Deployment with Google Cloud</title>
+
+		<link rel="stylesheet" href="dist/reset.css">
+		<link rel="stylesheet" href="dist/reveal.css">
+		<link rel="stylesheet" href="dist/theme/black.css">
+
+		<!-- Theme used for syntax highlighted code -->
+		<link rel="stylesheet" href="plugin/highlight/monokai.css">
+	</head>
+	<body>
+		<div class="reveal">
+			<div class="slides">
+				<!-- Slide Introduction -->
+				<section data-markdown>
+					<textarea data-template>
+					  ## Build Microservice Flask API for Model Machine Learning and Deployment with Google Cloud
+					  Halo Saya [Muhammad Ikhwan Fathulloh](https://ikhwanfathulloh.netlify.app/)
+					</textarea>
+				  </section>				  
+
+				  <!-- Slide Definisi -->
+				  <section>
+					<section data-markdown>
+					  <textarea data-template>
+						## Memahami Metode / Algoritma Teknik ke dalam Pemrograman
+					  </textarea>
+					</section>
+					<section data-markdown>
+					  <textarea data-template>
+						**Metode Pengembangan:**  
+						Kerangka kerja sistematis untuk merancang, mengembangkan, dan memelihara perangkat lunak.
+						- **Contoh:**
+							- Agile: Iterasi fleksibel, fokus kolaborasi.
+							- Waterfall: Pendekatan linier, tahap berurutan.
+							- Scrum: Sprint pendek, hasil terukur.
+					</textarea>
+					</section>
+					<section data-markdown>
+					  <textarea data-template>
+						**Metode Teknik:**  
+						Pendekatan spesifik atau algoritma untuk menyelesaikan masalah teknis.
+						- **Contoh:**
+							- Algoritma Sorting: Quick Sort, Merge Sort.
+							- Neural Networks: Memodelkan pola kompleks.
+							- Backpropagation: Pelatihan model jaringan saraf.
+					  </textarea>
+					</section>
+					<section data-markdown>
+					  <textarea data-template>
+						#### Perbedaan Utama
+						| **Aspek**    | **Metode Pengembangan**      | **Metode Teknik**          |
+						|--------------|------------------------------|----------------------------|
+						| **Definisi** | Kerangka kerja sistem.       | Algoritma/teknik spesifik. |
+						| **Fokus**    | Proses & tahapan.            | Solusi teknis masalah.     |
+						| **Tujuan**   | Efisiensi & manajemen waktu. | Solusi efisien.            |
+						| **Contoh**   | Agile, Scrum, Waterfall.     | Sorting, Neural Networks.  |
+					  </textarea>
+					</section>
+				  </section>
+				  
+				  <!-- Slide Macam-macam -->
+				  <section>
+					<section data-markdown>
+					  <textarea data-template>
+						## Macam-macam Metode / Algoritma Teknik dalam Pemrograman
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 1. **Metode Struktur Data**
+						- **FIFO**: Elemen pertama masuk, pertama keluar. Contoh: Queue.
+						- **LIFO**: Elemen terakhir masuk, pertama keluar. Contoh: Stack.
+						- **Queue**: Antrean data dengan operasi enqueue dan dequeue.
+						- **Priority Queue**: Queue dengan prioritas. Contoh: Sistem antrian rumah sakit.
+						- **Graph**: Struktur node dan edge. Contoh: Pencarian rute.
+						- **Tree**: Struktur hierarki. Contoh: Struktur folder.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 2. **Metode Keamanan**
+						- **RBAC**: Akses berdasarkan peran pengguna.
+						- **Kriptografi**: Enkripsi untuk melindungi data.
+						- **Enkripsi & Dekripsi**: Mengubah dan mengembalikan data. Contoh: HTTPS.
+						- **Hashing, Digital Signature**: Teknik keamanan tambahan.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 3. **Metode Pola Desain Pemrograman**
+						- **SOLID**: Prinsip desain kode.
+						  - **SRP**: Tanggung jawab tunggal.
+						  - **OCP**: Kode terbuka untuk ekstensi.
+						  - **LSP**: Penggantian objek turunan.
+						  - **ISP**: Antarmuka spesifik.
+						  - **DIP**: Ketergantungan terbalik.
+						- **Design Repository Service**: Pemisahan logika akses data dan bisnis.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 4. **Metode Numerik**
+						- **Rumus Matematika**: Metode numerik untuk menghitung solusi.
+						- **Finite Difference, Euler's Method**: Teknik numerik lainnya.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 5. **Metode Kecerdasan Buatan**
+						- **Data Science**: Analisis data untuk prediksi dan klasifikasi.
+						- **Computer Vision**: Pengolahan gambar. Contoh: OCR.
+						- **NLP**: Pengolahan teks. Contoh: Chatbot.
+						- **Reinforcement Learning**: Pembelajaran berbasis penghargaan.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 6. **Metode Web3**
+						- **Blockchain**: Struktur data terdesentralisasi. Contoh: Cryptocurrency.
+						- **Smart Contract**: Program otomatis di blockchain. Contoh: DeFi.
+						- **DApps**: Aplikasi terdesentralisasi. Contoh: NFT Marketplace.
+						- **Wallet Integration**: Pengelolaan kunci pribadi. Contoh: MetaMask.
+						- **NFT**: Aset digital unik di blockchain.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### 7. **Metode Embedded System**
+						- **RTOS**: Sistem operasi real-time.
+						- **Fuzzy Logic**: Pengambilan keputusan berbasis ketidakpastian.
+						- **PID**: Pengendalian sistem dinamis.
+						- **Machine Learning on Edge Devices**: Pembelajaran mesin pada perangkat terbatas.
+						- **Neural Network on FPGA**: Jaringan saraf pada perangkat keras untuk latensi rendah.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### **Dan masih banyak lagi sesuai dengan definisi Metode Teknik**
+					  </textarea>
+					</section>
+				  </section>				  
+
+				  <!-- Slide Implementasi -->
+				  <section>
+					<section data-markdown>
+					  <textarea data-template>
+						## Menggabungkan Metode / Algoritma Teknik ke Aplikasi
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### Monolith (Metode / Algoritma Teknik)
+				  
+						![Monolith](https://raw.githubusercontent.com/Muhammad-Ikhwan-Fathulloh/Implementation-of-Techniques-into-Programming/refs/heads/main/Assets/Diagram/Metode-Teknik-Monolith.png)
+				  
+						Monolith adalah sebuah arsitektur perangkat lunak di mana seluruh komponen dan fungsionalitas aplikasi digabung menjadi satu kesatuan tunggal. Semua bagian aplikasi dijalankan dalam satu proses dan dipaketkan sebagai satu entitas.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### Proses Menggabungkan Metode / Algoritma Teknik
+						1. **Implementasi dalam Basis Kode**: Algoritma ditulis dalam basis kode monolith.
+						2. **Integrasi Modul**: Algoritma dipanggil oleh modul lain.
+						3. **Testing dan Deployment**: Aplikasi diuji dan di-deploy bersama algoritma.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### Microservice (Metode / Algoritma Teknik)
+				  
+						![Microservice](https://raw.githubusercontent.com/Muhammad-Ikhwan-Fathulloh/Implementation-of-Techniques-into-Programming/refs/heads/main/Assets/Diagram/Metode-Teknik-Microservice.png)
+				  
+						Microservice adalah arsitektur perangkat lunak yang memecah aplikasi menjadi layanan-layanan kecil yang berdiri sendiri. Metode atau algoritma teknik diisolasi dalam layanan terpisah untuk efisiensi dan skalabilitas.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### Proses Menggabungkan Metode / Algoritma Teknik
+						1. **Pengembangan Terpisah**: Algoritma diimplementasikan dalam microservice.
+						2. **API Endpoint**: Microservice menyediakan API untuk permintaan.
+						3. **Integrasi dengan Aplikasi**: Aplikasi utama memanggil API microservice.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						### Monolith + Microservice (Metode / Algoritma Teknik)
+				  
+						![Monolith + Microservice](https://raw.githubusercontent.com/Muhammad-Ikhwan-Fathulloh/Implementation-of-Techniques-into-Programming/refs/heads/main/Assets/Diagram/Metode-Teknik-Monolith-Microservice.png)
+				  
+						Pendekatan hybrid yang menggabungkan arsitektur monolith dengan microservice. Metode atau algoritma teknik dipisahkan ke dalam layanan microservice, sementara aplikasi utama tetap monolith.
+					  </textarea>
+					</section>
+				  
+					<section data-markdown>
+					  <textarea data-template>
+						#### Proses Menggabungkan Metode / Algoritma Teknik
+						1. **Identifikasi Algoritma Berat**: Tentukan algoritma yang sumber daya tinggi.
+						2. **Isolasi ke Microservice**: Implementasikan algoritma dalam microservice.
+						3. **API Endpoint**: Microservice menyediakan API.
+						4. **Integrasi API ke Monolith**: Aplikasi monolith memanggil microservice.
+						5. **Kembalikan Data**: Hasil dari microservice dikembalikan ke aplikasi.
+					  </textarea>
+					</section>
+				  </section>
+
+				  <!-- Slide Live Coding -->
+				  <section data-markdown>
+					<textarea data-template>
+					 ## Gaskeun <span style="color: red;">Live Coding</span> lur!
+					 				 
+					</textarea>
+				  </section>
+
+				  <!-- Slide Conclusion -->
+				  <section data-markdown>
+					<textarea data-template>
+					 ## Kesimpulan
+
+					**Metode Pengembangan** berfokus pada pengelolaan dan alur kerja proyek perangkat lunak secara keseluruhan, sementara **Metode Teknik** lebih berfokus pada penerapan teknik atau algoritma tertentu untuk menyelesaikan masalah dalam pengembangan atau analisis data. Keduanya saling melengkapi dalam menciptakan solusi perangkat lunak yang efisien dan efektif.
+					</textarea>
+				  </section>
+				  <!-- Slide Thanks -->
+				  <section data-markdown>
+					<textarea data-template>
+					 ## Terima Kasih
+
+					 <span style="color: red;">Udah siap berkarya?</span>
+
+					 [Dokumentasi](https://github.com/Muhammad-Ikhwan-Fathulloh/Implementation-of-Techniques-into-Programming)
+					</textarea>
+				  </section>
+			</div>
+		</div>
+
+		<script src="dist/reveal.js"></script>
+		<script src="plugin/notes/notes.js"></script>
+		<script src="plugin/markdown/markdown.js"></script>
+		<script src="plugin/highlight/highlight.js"></script>
+		<script>
+			// More info about initialization & config:
+			// - https://revealjs.com/initialization/
+			// - https://revealjs.com/config/
+			Reveal.initialize({
+				hash: true,
+				slideNumber: (slide) => {
+					// Ignore numbering of vertical slides
+					return [Reveal.getIndices(slide).h];
+				},
+				// Learn about plugins: https://revealjs.com/plugins/
+				plugins: [ RevealMarkdown, RevealHighlight, RevealNotes ]
+			});
+		</script>
+	</body>
+</html>
