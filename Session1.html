@@ -1,0 +1,961 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <title>BAB I: Pengenalan Kecerdasan Buatan</title>
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css" id="theme">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;500;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --cream: #FFF4D6;
+            --black: #141414;
+            --yellow: #FFD93D;
+            --pink: #FF6FA5;
+            --blue: #5B9DFF;
+            --green: #5BD68A;
+            --r-main-font: 'Space Grotesk', sans-serif;
+            --r-heading-font: 'Space Grotesk', sans-serif;
+            --r-code-font: 'Space Mono', monospace;
+            --r-background-color: var(--black);
+            --r-main-color: var(--black);
+            --r-heading-color: var(--black);
+            --r-link-color: var(--blue);
+        }
+
+        body {
+            background-color: var(--black) !important;
+        }
+
+        .reveal {
+            font-family: var(--r-main-font);
+            font-weight: 500;
+            color: var(--black);
+            height: 100vh;
+        }
+
+        .reveal .slides {
+            text-align: left;
+            height: 100%;
+        }
+
+        /* SLIDE FULLSCREEN TANPA MARGIN BERLEBIH */
+        .reveal section {
+            background-color: var(--cream);
+            padding: 40px;
+            box-sizing: border-box;
+            border: 4px solid var(--black);
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            width: 100%;
+            height: 100%;
+            margin: 0;
+            overflow: hidden;
+        }
+
+        .reveal h1, .reveal h2, .reveal h3, .reveal h4, .reveal h5, .reveal h6 {
+            font-family: var(--r-heading-font);
+            font-weight: 700;
+            text-transform: uppercase;
+            color: var(--black);
+            margin-bottom: 20px;
+        }
+
+        .reveal h1 { font-size: 2em; }
+        .reveal h2 { font-size: 1.4em; }
+        .reveal h3 { font-size: 1.1em; }
+        .reveal p, .reveal li { font-size: 0.8em; line-height: 1.3; }
+
+        .reveal ul { margin-left: 20px; display: block; }
+        .reveal ul li { margin-bottom: 10px; }
+
+        .bg-cream { background-color: var(--cream) !important; color: var(--black) !important; }
+        .bg-black { background-color: var(--black) !important; color: var(--cream) !important; }
+        .bg-yellow { background-color: var(--yellow) !important; color: var(--black) !important; }
+        .bg-pink { background-color: var(--pink) !important; color: var(--black) !important; }
+        .bg-blue { background-color: var(--blue) !important; color: var(--black) !important; }
+        .bg-green { background-color: var(--green) !important; color: var(--black) !important; }
+
+        .bg-black h1, .bg-black h2, .bg-black h3, .bg-black h4, .bg-black h5, .bg-black h6 { color: var(--cream); }
+
+        .neo-box {
+            border: 4px solid var(--black);
+            box-shadow: 8px 8px 0 var(--black);
+            padding: 15px;
+            box-sizing: border-box;
+            display: inline-block;
+        }
+        
+        .bg-black .neo-box {
+            border: 4px solid var(--cream);
+            box-shadow: 8px 8px 0 var(--cream);
+            color: var(--black);
+        }
+
+        .neo-card {
+            border: 4px solid var(--black);
+            box-shadow: 6px 6px 0 var(--black);
+            padding: 15px;
+            background: var(--cream);
+            display: flex;
+            flex-direction: column;
+            box-sizing: border-box;
+            justify-content: center;
+            overflow: hidden;
+            min-height: 0; /* Mencegah flexbox meluber */
+        }
+        
+        .bg-black .neo-card {
+            background: var(--black);
+            border-color: var(--cream);
+            box-shadow: 6px 6px 0 var(--cream);
+            color: var(--cream);
+        }
+
+        /* GRID LAYOUT RESPONSIF */
+        .flex-grow { flex-grow: 1; display: flex; flex-direction: column; justify-content: center; min-height: 0; }
+        .grid-auto { display: grid; grid-template-columns: repeat(auto-fit, minmax(200px, 1fr)); gap: 15px; min-height: 0; }
+        .grid-2 { display: grid; grid-template-columns: 1fr 1fr; gap: 15px; align-items: stretch; min-height: 0; }
+        .grid-3 { display: grid; grid-template-columns: repeat(auto-fit, minmax(180px, 1fr)); gap: 15px; align-items: stretch; min-height: 0; }
+        .grid-4x2 { display: grid; grid-template-columns: repeat(4, 1fr); grid-template-rows: repeat(2, 1fr); gap: 12px; min-height: 0; }
+        .grid-4 { display: grid; grid-template-columns: repeat(auto-fit, minmax(140px, 1fr)); grid-template-rows: 1fr 1fr; gap: 12px; min-height: 0; }
+        .flex-row { display: flex; gap: 15px; align-items: center; justify-content: center; flex-wrap: wrap; }
+        
+        /* Animasi Pop-in */
+        .neo-box, .neo-card, .neo-table, .svg-illustration, .svg-diagram, .code-card {
+            animation: popIn 0.5s cubic-bezier(0.17, 0.84, 0.44, 1) backwards;
+        }
+        @keyframes popIn {
+            0% { transform: scale(0.8) translate(10px, 10px); opacity: 0; }
+            100% { transform: scale(1) translate(0, 0); opacity: 1; }
+        }
+        .reveal section.present [class^="neo-"]:nth-child(1), .reveal section.present .flex-grow > *:nth-child(1) { animation-delay: 0.1s; }
+        .reveal section.present [class^="neo-"]:nth-child(2), .reveal section.present .flex-grow > *:nth-child(2) { animation-delay: 0.2s; }
+        .reveal section.present [class^="neo-"]:nth-child(3), .reveal section.present .flex-grow > *:nth-child(3) { animation-delay: 0.3s; }
+        .reveal section.present [class^="neo-"]:nth-child(4), .reveal section.present .flex-grow > *:nth-child(4) { animation-delay: 0.4s; }
+        .reveal section.present [class^="neo-"]:nth-child(5), .reveal section.present .flex-grow > *:nth-child(5) { animation-delay: 0.5s; }
+        .reveal section.present [class^="neo-"]:nth-child(6), .reveal section.present .flex-grow > *:nth-child(6) { animation-delay: 0.6s; }
+        .reveal section.present [class^="neo-"]:nth-child(7), .reveal section.present .flex-grow > *:nth-child(7) { animation-delay: 0.7s; }
+        .reveal section.present [class^="neo-"]:nth-child(8), .reveal section.present .flex-grow > *:nth-child(8) { animation-delay: 0.8s; }
+
+        .code-card {
+            background: var(--black);
+            color: var(--cream);
+            padding: 20px;
+            border: 4px solid var(--cream);
+            box-shadow: 8px 8px 0 var(--cream);
+            font-family: monospace;
+            font-size: 14px;
+            text-align: left;
+            white-space: pre-wrap;
+            overflow: hidden;
+            width: 100%;
+            box-sizing: border-box;
+            height: 100%;
+            min-height: 0;
+        }
+
+        /* Tabel */
+        .table-container { flex-grow: 1; display: flex; align-items: center; overflow: hidden; min-height: 0; }
+        .neo-table {
+            border-collapse: collapse;
+            font-size: 0.6em;
+            width: 100%;
+            table-layout: fixed;
+            box-shadow: 8px 8px 0 var(--black);
+        }
+        .neo-table th, .neo-table td {
+            border: 4px solid var(--black);
+            padding: 10px;
+            text-align: left;
+            background-color: var(--cream);
+            color: var(--black);
+            vertical-align: middle;
+            word-wrap: break-word;
+        }
+        .neo-table th {
+            background-color: var(--yellow);
+            font-weight: 700;
+            text-transform: uppercase;
+        }
+        
+        .bg-black .neo-table th, .bg-black .neo-table td {
+            background-color: var(--black);
+            color: var(--cream);
+            border-color: var(--cream);
+        }
+        .bg-black .neo-table th { background-color: var(--yellow); color: var(--black); border-color: var(--cream); }
+
+        .footer-ref {
+            position: absolute;
+            bottom: 20px;
+            right: 40px;
+            font-size: 0.5em;
+            opacity: 0.7;
+            z-index: 100;
+        }
+
+        .reveal .slide-number { color: var(--cream); font-size: 14px; }
+        .reveal .controls { color: var(--cream); }
+        .reveal .progress { color: var(--yellow); }
+
+        .reveal pre { width: 100%; box-shadow: none; margin: 0; height: 100%; min-height: 0; }
+        .reveal pre code { padding: 20px; height: 100%; box-sizing: border-box; font-size: 0.7em; }
+
+        .big-text { font-size: 1.8em; font-weight: 700; text-transform: uppercase; line-height: 1.1; }
+        .text-sm { font-size: 0.6em; }
+        .text-md { font-size: 0.8em; }
+
+        /* SVG Ilustrasi */
+        .svg-illustration { width: 100%; height: auto; max-height: 120px; margin-bottom: 10px; }
+        .svg-diagram { width: 100%; height: auto; max-height: 400px; }
+    </style>
+</head>
+<body>
+    <div class="reveal">
+        <div class="slides">
+            <!-- SLIDE 1: JUDUL -->
+            <section class="bg-cream" style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <svg class="svg-illustration" viewBox="0 0 400 150" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Ilustrasi Neo-Brutalism Geometris -->
+                    <rect x="10" y="20" width="80" height="80" fill="#FFD93D" stroke="#141414" stroke-width="6" transform="translate(12,12)"/>
+                    <rect x="10" y="20" width="80" height="80" fill="#FFD93D" stroke="#141414" stroke-width="6"/>
+                    <circle cx="150" cy="60" r="40" fill="#FF6FA5" stroke="#141414" stroke-width="6" transform="translate(12,12)"/>
+                    <circle cx="150" cy="60" r="40" fill="#FF6FA5" stroke="#141414" stroke-width="6"/>
+                    <polygon points="220,100 260,20 300,100" fill="#5B9DFF" stroke="#141414" stroke-width="6" transform="translate(12,12)"/>
+                    <polygon points="220,100 260,20 300,100" fill="#5B9DFF" stroke="#141414" stroke-width="6"/>
+                    <path d="M330 20 L370 20 L370 100 L330 100 Z" fill="#5BD68A" stroke="#141414" stroke-width="6" transform="translate(12,12)"/>
+                    <path d="M330 20 L370 20 L370 100 L330 100 Z" fill="#5BD68A" stroke="#141414" stroke-width="6"/>
+                    <!-- Garis dekoratif -->
+                    <path d="M10 130 L380 130" stroke="#141414" stroke-width="6" fill="none"/>
+                    <path d="M10 140 L380 140" stroke="#141414" stroke-width="6" stroke-dasharray="20 10" fill="none"/>
+                </svg>
+                <h1 class="r-fit-text" style="font-size: 1.4em; border: 4px solid var(--black); padding: 20px; background: var(--yellow); box-shadow: 12px 12px 0 var(--black); margin-bottom: 30px;">BAB I: PENGENALAN KECERDASAN BUATAN</h1>
+                <div class="neo-box bg-pink" style="margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 0.8em;">Penyusun: Muhammad Ikhwan Fathulloh</p>
+                </div>
+                <a href="https://one.nocturnailed.com/" target="_blank" class="neo-box bg-blue" style="text-decoration: none; color: var(--black);">
+                    <p style="margin: 0; font-size: 0.8em;">one.nocturnailed.com</p>
+                </a>
+                <aside class="notes">Selamat datang di perkuliahan Kecerdasan Buatan.</aside>
+            </section>
+
+            <!-- SLIDE 2: CAPAIAN PEMBELAJARAN -->
+            <section class="bg-cream">
+                <h2>Capaian Pembelajaran</h2>
+                <div class="flex-grow grid-4">
+                    <div class="neo-card" style="background: var(--yellow);">
+                        <h4 style="font-size: 0.7em;">1. Konsep Dasar</h4>
+                        <p class="text-sm">Menjelaskan konsep AI & beda dengan kecerdasan alami.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--pink);">
+                        <h4 style="font-size: 0.7em;">2. Bidang & Sejarah</h4>
+                        <p class="text-sm">Menjelaskan bidang ilmu dasar AI, sejarah, & aplikasi.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--blue);">
+                        <h4 style="font-size: 0.7em;">3. Agen Intelejen</h4>
+                        <p class="text-sm">Menjelaskan peran agen intelejen dalam AI.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--green);">
+                        <h4 style="font-size: 0.7em;">4. Bahasa Pemrograman</h4>
+                        <p class="text-sm">Menjelaskan bahasa pemrograman AI & alasannya.</p>
+                    </div>
+                </div>
+                <aside class="notes">Empat capaian pembelajaran utama.</aside>
+            </section>
+
+            <!-- SLIDE 3: PETA ISI BAB -->
+            <section class="bg-cream" style="text-align: center; display: flex; flex-direction: column; justify-content: center;">
+                <h2>Peta Isi Bab</h2>
+                <div class="flex-row" style="height: 80%;">
+                    <div class="neo-box bg-yellow"><p class="text-md" style="margin:0;">1.1 Pengertian</p></div>
+                    <div class="neo-box bg-pink"><p class="text-md" style="margin:0;">1.2 Bidang Ilmu</p></div>
+                    <div class="neo-box bg-blue"><p class="text-md" style="margin:0;">1.3 Sejarah</p></div>
+                    <div class="neo-box bg-green"><p class="text-md" style="margin:0;">1.4 Agen Intelejen</p></div>
+                    <div class="neo-box bg-cream"><p class="text-md" style="margin:0;">1.5 Bahasa Pemrograman</p></div>
+                </div>
+                <aside class="notes">Lima bagian utama bab ini.</aside>
+            </section>
+
+            <!-- SLIDE 4: DEFINISI AI -->
+            <section class="bg-black">
+                <h2 style="color: var(--yellow);">1.1 Pengertian AI</h2>
+                <div class="flex-grow">
+                    <p class="big-text" style="color: var(--cream);">Bisakah mesin berpikir?</p>
+                    <div class="neo-box bg-cream" style="margin-top: 30px; width: 100%;">
+                        <p class="text-md" style="margin: 0;">AI = Cabang ilmu komputer yang membuat mesin mampu menalar, belajar, memahami bahasa, & ambil keputusan.</p>
+                    </div>
+                </div>
+                <p class="text-sm footer-ref">McCarthy dkk., 1955</p>
+                <aside class="notes">Kecerdasan Buatan adalah cabang ilmu komputer.</aside>
+            </section>
+
+            <!-- SLIDE 5: EMPAT PENDEKATAN DEFINISI -->
+            <section class="bg-cream">
+                <h2>Empat Pendekatan Definisi AI</h2>
+                <div class="table-container">
+                    <table class="neo-table">
+                        <thead>
+                            <tr>
+                                <th></th>
+                                <th>Berpikir (Thinking)</th>
+                                <th>Bertindak (Acting)</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td><strong>Seperti Manusia</strong></td>
+                                <td>Cognitive modeling: meniru pikiran manusia.</td>
+                                <td>Turing Test: tak terbedakan dari manusia.</td>
+                            </tr>
+                            <tr>
+                                <td><strong>Rasional</strong></td>
+                                <td>Laws of thought: bernalar logis formal.</td>
+                                <td>Agen rasional: capai hasil terbaik.</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                </div>
+                <p class="text-sm footer-ref">Russell & Norvig, 2021</p>
+                <aside class="notes">Empat pendekatan definisi AI.</aside>
+            </section>
+
+            <!-- SLIDE 6: AI VS KECERDASAN ALAMI (1) -->
+            <section class="bg-cream">
+                <h2>AI vs Kecerdasan Alami (1)</h2>
+                <div class="table-container">
+                    <table class="neo-table">
+                        <thead>
+                            <tr>
+                                <th>Aspek</th>
+                                <th>Kecerdasan Alami</th>
+                                <th>Kecerdasan Buatan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Sifat</td><td>Kreatif, berkembang alami</td><td>Konsisten, tetap</td></tr>
+                            <tr><td>Kecepatan</td><td>Lambat hitung kompleks</td><td>Sangat cepat hitung & data</td></tr>
+                            <tr><td>Transfer</td><td>Sulit dipindah utuh</td><td>Mudah disalin & digandakan</td></tr>
+                            <tr><td>Biaya</td><td>Pendidikan bertahun-tahun</td><td>Mahal awal, murah replikasi</td></tr>
+                            <tr><td>Adaptasi</td><td>Baik di konteks baru</td><td>Terbatas pada data latih</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <aside class="notes">Perbandingan AI dan kecerdasan alami bagian 1.</aside>
+            </section>
+
+            <!-- SLIDE 7: AI VS KECERDASAN ALAMI (2) -->
+            <section class="bg-yellow">
+                <h2>AI vs Kecerdasan Alami (2)</h2>
+                <div class="table-container">
+                    <table class="neo-table">
+                        <thead>
+                            <tr>
+                                <th>Aspek</th>
+                                <th>Kecerdasan Alami</th>
+                                <th>Kecerdasan Buatan</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Common Sense</td><td>Bawaan dan kaya</td><td>Tantangan riset</td></tr>
+                            <tr><td>Energi</td><td>Sangat efisien (~20 watt)</td><td>Energi & perangkat besar</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <aside class="notes">Perbandingan AI dan kecerdasan alami bagian 2.</aside>
+            </section>
+
+            <!-- SLIDE 8: JENIS AI -->
+            <section class="bg-cream">
+                <h2>Tingkatan dan Jenis AI</h2>
+                <div class="flex-grow grid-3">
+                    <div class="neo-card" style="background: var(--yellow); justify-content: flex-start;">
+                        <h3>Narrow AI</h3>
+                        <p class="text-sm">Satu tugas spesifik (filter spam, pengenal wajah). Seluruh AI saat ini.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--pink); justify-content: flex-start;">
+                        <h3>AGI</h3>
+                        <p class="text-sm">Memahami tugas intelektual seperti manusia. Hipotetis & tujuan riset.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--blue); justify-content: flex-start;">
+                        <h3>ASI</h3>
+                        <p class="text-sm">Melampaui kemampuan manusia di semua bidang. Spekulatif.</p>
+                    </div>
+                </div>
+                <aside class="notes">Tingkatan AI: Narrow, AGI, ASI.</aside>
+            </section>
+
+            <!-- SLIDE 9: AI > ML > DL -->
+            <section class="bg-black">
+                <h2 style="color: var(--cream);">AI > ML > DL</h2>
+                <div class="flex-grow" style="display: flex; justify-content: center; align-items: center;">
+                    <svg class="svg-diagram" viewBox="0 0 400 350" xmlns="http://www.w3.org/2000/svg">
+                        <!-- AI Outer Box with Shadow -->
+                        <rect x="20" y="20" width="360" height="310" fill="#141414" stroke="#FFF4D6" stroke-width="6" transform="translate(12,12)"/>
+                        <rect x="20" y="20" width="360" height="310" fill="#141414" stroke="#FFF4D6" stroke-width="6"/>
+                        <text x="200" y="60" font-family="Space Grotesk" font-size="20" font-weight="700" fill="#FFD93D" text-anchor="middle">AI (KECERDASAN BUATAN)</text>
+                        <text x="200" y="85" font-family="Space Grotesk" font-size="12" fill="#FFF4D6" text-anchor="middle">Pencarian, logika, aturan, perencanaan</text>
+                        
+                        <!-- ML Middle Box with Shadow -->
+                        <rect x="60" y="110" width="280" height="200" fill="#141414" stroke="#FF6FA5" stroke-width="6" transform="translate(12,12)"/>
+                        <rect x="60" y="110" width="280" height="200" fill="#141414" stroke="#FF6FA5" stroke-width="6"/>
+                        <text x="200" y="150" font-family="Space Grotesk" font-size="20" font-weight="700" fill="#FF6FA5" text-anchor="middle">ML (MACHINE LEARNING)</text>
+                        <text x="200" y="175" font-family="Space Grotesk" font-size="12" fill="#FFF4D6" text-anchor="middle">Belajar pola dari data</text>
+                        
+                        <!-- DL Inner Box with Shadow -->
+                        <rect x="100" y="200" width="200" height="90" fill="#5B9DFF" stroke="#FFF4D6" stroke-width="6" transform="translate(12,12)"/>
+                        <rect x="100" y="200" width="200" height="90" fill="#5B9DFF" stroke="#FFF4D6" stroke-width="6"/>
+                        <text x="200" y="235" font-family="Space Grotesk" font-size="20" font-weight="700" fill="#141414" text-anchor="middle">DL (DEEP LEARNING)</text>
+                        <text x="200" y="260" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Jaringan Saraf Berlapis</text>
+                    </svg>
+                </div>
+                <p class="text-sm" style="color: var(--cream); text-align: center;">Paradigma ML: Supervised, Unsupervised, Reinforcement.</p>
+                <aside class="notes">AI adalah payung terluas, mencakup ML dan DL.</aside>
+            </section>
+
+            <!-- SLIDE 10: SUBBIDANG AI -->
+            <section class="bg-cream">
+                <h2>Subbidang & Aplikasi AI</h2>
+                <div class="flex-grow grid-4x2">
+                    <div class="neo-card" style="background: var(--yellow);"><strong>NLP</strong><br><span class="text-sm">Penerjemah, Chatbot</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>Visi Komputer</strong><br><span class="text-sm">Wajah, Citra Medis</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>Suara</strong><br><span class="text-sm">Transkripsi, Asisten</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>Robotika</strong><br><span class="text-sm">Industri, Drone</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>Sistem Pakar</strong><br><span class="text-sm">Diagnosa Aturan</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>Perencanaan</strong><br><span class="text-sm">Logistik, Jadwal</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>Rekomendasi</strong><br><span class="text-sm">Film, Produk</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>AI Generatif</strong><br><span class="text-sm">Teks, Gambar, Kode</span></div>
+                </div>
+                <aside class="notes">Delapan subbidang utama AI.</aside>
+            </section>
+
+            <!-- SLIDE 11: ETIKA AI -->
+            <section class="bg-pink">
+                <h2>Etika & Tanggung Jawab AI</h2>
+                <div class="flex-grow">
+                    <ul style="font-size: 0.9em; line-height: 1.5;">
+                        <li><strong>Bias & keadilan:</strong> Mewarisi bias dari data latih.</li>
+                        <li><strong>Privasi:</strong> UU No. 27/2022 tentang Data Pribadi.</li>
+                        <li><strong>Transparansi:</strong> Model kompleks sulit dijelaskan.</li>
+                        <li><strong>Akuntabilitas:</strong> Siapa salah jika mesin salah?</li>
+                        <li><strong>Dampak:</strong> Otomasi & konsumsi energi pelatihan.</li>
+                    </ul>
+                </div>
+                <p class="text-sm footer-ref">UNESCO, 2021</p>
+                <aside class="notes">Isu etika dan tanggung jawab AI.</aside>
+            </section>
+
+            <!-- SLIDE 12: BIDANG ILMU -->
+            <section class="bg-cream">
+                <h2>1.2 Bidang Ilmu Dasar AI</h2>
+                <div class="flex-grow grid-4x2">
+                    <div class="neo-card" style="background: var(--green);"><strong>Filsafat</strong><br><span class="text-sm">Logika, hakikat pikir</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Matematika</strong><br><span class="text-sm">Probabilitas, aljabar</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Ekonomi</strong><br><span class="text-sm">Teori keputusan</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Neurosains</strong><br><span class="text-sm">Cara kerja otak</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Psikologi</strong><br><span class="text-sm">Kognitif, perilaku</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>T. Komputer</strong><br><span class="text-sm">CPU, GPU, TPU</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Teori Kendali</strong><br><span class="text-sm">Sistem feedback</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Linguistik</strong><br><span class="text-sm">Sintaksis, semantik</span></div>
+                </div>
+                <p class="text-sm footer-ref">Russell & Norvig, 2021</p>
+                <aside class="notes">Delapan bidang ilmu dasar AI.</aside>
+            </section>
+
+            <!-- SLIDE 13: SEJARAH AI (1) -->
+            <section class="bg-cream">
+                <h2>1.3 Sejarah AI (1943-1974)</h2>
+                <div class="flex-grow grid-3">
+                    <div class="neo-card" style="background: var(--yellow);"><strong>1943</strong><br><span class="text-sm">Model matematis neuron (McCulloch & Pitts).</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>1950</strong><br><span class="text-sm">Alan Turing & Turing Test.</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>1956</strong><br><span class="text-sm">Lokakarya Dartmouth, istilah AI resmi.</span></div>
+                    <div class="neo-card" style="background: var(--yellow); grid-column: span 3;"><strong>1956-1974</strong><br><span class="text-sm">Era antusiasme awal: pemecah masalah, pembuktian teorema, bahasa LISP.</span></div>
+                </div>
+                <aside class="notes">Sejarah AI 1943-1974.</aside>
+            </section>
+
+            <!-- SLIDE 14: SEJARAH AI (2) -->
+            <section class="bg-black">
+                <h2 style="color: var(--yellow);">Musim Dingin & Sistem Pakar</h2>
+                <div class="flex-grow grid-2">
+                    <div class="neo-card"><strong>1974-1980</strong><br><span class="text-sm">Musim Dingin AI I: pendanaan turun, Laporan Lighthill.</span></div>
+                    <div class="neo-card"><strong>1980-1987</strong><br><span class="text-sm">Kebangkitan sistem pakar komersial.</span></div>
+                    <div class="neo-card"><strong>1986</strong><br><span class="text-sm">Popularisasi algoritma backpropagation.</span></div>
+                    <div class="neo-card"><strong>1987-1993</strong><br><span class="text-sm">Musim Dingin AI II: sistem pakar mahal & kaku.</span></div>
+                </div>
+                <aside class="notes">Musim dingin dan kebangkitan sistem pakar.</aside>
+            </section>
+
+            <!-- SLIDE 15: SEJARAH AI (3) -->
+            <section class="bg-cream">
+                <h2>Era ML, Deep Learning, & Generatif</h2>
+                <div class="flex-grow grid-3">
+                    <div class="neo-card" style="background: var(--pink);"><strong>1997</strong><br><span class="text-sm">Deep Blue kalahkan juara catur.</span></div>
+                    <div class="neo-card" style="background: var(--pink);"><strong>2011</strong><br><span class="text-sm">IBM Watson menang kuis Jeopardy!.</span></div>
+                    <div class="neo-card" style="background: var(--pink);"><strong>2012</strong><br><span class="text-sm">AlexNet picu ledakan Deep Learning.</span></div>
+                    <div class="neo-card" style="background: var(--pink); grid-column: span 2;"><strong>2017</strong><br><span class="text-sm">Arsitektur Transformer diperkenalkan.</span></div>
+                    <div class="neo-card" style="background: var(--pink); grid-column: span 1;"><strong>2020-an</strong><br><span class="text-sm">Era AI Generatif & LLM.</span></div>
+                </div>
+                <aside class="notes">Era modern AI.</aside>
+            </section>
+
+            <!-- SLIDE 16: PELAJARAN DARI SEJARAH -->
+            <section class="bg-blue">
+                <h2>Pelajaran dari Sejarah</h2>
+                <div class="flex-grow">
+                    <div class="neo-box bg-cream" style="width: 100%; text-align: center; margin-bottom: 30px;">
+                        <p class="text-md" style="margin: 0;">Kemajuan AI berjalan dalam siklus antusiasme & kekecewaan.</p>
+                    </div>
+                    <div class="grid-3" style="height: 40%;">
+                        <div class="neo-card" style="background: var(--yellow); text-align: center;"><h4>Data Besar</h4></div>
+                        <div class="neo-card" style="background: var(--yellow); text-align: center;"><h4>Daya Komputasi</h4></div>
+                        <div class="neo-card" style="background: var(--yellow); text-align: center;"><h4>Algoritma Baik</h4></div>
+                    </div>
+                </div>
+                <aside class="notes">Tiga faktor pendorong kemajuan AI.</aside>
+            </section>
+
+            <!-- SLIDE 17: AGEN & LINGKUNGAN -->
+            <section class="bg-cream">
+                <h2>1.4 Agen & Lingkungannya</h2>
+                <div class="flex-grow" style="display: flex; justify-content: center; align-items: center;">
+                    <svg class="svg-diagram" viewBox="0 0 600 250" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Lingkungan Box (Right) -->
+                        <rect x="400" y="20" width="180" height="210" fill="#FFD93D" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="400" y="20" width="180" height="210" fill="#FFD93D" stroke="#141414" stroke-width="6"/>
+                        <text x="490" y="50" font-family="Space Grotesk" font-size="18" font-weight="700" fill="#141414" text-anchor="middle">LINGKUNGAN</text>
+                        <!-- City Landscape Ilustration -->
+                        <rect x="420" y="120" width="30" height="60" fill="#141414"/>
+                        <rect x="460" y="140" width="30" height="40" fill="#141414"/>
+                        <rect x="500" y="100" width="30" height="80" fill="#141414"/>
+                        <rect x="540" y="150" width="30" height="30" fill="#141414"/>
+                        <circle cx="540" cy="80" r="15" fill="#FFF4D6" stroke="#141414" stroke-width="4"/> <!-- Sun -->
+
+                        <!-- Agen Box (Left) -->
+                        <rect x="20" y="20" width="180" height="210" fill="#5B9DFF" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="20" y="20" width="180" height="210" fill="#5B9DFF" stroke="#141414" stroke-width="6"/>
+                        <text x="110" y="50" font-family="Space Grotesk" font-size="18" font-weight="700" fill="#141414" text-anchor="middle">AGEN</text>
+                        
+                        <!-- Program Agen Box -->
+                        <rect x="40" y="70" width="140" height="50" fill="#FFF4D6" stroke="#141414" stroke-width="4"/>
+                        <text x="110" y="100" font-family="Space Grotesk" font-size="14" font-weight="700" fill="#141414" text-anchor="middle">PROGRAM AGEN</text>
+                        
+                        <!-- Sensor & Aktuator Icons -->
+                        <circle cx="60" cy="160" r="15" fill="#FFF4D6" stroke="#141414" stroke-width="4"/> <!-- Camera Lens -->
+                        <circle cx="60" cy="160" r="5" fill="#141414"/>
+                        <rect x="140" y="145" width="30" height="30" fill="#FFF4D6" stroke="#141414" stroke-width="4"/> <!-- Actuator -->
+                        <path d="M145 175 L155 165 L165 175 Z" fill="#141414"/>
+                        
+                        <text x="60" y="200" font-family="Space Grotesk" font-size="10" fill="#141414" text-anchor="middle">Sensor</text>
+                        <text x="155" y="200" font-family="Space Grotesk" font-size="10" fill="#141414" text-anchor="middle">Aktuator</text>
+
+                        <!-- Panah Aksi -->
+                        <path d="M210 100 L390 100" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="390,90 410,100 390,110" fill="#141414"/>
+                        <rect x="270" y="80" width="60" height="20" fill="#FFF4D6" stroke="#141414" stroke-width="4"/>
+                        <text x="300" y="95" font-family="Space Grotesk" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">AKSI</text>
+
+                        <!-- Panah Persepsi -->
+                        <path d="M390 150 L210 150" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="210,140 190,150 210,160" fill="#141414"/>
+                        <rect x="250" y="170" width="100" height="20" fill="#FFF4D6" stroke="#141414" stroke-width="4"/>
+                        <text x="300" y="185" font-family="Space Grotesk" font-size="12" font-weight="700" fill="#141414" text-anchor="middle">PERSEPSI</text>
+                    </svg>
+                </div>
+                <p class="text-sm footer-ref">Russell & Norvig, 2021</p>
+                <aside class="notes">Diagram interaksi agen dan lingkungan.</aside>
+            </section>
+
+            <!-- SLIDE 18: PEAS -->
+            <section class="bg-cream">
+                <h2>PEAS & 4 Contoh Agen</h2>
+                <div class="table-container">
+                    <table class="neo-table" style="font-size: 0.55em;">
+                        <thead>
+                            <tr>
+                                <th>Agen</th>
+                                <th>Performance</th>
+                                <th>Environment</th>
+                                <th>Actuators</th>
+                                <th>Sensors</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Mobil Otonom</td><td>Aman, cepat, nyaman</td><td>Jalan, pejalan kaki</td><td>Kemudi, gas, rem</td><td>Kamera, lidar, GPS</td></tr>
+                            <tr><td>Diagnosis Medis</td><td>Tepat, biaya rendah</td><td>Pasien, rumah sakit</td><td>Tes, diagnosis</td><td>Gejala pasien</td></tr>
+                            <tr><td>Robot Vacuum</td><td>Bersih, hemat baterai</td><td>Ruangan, lantai</td><td>Roda, sikat</td><td>Sensor tabrakan</td></tr>
+                            <tr><td>Chatbot CS</td><td>Selesai, puas</td><td>Percakapan</td><td>Teks balasan</td><td>Teks masukan</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <aside class="notes">Tabel PEAS untuk 4 agen.</aside>
+            </section>
+
+            <!-- SLIDE 19: RASIONALITAS -->
+            <section class="bg-cream">
+                <h2>Konsep Rasionalitas</h2>
+                <div class="flex-grow grid-3">
+                    <div class="neo-card" style="background: var(--green);">
+                        <h3>Rasional</h3>
+                        <p class="text-sm">Maksimalkan kinerja yang <em>diharapkan</em> berdasar bukti.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--pink);">
+                        <h3>Omniscience</h3>
+                        <p class="text-sm">Mahatahu hasil pasti aksi (tidak realistis).</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--blue);">
+                        <h3>Perfection</h3>
+                        <p class="text-sm">Maksimalkan kinerja <em>aktual</em> (kesempurnaan).</p>
+                    </div>
+                </div>
+                <div class="neo-box bg-yellow" style="width: 100%; text-align: center;">
+                    <p class="text-sm" style="margin: 0;">Rasionalitas bergantung pada: ukuran kinerja, pengetahuan, aksi, persepsi.</p>
+                </div>
+                <aside class="notes">Konsep rasionalitas agen.</aside>
+            </section>
+
+            <!-- SLIDE 20: TUJUH DIMENSI LINGKUNGAN -->
+            <section class="bg-cream">
+                <h2>Tujuh Dimensi Lingkungan Tugas</h2>
+                <div class="table-container">
+                    <table class="neo-table" style="font-size: 0.55em;">
+                        <thead>
+                            <tr><th>Dimensi</th><th>Penjelasan</th><th>Contoh</th></tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Fully vs Partially</td><td>Kelengkapan akses sensor</td><td>Catur vs Poker</td></tr>
+                            <tr><td>Single vs Multi</td><td>Sendiri vs bersama agen lain</td><td>Teka-teki vs Catur</td></tr>
+                            <tr><td>Deterministic vs Stochastic</td><td>Pasti vs mengandung ketidakpastian</td><td>Puzzle vs Mengemudi</td></tr>
+                            <tr><td>Episodic vs Sequential</td><td>Independen vs berurutan</td><td>Klasifikasi vs Catur</td></tr>
+                            <tr><td>Static vs Dynamic</td><td>Berubah saat berpikir vs tetap</td><td>Teka-teki vs Taksi</td></tr>
+                            <tr><td>Discrete vs Continuous</td><td>Terhingga vs kontinu</td><td>Catur vs Robot</td></tr>
+                            <tr><td>Known vs Unknown</td><td>Aturan dikenal vs tidak</td><td>Kartu dikenal vs baru</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <aside class="notes">Tujuh dimensi lingkungan tugas.</aside>
+            </section>
+
+            <!-- SLIDE 21: LIMA STRUKTUR AGEN -->
+            <section class="bg-black">
+                <h2 style="color: var(--yellow);">Lima Struktur Agen</h2>
+                <div class="flex-grow grid-4" style="grid-template-rows: 1fr 1fr;">
+                    <div class="neo-card" style="background: var(--green);">
+                        <h4 style="font-size: 0.7em;">1. Simple Reflex</h4>
+                        <p class="text-sm">Aturan if-then, tanpa riwayat. Contoh: Termostat.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--green);">
+                        <h4 style="font-size: 0.7em;">2. Model-based</h4>
+                        <p class="text-sm">Punya model internal dunia. Contoh: Robot vacuum.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--green);">
+                        <h4 style="font-size: 0.7em;">3. Goal-based</h4>
+                        <p class="text-sm">Pilih aksi menuju tujuan. Contoh: Navigasi GPS.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--green);">
+                        <h4 style="font-size: 0.7em;">4. Utility-based</h4>
+                        <p class="text-sm">Maksimalkan utilitas. Contoh: Sistem rekomendasi.</p>
+                    </div>
+                    <div class="neo-card" style="background: var(--pink); grid-column: span 4;">
+                        <h4 style="font-size: 0.7em;">5. Learning Agent</h4>
+                        <p class="text-sm">Belajar dari pengalaman. Mengandung performance, learning, critic, problem generator.</p>
+                    </div>
+                </div>
+                <aside class="notes">Lima struktur agen.</aside>
+            </section>
+
+            <!-- SLIDE 22: LEARNING AGENT DIAGRAM -->
+            <section class="bg-cream">
+                <h2>Struktur Learning Agent</h2>
+                <div class="flex-grow" style="display: flex; justify-content: center; align-items: center;">
+                    <svg class="svg-diagram" viewBox="0 0 600 350" xmlns="http://www.w3.org/2000/svg">
+                        <!-- Critic -->
+                        <rect x="20" y="20" width="150" height="70" fill="#FFD93D" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="20" y="20" width="150" height="70" fill="#FFD93D" stroke="#141414" stroke-width="6"/>
+                        <text x="95" y="50" font-family="Space Grotesk" font-size="16" font-weight="700" fill="#141414" text-anchor="middle">CRITIC</text>
+                        <text x="95" y="70" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Menilai kinerja</text>
+
+                        <!-- Learning Element -->
+                        <rect x="220" y="20" width="160" height="70" fill="#FF6FA5" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="220" y="20" width="160" height="70" fill="#FF6FA5" stroke="#141414" stroke-width="6"/>
+                        <text x="300" y="50" font-family="Space Grotesk" font-size="16" font-weight="700" fill="#141414" text-anchor="middle">LEARNING</text>
+                        <text x="300" y="70" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Perbaiki kinerja</text>
+
+                        <!-- Problem Generator -->
+                        <rect x="430" y="20" width="150" height="70" fill="#5BD68A" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="430" y="20" width="150" height="70" fill="#5BD68A" stroke="#141414" stroke-width="6"/>
+                        <text x="505" y="50" font-family="Space Grotesk" font-size="16" font-weight="700" fill="#141414" text-anchor="middle">PROBLEM GEN</text>
+                        <text x="505" y="70" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Eksplorasi</text>
+
+                        <!-- Arrows Top -->
+                        <path d="M170 55 L220 55" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="220,45 230,55 220,65" fill="#141414"/>
+                        <path d="M380 55 L430 55" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="430,45 440,55 430,65" fill="#141414"/>
+
+                        <!-- Performance Element -->
+                        <rect x="220" y="140" width="160" height="70" fill="#5B9DFF" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="220" y="140" width="160" height="70" fill="#5B9DFF" stroke="#141414" stroke-width="6"/>
+                        <text x="300" y="170" font-family="Space Grotesk" font-size="16" font-weight="700" fill="#141414" text-anchor="middle">PERFORMANCE</text>
+                        <text x="300" y="190" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Pilih aksi</text>
+
+                        <!-- Arrow Top to Bottom -->
+                        <path d="M300 90 L300 140" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="290,140 310,140 300,150" fill="#141414"/>
+
+                        <!-- Arrow Problem Gen to Performance (Curved) -->
+                        <path d="M505 90 L505 240 L380 240 L380 175" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="370,175 390,175 380,165" fill="#141414"/>
+                        <text x="440" y="235" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Eksperimen</text>
+
+                        <!-- Lingkungan Box -->
+                        <rect x="100" y="260" width="400" height="70" fill="#FFF4D6" stroke="#141414" stroke-width="6" transform="translate(8,8)"/>
+                        <rect x="100" y="260" width="400" height="70" fill="#FFF4D6" stroke="#141414" stroke-width="6"/>
+                        <text x="300" y="290" font-family="Space Grotesk" font-size="16" font-weight="700" fill="#141414" text-anchor="middle">LINGKUNGAN</text>
+                        <text x="300" y="310" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Persepsi (sensor) & Aksi (aktuator)</text>
+
+                        <!-- Arrows to Lingkungan -->
+                        <path d="M200 210 L200 260" stroke="#141414" stroke-width="6" fill="none"/>
+                        <polygon points="190,260 210,260 200,270" fill="#141414"/>
+                        <text x="170" y="240" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Aksi</text>
+                        
+                        <path d="M380 210 L380 260" stroke="#141414" stroke-width="6" fill="none" transform="scale(-1, 1) translate(-760, 0)"/>
+                        <polygon points="390,260 410,260 400,270" fill="#141414"/>
+                        <text x="430" y="240" font-family="Space Grotesk" font-size="12" fill="#141414" text-anchor="middle">Persepsi</text>
+                    </svg>
+                </div>
+                <aside class="notes">Diagram struktur learning agent.</aside>
+            </section>
+
+            <!-- SLIDE 23: SEJARAH BAHASA PEMROGRAMAN AI -->
+            <section class="bg-cream">
+                <h2>1.5 Sejarah Bahasa Pemrograman AI</h2>
+                <div class="flex-grow grid-3">
+                    <div class="neo-card" style="background: var(--yellow);"><strong>1958</strong><br><span class="text-sm">LISP (McCarthy). Simbolik, GC.</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>1972</strong><br><span class="text-sm">Prolog. Logika, deklaratif.</span></div>
+                    <div class="neo-card" style="background: var(--yellow);"><strong>1980-an</strong><br><span class="text-sm">OPS5 (bahasa aturan) & CLIPS (tool pakar).</span></div>
+                    <div class="neo-card" style="background: var(--yellow); grid-column: span 1;"><strong>1991</strong><br><span class="text-sm">Python (van Rossum). Serba guna, ekosistem.</span></div>
+                    <div class="neo-card" style="background: var(--yellow); grid-column: span 2;"><strong>1993-2012</strong><br><span class="text-sm">R (1993), Java (1995), Julia (2012).</span></div>
+                </div>
+                <aside class="notes">Sejarah bahasa pemrograman AI.</aside>
+            </section>
+
+            <!-- SLIDE 24: PYTHON & EKOSISTEM -->
+            <section class="bg-blue">
+                <h2>Python & Ekosistemnya</h2>
+                <div class="flex-grow grid-4">
+                    <div class="neo-card"><strong style="color:var(--yellow)">NumPy</strong><br><span class="text-sm">Komputasi numerik</span></div>
+                    <div class="neo-card"><strong style="color:var(--yellow)">pandas</strong><br><span class="text-sm">Data tabular</span></div>
+                    <div class="neo-card"><strong style="color:var(--yellow)">scikit-learn</strong><br><span class="text-sm">ML klasik</span></div>
+                    <div class="neo-card"><strong style="color:var(--yellow)">PyTorch/TF</strong><br><span class="text-sm">Deep Learning</span></div>
+                </div>
+                <div class="neo-box bg-cream" style="text-align: center; width: 100%; margin-top: 20px;">
+                    <p class="text-md" style="margin: 0;">Dipakai 58% responden (Stack Overflow, 2025).</p>
+                </div>
+                <aside class="notes">Python dan ekosistemnya.</aside>
+            </section>
+
+            <!-- SLIDE 25: KODE PYTHON -->
+            <section class="bg-black">
+                <h2 style="color: var(--yellow);">Contoh Klasifikasi Python</h2>
+                <div class="flex-grow">
+                    <pre style="width: 100%; box-shadow: 8px 8px 0 var(--cream); border: 4px solid var(--cream); height: 100%; background: #141414;"><code class="language-python" data-noescape>from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.tree import DecisionTreeClassifier
+
+X, y = load_iris(return_X_y=True)
+X_train, X_test, y_train, y_test = train_test_split(X, y, test_size=0.3)
+
+model = DecisionTreeClassifier().fit(X_train, y_train)
+print("Akurasi:", model.score(X_test, y_test))</code></pre>
+                </div>
+                <aside class="notes">Contoh kode Python.</aside>
+            </section>
+
+            <!-- SLIDE 26: LISP & PROLOG -->
+            <section class="bg-cream">
+                <h2>LISP & Prolog</h2>
+                <div class="flex-grow grid-2">
+                    <div class="code-card"><code class="language-lisp">(defun faktorial (n)
+  (if (<= n 1) 1 
+      (* n (faktorial (- n 1)))))</code></div>
+                    <div class="code-card"><code class="language-prolog">orang_tua(budi, ani).
+orang_tua(ani, citra).
+kakek_nenek(X, Z) :- 
+    orang_tua(X, Y), 
+    orang_tua(Y, Z).</code></div>
+                </div>
+                <aside class="notes">Kode LISP dan Prolog.</aside>
+            </section>
+
+            <!-- SLIDE 27: BAHASA LAIN & PENDUKUNG -->
+            <section class="bg-cream">
+                <h2>Bahasa Utama Lain & Pendukung</h2>
+                <div class="flex-grow grid-4x2">
+                    <div class="neo-card" style="background: var(--green);"><strong>R</strong><br><span class="text-sm">Statistik & visualisasi data.</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Java</strong><br><span class="text-sm">Enterprise, portabel, skala besar.</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>Julia</strong><br><span class="text-sm">Komputasi numerik kinerja tinggi.</span></div>
+                    <div class="neo-card" style="background: var(--green);"><strong>C/C++ & CUDA</strong><br><span class="text-sm">Inti komputasi, robotika, GPU.</span></div>
+                    <div class="neo-card" style="background: var(--pink);"><strong>SQL</strong><br><span class="text-sm">Akses & siapkan data.</span></div>
+                    <div class="neo-card" style="background: var(--pink);"><strong>JavaScript</strong><br><span class="text-sm">Jalankan model di web peramban.</span></div>
+                    <div class="neo-card" style="background: var(--pink);"><strong>Rust & Go</strong><br><span class="text-sm">Infrastruktur, keamanan memori.</span></div>
+                    <div class="neo-card"><strong>Aturan</strong><br><span class="text-sm">Pilih sesuai masalah & ekosistem.</span></div>
+                </div>
+                <aside class="notes">Bahasa pendukung AI lainnya.</aside>
+            </section>
+
+            <!-- SLIDE 28: PERBANDINGAN BAHASA -->
+            <section class="bg-cream">
+                <h2>Perbandingan & Memilih Bahasa</h2>
+                <div class="table-container">
+                    <table class="neo-table" style="font-size: 0.55em;">
+                        <thead>
+                            <tr>
+                                <th>Bahasa</th>
+                                <th>Kekuatan</th>
+                                <th>Keterbatasan</th>
+                                <th>Cocok Untuk</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr><td>Python</td><td>Ekosistem terbesar</td><td>Eksekusi murni lambat</td><td>ML, NLP, riset</td></tr>
+                            <tr><td>LISP</td><td>Manipulasi simbol</td><td>Komunitas kecil</td><td>AI simbolik klasik</td></tr>
+                            <tr><td>Prolog</td><td>Inferensi bawaan</td><td>Kurang numerik</td><td>Sistem pakar, logika</td></tr>
+                            <tr><td>R</td><td>Statistik kuat</td><td>Kurang untuk produksi</td><td>Analisis data, riset</td></tr>
+                            <tr><td>C/C++</td><td>Kinerja tertinggi</td><td>Rumit dikembangkan</td><td>Robotika, inference</td></tr>
+                        </tbody>
+                    </table>
+                </div>
+                <div class="neo-box bg-yellow" style="width: 100%; text-align: center; margin-top: 15px;">
+                    <p class="text-sm" style="margin: 0;"><strong>Rule of thumb:</strong> Mulai Python, tambah SQL, pelajari Prolog/LISP, gunakan C++ bila perlu kinerja.</p>
+                </div>
+                <aside class="notes">Tabel perbandingan bahasa pemrograman.</aside>
+            </section>
+
+            <!-- SLIDE 29: RANGKUMAN -->
+            <section class="bg-cream">
+                <h2>Rangkuman</h2>
+                <div class="flex-grow">
+                    <ul style="font-size: 0.9em; line-height: 1.5;">
+                        <li>AI didefinisisi 4 cara; agen rasional jadi kerangka utama.</li>
+                        <li>AI payung ML & DL; seluruh AI saat ini <em>narrow AI</em>.</li>
+                        <li>AI multidisipliner: 8 bidang ilmu mendasarinya.</li>
+                        <li>Sejarah AI siklikal: Dartmouth, musim dingin, LLM.</li>
+                        <li>Agen sensor-aktuator; 5 struktur agen intelejen.</li>
+                        <li>Bahasa AI: dari LISP/Prolog ke Python/Julia/C++.</li>
+                    </ul>
+                </div>
+                <aside class="notes">Rangkuman bab 1.</aside>
+            </section>
+
+            <!-- SLIDE 30: GLOSARIUM -->
+            <section class="bg-cream">
+                <h2>Glosarium</h2>
+                <div class="flex-grow grid-4x2">
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>Agen</strong><br><span class="text-sm">Persepsi sensor, aksi aktuator.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>Percept</strong><br><span class="text-sm">Masukan persepsi pada satu saat.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>Fungsi Agen</strong><br><span class="text-sm">Pemetaan persepsi ke aksi.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>Rasionalitas</strong><br><span class="text-sm">Maksimalkan kinerja diharapkan.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>Turing Test</strong><br><span class="text-sm">Uji kemampuan tiru jawaban manusia.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>ML & DL</strong><br><span class="text-sm">Belajar pola & jaringan saraf berlapis.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>AI Winter</strong><br><span class="text-sm">Penurunan minat & pendanaan AI.</span></div>
+                    <div class="neo-card" style="background: var(--cream); box-shadow: 4px 4px 0 var(--black);"><strong>Sistem Pakar</strong><br><span class="text-sm">Program tiru penalaran pakar.</span></div>
+                </div>
+                <aside class="notes">Glosarium istilah.</aside>
+            </section>
+
+            <!-- SLIDE 31: LATIHAN -->
+            <section class="bg-pink">
+                <h2>Latihan</h2>
+                <div class="flex-grow grid-3">
+                    <div class="neo-card">
+                        <h3 style="color: var(--yellow);">Pemahaman</h3>
+                        <p class="text-sm">Jelaskan beda Narrow AI, AGI, dan ASI.</p>
+                    </div>
+                    <div class="neo-card">
+                        <h3 style="color: var(--yellow);">Penerapan</h3>
+                        <p class="text-sm">Buat deskripsi PEAS untuk agen pembersih lantai.</p>
+                    </div>
+                    <div class="neo-card">
+                        <h3 style="color: var(--yellow);">Proyek Mini</h3>
+                        <p class="text-sm">Jalankan kode Python scikit-learn & laporkan akurasinya.</p>
+                    </div>
+                </div>
+                <aside class="notes">Latihan bab 1.</aside>
+            </section>
+
+            <!-- SLIDE 32: DAFTAR PUSTAKA -->
+            <section class="bg-cream">
+                <h2>Daftar Pustaka</h2>
+                <div class="flex-grow grid-2" style="font-size: 0.45em; column-gap: 30px; align-items: start; overflow: hidden;">
+                    <div>
+                        <p>Abadi, M., dkk. (2016). TensorFlow: A system for large-scale machine learning. <em>OSDI</em>.</p>
+                        <p>Bezanson, J., dkk. (2017). Julia: A fresh approach to numerical computing. <em>SIAM Review</em>.</p>
+                        <p>Colmerauer, A., & Roussel, P. (1993). The birth of Prolog. <em>ACM SIGPLAN Notices</em>.</p>
+                        <p>Giarratano, J. C., & Riley, G. D. (2005). <em>Expert Systems</em>. Thomson.</p>
+                        <p>Harris, C. R., dkk. (2020). Array programming with NumPy. <em>Nature</em>.</p>
+                        <p>Ihaka, R., & Gentleman, R. (1996). R: A language for data analysis. <em>JCGS</em>.</p>
+                        <p>Kowalski, R. (1988). The early years of logic programming. <em>CACM</em>.</p>
+                        <p>Krizhevsky, A., dkk. (2012). ImageNet classification. <em>NIPS</em>.</p>
+                        <p>LeCun, Y., dkk. (2015). Deep learning. <em>Nature</em>.</p>
+                        <p>Lighthill, J. (1973). <em>Artificial Intelligence: A General Survey</em>. SRC.</p>
+                        <p>McCarthy, J. (1960). Recursive functions... <em>CACM</em>.</p>
+                    </div>
+                    <div>
+                        <p>McCarthy, J., dkk. (1955). <em>Proposal Dartmouth</em>.</p>
+                        <p>McCulloch, W. S., & Pitts, W. (1943). A logical calculus... <em>Bull. Math. Biophysics</em>.</p>
+                        <p>Mitchell, T. M. (1997). <em>Machine Learning</em>. McGraw-Hill.</p>
+                        <p>Paszke, A., dkk. (2019). PyTorch. <em>NeurIPS</em>.</p>
+                        <p>Pedregosa, F., dkk. (2011). Scikit-learn. <em>JMLR</em>.</p>
+                        <p>Rumelhart, D. E., dkk. (1986). Learning representations... <em>Nature</em>.</p>
+                        <p>Russell, S., & Norvig, P. (2021). <em>AI: A Modern Approach</em> (4th ed.). Pearson.</p>
+                        <p>Stack Overflow. (2025). <em>2025 Developer Survey</em>.</p>
+                        <p>Steele, G. L., & Gabriel, R. P. (1993). The evolution of Lisp. <em>ACM SIGPLAN</em>.</p>
+                        <p>Turing, A. M. (1950). Computing machinery and intelligence. <em>Mind</em>.</p>
+                        <p>UNESCO. (2021). <em>Recommendation on the Ethics of AI</em>.</p>
+                        <p>Vaswani, A., dkk. (2017). Attention is all you need. <em>NIPS</em>.</p>
+                    </div>
+                </div>
+                <aside class="notes">Daftar pustaka.</aside>
+            </section>
+
+            <!-- SLIDE 33: TERIMA KASIH -->
+            <section class="bg-yellow" style="text-align: center; display: flex; flex-direction: column; justify-content: center; align-items: center;">
+                <h1 class="r-fit-text" style="font-size: 2em; border: 4px solid var(--black); padding: 20px; background: var(--cream); box-shadow: 12px 12px 0 var(--black); margin-bottom: 30px;">TERIMA KASIH</h1>
+                <div class="neo-box bg-pink" style="margin-bottom: 20px;">
+                    <p style="margin: 0; font-size: 0.8em;">Muhammad Ikhwan Fathulloh</p>
+                </div>
+                <a href="https://one.nocturnailed.com/" target="_blank" class="neo-box bg-blue" style="text-decoration: none; color: var(--black);">
+                    <p style="margin: 0; font-size: 0.8em;">one.nocturnailed.com</p>
+                </a>
+                <aside class="notes">Terima kasih.</aside>
+            </section>
+        </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+    <script>
+        Reveal.initialize({
+            hash: true,
+            slideNumber: 'c/t',
+            plugins: [RevealNotes, RevealHighlight],
+            controls: true,
+            progress: true,
+            center: true,
+            transition: 'slide',
+            transitionSpeed: 'fast',
+            minScale: 0.1,
+            maxScale: 2.0,
+            width: 1280,
+            height: 720
+        });
+    </script>
+</body>
+</html>
