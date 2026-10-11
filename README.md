@@ -1,8 +1,5 @@
 # Intelegensi Buatan (IF-030)
 
-Universitas Teknologi Bandung · Fakultas Industri Kreatif · Teknik Informatika
-Dosen: Ari Hadhiwibowo, S.T., M.Kom.
-
 Repositori ini berisi rencana, materi, dan notebook praktik mata kuliah Intelegensi Buatan. Topik mengikuti RPS. Praktik dan tambahan modern diatur agar alurnya:
 
 **Python → Machine Learning → Deep Learning → Transformers & LLM → FastAPI → Streamlit**
