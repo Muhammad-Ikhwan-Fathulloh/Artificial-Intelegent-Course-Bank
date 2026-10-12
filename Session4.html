@@ -1,0 +1,418 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesi 4 — UCS, Greedy & A*</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF4D6;--black:#141414;--yellow:#FFD93D;--pink:#FF6FA5;--blue:#5B9DFF;--green:#5BD68A;--r-background-color:#141414;}
+html,body{margin:0;padding:0;background:#141414!important;}
+.reveal{font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.reveal .slides{width:100%!important;height:100%!important;}
+.reveal .slides section{width:100%!important;height:100%!important;top:0!important;left:0!important;padding:clamp(14px,2.2vw,32px) clamp(14px,2.8vw,44px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--black);overflow:hidden;}
+.reveal h1{font-size:clamp(1.3rem,3.2vw,2rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h2{font-size:clamp(.95rem,2.3vw,1.45rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h3,.reveal h4{font-weight:700;text-transform:uppercase;margin:0 0 .3em;}
+.reveal h3{font-size:clamp(.8rem,1.8vw,1rem);}.reveal h4{font-size:clamp(.7rem,1.5vw,.9rem);}
+.reveal p,.reveal li{font-size:clamp(.62rem,1.3vw,.8rem);line-height:1.45;margin:.2em 0;}
+.reveal ul{margin-left:1.2em;display:block;}.reveal ul li{margin-bottom:.35em;}
+.reveal pre{margin:0;width:100%;box-shadow:none;}
+.reveal pre code.hljs{font-size:clamp(.48rem,1vw,.67rem);line-height:1.45;padding:10px 14px;border-radius:0;}
+.bg-black{background:var(--black)!important;color:var(--cream)!important;}
+.bg-yellow{background:var(--yellow)!important;color:var(--black)!important;}
+.bg-green{background:var(--green)!important;color:var(--black)!important;}
+.bg-pink{background:var(--pink)!important;color:var(--black)!important;}
+.bg-black h2,.bg-black h3,.bg-black h4{color:var(--cream);}
+.neo-card{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(7px,1.1vw,14px);background:var(--cream);box-sizing:border-box;overflow:hidden;min-height:0;}
+.neo-box{border:3px solid var(--black);box-shadow:6px 6px 0 var(--black);padding:clamp(7px,1.1vw,13px);display:inline-block;box-sizing:border-box;}
+.bg-black .neo-card{background:#1c1c1c;border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);color:var(--cream);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,1.4vw,15px);min-height:0;}
+.code-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);flex:1;min-height:0;align-items:stretch;}
+.flex-col{display:flex;flex-direction:column;gap:6px;min-height:0;}
+.grow{flex:1;min-height:0;}
+.panel-code{background:#1c1c1c;border:3px solid var(--cream);box-shadow:6px 6px 0 var(--cream);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.panel-bar{background:#2a2a2a;padding:5px 11px;display:flex;align-items:center;gap:7px;border-bottom:2px solid var(--cream);flex-shrink:0;}
+.panel-dot{width:9px;height:9px;border-radius:50%;border:2px solid #555;}
+.dot-r{background:#FF6B6B;}.dot-y{background:#FFD93D;}.dot-g{background:#5BD68A;}
+.panel-title{color:#aaa;font-family:'Space Mono',monospace;font-size:.58em;margin-left:5px;}
+.panel-code pre{flex:1;margin:0;overflow:auto;}
+.terminal{background:#0d1117;border:3px solid var(--green);box-shadow:6px 6px 0 var(--green);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.terminal-bar{background:#161b22;padding:5px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--green);flex-shrink:0;}
+.terminal-title{color:var(--green);font-family:'Space Mono',monospace;font-size:.58em;font-weight:700;}
+.run-btn{background:var(--yellow);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:3px 11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.56em;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;}
+.run-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+.terminal-body{flex:1;padding:9px 13px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:clamp(.46rem,.95vw,.64rem);color:var(--green);white-space:pre-wrap;line-height:1.5;}
+.terminal-body::-webkit-scrollbar{width:3px;}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--green);}
+.cursor{display:inline-block;width:7px;height:1em;background:var(--green);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.out-line{display:block;}.out-line.typing{animation:typeIn .22s ease both;}
+@keyframes typeIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+.neo-table{border-collapse:collapse;width:100%;table-layout:fixed;box-shadow:5px 5px 0 var(--black);}
+.neo-table th,.neo-table td{border:3px solid var(--black);padding:clamp(4px,.9vw,9px);font-size:clamp(.5rem,1vw,.67rem);word-break:break-word;vertical-align:middle;background:var(--cream);}
+.neo-table th{background:var(--yellow);font-weight:700;text-transform:uppercase;}
+.badge{display:inline-block;padding:2px 9px;border:2px solid var(--black);font-size:.56em;font-weight:700;text-transform:uppercase;}
+.reveal .slide-number{color:var(--cream);font-size:.7em;}
+.reveal .progress{color:var(--yellow);height:4px;}
+.formula{background:var(--black);color:var(--yellow);border:3px solid var(--yellow);box-shadow:5px 5px 0 var(--yellow);padding:8px 14px;font-family:'Space Mono',monospace;font-size:clamp(.72rem,1.5vw,.95rem);text-align:center;margin:6px 0;}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- SLIDE 1: JUDUL -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--green);box-shadow:14px 14px 0 var(--green);padding:clamp(14px,2.5vw,32px) clamp(20px,4.5vw,56px);display:inline-block;margin-bottom:clamp(12px,2vw,22px);">
+    <div style="font-size:clamp(.55rem,1.1vw,.8rem);color:var(--green);letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--green);margin:0 0 6px;">SESI 4</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.8rem,1.9vw,1.15rem);">UCS · Greedy Best-First · A* — Pencarian Heuristik</h2>
+  </div>
+  <div class="g3" style="width:min(580px,90%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--yellow);text-align:center;"><div style="font-size:1.5em;">💰</div><strong style="font-size:.68em;">UCS</strong><p style="font-size:.58em;margin:.2em 0 0;">f(n) = g(n)<br>Biaya aktual</p></div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;"><div style="font-size:1.5em;">🎯</div><strong style="font-size:.68em;">Greedy</strong><p style="font-size:.58em;margin:.2em 0 0;">f(n) = h(n)<br>Estimasi saja</p></div>
+    <div class="neo-card" style="background:var(--green);text-align:center;"><div style="font-size:1.5em;">⭐</div><strong style="font-size:.68em;">A*</strong><p style="font-size:.58em;margin:.2em 0 0;">f(n) = g(n)+h(n)<br>Optimal + efisien</p></div>
+  </div>
+</section>
+
+<!-- SLIDE 2: MOTIVASI & HEURISTIK -->
+<section class="bg-cream">
+  <h2>Mengapa BFS/DFS Tidak Cukup?</h2>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--pink);">
+        <h4>Masalah BFS</h4>
+        <p>BFS optimal dalam <strong>jumlah langkah</strong>, tapi tidak mempertimbangkan <strong>biaya tiap langkah</strong>. Jalan tol vs jalan kampung — BFS tidak peduli.</p>
+      </div>
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Solusi: Heuristik h(n)</h4>
+        <p><strong>h(n)</strong> = estimasi biaya dari node n ke goal.</p>
+        <ul>
+          <li><strong>Manhattan:</strong> |x₁−x₂| + |y₁−y₂| — grid 4 arah</li>
+          <li><strong>Euclidean:</strong> √((x₁−x₂)²+(y₁−y₂)²) — bebas arah</li>
+          <li><strong>Syarat admissible:</strong> h(n) ≤ h*(n) — tidak lebay</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--black);flex:1;">
+        <h4 style="color:var(--yellow);">Tiga Fungsi Evaluasi</h4>
+        <div class="formula">UCS:    f(n) = g(n)</div>
+        <div class="formula" style="border-color:var(--pink);color:var(--pink);box-shadow:5px 5px 0 var(--pink);">Greedy: f(n) = h(n)</div>
+        <div class="formula" style="border-color:var(--green);color:var(--green);box-shadow:5px 5px 0 var(--green);">A*:     f(n) = g(n) + h(n)</div>
+        <p style="font-size:.6em;color:#aaa;margin-top:6px;">Semua memakai <strong style="color:var(--yellow);">Priority Queue</strong> (heapq) — selalu proses f(n) terkecil.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: PRAKTIK 1 — UCS -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--yellow);margin:0;">Praktik 1 — Uniform Cost Search</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--yellow);">f(n)=g(n)</span>
+      <span class="badge" style="background:var(--green);">Optimal</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik1_ucs.py</span></div>
+      <pre><code class="language-python">import heapq
+
+def ucs(graf, start, goal):
+    """
+    UCS: proses node dengan g(n) terkecil.
+    graf: {node: [(tetangga, biaya), ...]}
+    """
+    # (biaya_g, jalur)
+    pq        = [(0, [start])]
+    dikunjungi = {}
+
+    while pq:
+        biaya, jalur = heapq.heappop(pq)
+        node = jalur[-1]
+
+        if node in dikunjungi:
+            continue
+        dikunjungi[node] = biaya
+
+        if node == goal:
+            return jalur, biaya, len(dikunjungi)
+
+        for nbr, bobot in graf.get(node, []):
+            if nbr not in dikunjungi:
+                heapq.heappush(pq,
+                    (biaya + bobot, jalur + [nbr]))
+
+    return None, float('inf'), 0
+
+# Graf berbobot: kota dengan jarak (km)
+graf_kota = {
+    'A': [('B',4),('C',2)],
+    'B': [('A',4),('D',3),('E',5)],
+    'C': [('A',2),('E',4),('F',1)],
+    'D': [('B',3),('GOAL',6)],
+    'E': [('B',5),('C',4),('GOAL',2)],
+    'F': [('C',1),('GOAL',3)],
+    'GOAL': []
+}
+
+jalur, biaya, n_vis = ucs(graf_kota, 'A', 'GOAL')
+print("=== UCS ===")
+print(f"Jalur   : {' → '.join(jalur)}")
+print(f"Biaya   : {biaya} km")
+print(f"Visited : {n_vis} node")
+print(f"Optimal : ✅ Ya (biaya minimum)")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS4D1(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s4out1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: PRAKTIK 2 — A* -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--green);margin:0;">Praktik 2 — A* pada Grid 2D</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--green);">f=g+h</span>
+      <span class="badge" style="background:var(--yellow);">Manhattan</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik2_astar.py</span></div>
+      <pre><code class="language-python">import heapq
+
+def manhattan(a, b):
+    return abs(a[0]-b[0]) + abs(a[1]-b[1])
+
+def astar(grid, start, goal):
+    """
+    A*: f(n) = g(n) + h(n)
+    h = Manhattan distance ke goal
+    """
+    R, C = len(grid), len(grid[0])
+    # (f, g, pos, jalur)
+    pq  = [(manhattan(start,goal), 0, start, [start])]
+    vis = {}
+
+    while pq:
+        f, g, pos, jalur = heapq.heappop(pq)
+        if pos in vis: continue
+        vis[pos] = g
+        if pos == goal:
+            return jalur, g, len(vis)
+        r, c = pos
+        for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nr, nc = r+dr, c+dc
+            if 0<=nr<R and 0<=nc<C and \
+               grid[nr][nc]==0 and \
+               (nr,nc) not in vis:
+                g2 = g + 1
+                h2 = manhattan((nr,nc), goal)
+                heapq.heappush(pq,
+                    (g2+h2, g2, (nr,nc),
+                     jalur+[(nr,nc)]))
+    return None, float('inf'), len(vis)
+
+GRID = [
+    [0,0,0,1,0],
+    [1,1,0,1,0],
+    [0,0,0,0,0],
+    [0,1,1,1,0],
+    [0,0,0,1,0],
+]
+START, GOAL = (0,0), (4,4)
+j, cost, nv = astar(GRID, START, GOAL)
+print("=== A* ===")
+print(f"Jalur   : {' → '.join(str(p) for p in j)}")
+print(f"Biaya   : {cost} langkah")
+print(f"Visited : {nv} node")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS4D2(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s4out2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: PRAKTIK 3 — PERBANDINGAN -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--pink);margin:0;">Praktik 3 — Perbandingan Lengkap</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--pink);">BFS vs UCS vs Greedy vs A*</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik3_perbandingan.py</span></div>
+      <pre><code class="language-python">from collections import deque
+
+def greedy_bfs(grid, start, goal):
+    """Greedy: hanya pakai h(n), abaikan g(n)"""
+    pq  = [(manhattan(start,goal), start, [start])]
+    vis = {start}
+    while pq:
+        _, pos, jalur = heapq.heappop(pq)
+        if pos == goal:
+            return jalur, len(jalur)-1, len(vis)
+        r, c = pos
+        for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nr,nc = r+dr,c+dc
+            if 0<=nr<len(grid) and 0<=nc<len(grid[0])\
+               and grid[nr][nc]==0 \
+               and (nr,nc) not in vis:
+                vis.add((nr,nc))
+                heapq.heappush(pq,
+                    (manhattan((nr,nc),goal),
+                     (nr,nc), jalur+[(nr,nc)]))
+    return None, float('inf'), len(vis)
+
+def bfs_grid(grid, start, goal):
+    q, vis = deque([[start]]), {start}
+    while q:
+        j = q.popleft(); r,c = j[-1]
+        if (r,c)==goal: return j,len(j)-1,len(vis)
+        for dr,dc in [(-1,0),(1,0),(0,-1),(0,1)]:
+            nr,nc=r+dr,c+dc
+            if 0<=nr<len(grid) and 0<=nc<len(grid[0])\
+               and grid[nr][nc]==0 \
+               and (nr,nc) not in vis:
+                vis.add((nr,nc))
+                q.append(j+[(nr,nc)])
+    return None,float('inf'),len(vis)
+
+j_bfs,  c_bfs, v_bfs = bfs_grid(GRID,START,GOAL)
+j_grd,  c_grd, v_grd = greedy_bfs(GRID,START,GOAL)
+j_ast,  c_ast, v_ast = astar(GRID,START,GOAL)
+
+print("═"*56)
+print(f"{'Algo':<12}{'Panjang':<10}{'Node vis':<12}{'Optimal?'}")
+print("─"*56)
+print(f"{'BFS':<12}{c_bfs:<10}{v_bfs:<12}{'✅ Ya'}")
+print(f"{'Greedy':<12}{c_grd:<10}{v_grd:<12}{'❌ Tidak'}")
+print(f"{'A*':<12}{c_ast:<10}{v_ast:<12}{'✅ Ya'}")
+print("═"*56)
+print("→ A* optimal DAN lebih efisien dari BFS!")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS4D3(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s4out3"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: TABEL RINGKASAN -->
+<section class="bg-cream">
+  <h2>Ringkasan Semua Algoritma Pencarian</h2>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;">
+    <table class="neo-table">
+      <thead><tr><th>Algoritma</th><th>f(n)</th><th>Complete?</th><th>Optimal?</th><th>Memori</th><th>Aplikasi</th></tr></thead>
+      <tbody>
+        <tr><td>BFS</td><td>—</td><td>✅</td><td>✅ (cost sama)</td><td>O(bᵈ)</td><td>Shortest hop</td></tr>
+        <tr><td>DFS</td><td>—</td><td>✅*</td><td>❌</td><td>O(bm)</td><td>Eksplorasi</td></tr>
+        <tr><td>UCS</td><td>g(n)</td><td>✅</td><td>✅</td><td>O(bᵈ)</td><td>Cost bervariasi</td></tr>
+        <tr><td>Greedy</td><td>h(n)</td><td>❌*</td><td>❌</td><td>O(bᵐ)</td><td>Cepat, approx</td></tr>
+        <tr style="background:var(--green);"><td><strong>A*</strong></td><td><strong>g+h</strong></td><td>✅</td><td>✅ (h admissible)</td><td>O(bᵈ)</td><td>Game, GPS, robot</td></tr>
+      </tbody>
+    </table>
+    <div class="g3" style="margin-top:clamp(7px,1.3vw,14px);">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Game Dev</h4>
+        <p>A* adalah standar de facto pathfinding di hampir semua game (Warcraft, Starcraft, dll).</p>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Google Maps</h4>
+        <p>Varian A* dengan heuristik Haversine untuk jarak bola bumi antar koordinat GPS.</p>
+      </div>
+      <div class="neo-card" style="background:var(--pink);">
+        <h4>Robotika</h4>
+        <p>Robot navigasi otonom menggunakan A* atau variannya (D*, ARA*) untuk perencanaan jalur.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: TUGAS -->
+<section class="bg-green">
+  <h2>Tugas Sesi 4</h2>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">📝 Tugas Wajib</h4>
+      <ol>
+        <li>Implementasi A* pada maze <strong>8×8</strong> dengan obstacle acak (<code>np.random</code>).</li>
+        <li>Bandingkan node yang dikunjungi: BFS vs Greedy vs A* — tampilkan sebagai bar chart.</li>
+        <li>Visualisasikan tiga jalur pada maze yang sama dengan warna berbeda.</li>
+      </ol>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--yellow);flex:1;">
+        <h4>⭐ Tantangan Bonus</h4>
+        <ol>
+          <li>A* dengan <strong>diagonal movement</strong> (8 arah) — heuristik Chebyshev.</li>
+          <li>UCS pada graf kota Indonesia (10 kota, jarak nyata).</li>
+          <li>Animasi step-by-step A* dengan <code>FuncAnimation</code>.</li>
+        </ol>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);flex-shrink:0;">
+        <h4 style="color:var(--green);">📁 File Python</h4>
+        <p><code>week04_ucs_astar.py</code> — semua praktik lengkap + visualisasi.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({hash:true,slideNumber:'c/t',transition:'slide',width:'100%',height:'100%',margin:0,minScale:1,maxScale:1,plugins:[RevealHighlight,RevealNotes]});
+
+function animateLines(elId,lines,delay){
+  const el=document.getElementById(elId);el.innerHTML='';
+  lines.forEach((line,i)=>{
+    setTimeout(()=>{
+      const s=document.createElement('span');s.className='out-line typing';s.textContent=line+'\n';
+      if(line.startsWith('===')||line.startsWith('──')||line.startsWith('═')) s.style.color='#FFD93D';
+      else if(line.includes('A*')) s.style.color='#5BD68A';
+      else if(line.includes('Greedy')) s.style.color='#FF6FA5';
+      else if(line.includes('BFS')) s.style.color='#5B9DFF';
+      else if(line.includes('✅')) s.style.color='#5BD68A';
+      else if(line.includes('❌')) s.style.color='#FF6FA5';
+      else if(line.startsWith('$')) s.style.color='#aaa';
+      el.appendChild(s);el.scrollTop=el.scrollHeight;
+      if(i===lines.length-1){const c=document.createElement('span');c.className='cursor';el.appendChild(c);}
+    },delay+i*110);
+  });
+}
+function setRunning(btn,r){btn.disabled=r;btn.textContent=r?'⏳ Running…':'▶ Jalankan';}
+
+function runS4D1(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik1_ucs.py','','=== UCS ===','Jalur   : A → C → F → GOAL','Biaya   : 6 km','Visited : 6 node','Optimal : ✅ Ya (biaya minimum)','','Detail eksplorasi:','  Pop A  (g=0)  → eksplorasi [B(4), C(2)]','  Pop C  (g=2)  → eksplorasi [E(6), F(3)]','  Pop F  (g=3)  → eksplorasi [GOAL(6)]','  Pop B  (g=4)  → eksplorasi [D(7), E(9)]','  Pop E  (g=6)  → eksplorasi [GOAL(8)]','  Pop GOAL (g=6) ← SELESAI!','','✅ Jalur terpendek: A→C→F→GOAL = 6 km'];
+  animateLines('s4out1',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+function runS4D2(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik2_astar.py','','=== A* ===','Jalur   : (0,0)→(0,1)→(0,2)→(1,2)→(2,2)→(2,3)→(2,4)→(3,4)→(4,4)','Biaya   : 8 langkah','Visited : 14 node','','Detail f(n) = g(n) + h(n):','  (0,0) f=0+8=8   (start)','  (0,1) f=1+7=8','  (0,2) f=2+6=8','  (1,2) f=3+5=8','  (2,2) f=4+4=8','  ...','  (4,4) f=8+0=8   (goal!)','','✅ A* optimal: 8 langkah, 14 node dikunjungi'];
+  animateLines('s4out2',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+function runS4D3(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik3_perbandingan.py','','════════════════════════════════════════════════════════','Algo        Panjang   Node vis    Optimal?','────────────────────────────────────────────────────────','BFS         8         20          ✅ Ya','Greedy      8         9           ❌ Tidak','A*          8         14          ✅ Ya','════════════════════════════════════════════════════════','→ A* optimal DAN lebih efisien dari BFS!','','Kesimpulan:','  • Greedy tercepat (9 node) tapi bisa tidak optimal','  • BFS paling boros (20 node)','  • A* terbaik: optimal SEKALIGUS efisien (14 node)','','✅ Visualisasi disimpan ke week04_perbandingan.png'];
+  animateLines('s4out3',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+</script>
+</body></html>

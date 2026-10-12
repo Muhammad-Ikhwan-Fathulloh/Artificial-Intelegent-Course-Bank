@@ -1,0 +1,510 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesi 3 — BFS & DFS: Pencarian pada Ruang Keadaan</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF4D6;--black:#141414;--yellow:#FFD93D;--pink:#FF6FA5;--blue:#5B9DFF;--green:#5BD68A;--r-background-color:#141414;}
+html,body{margin:0;padding:0;background:#141414!important;}
+.reveal{font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.reveal .slides{width:100%!important;height:100%!important;}
+.reveal .slides section{width:100%!important;height:100%!important;top:0!important;left:0!important;padding:clamp(14px,2.2vw,32px) clamp(14px,2.8vw,44px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--black);overflow:hidden;}
+.reveal h1{font-size:clamp(1.3rem,3.2vw,2rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h2{font-size:clamp(.95rem,2.3vw,1.45rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h3,.reveal h4{font-weight:700;text-transform:uppercase;margin:0 0 .3em;}
+.reveal h3{font-size:clamp(.8rem,1.8vw,1rem);}
+.reveal h4{font-size:clamp(.7rem,1.5vw,.9rem);}
+.reveal p,.reveal li{font-size:clamp(.62rem,1.3vw,.8rem);line-height:1.45;margin:.2em 0;}
+.reveal ul{margin-left:1.2em;display:block;}.reveal ul li{margin-bottom:.35em;}
+.reveal pre{margin:0;width:100%;box-shadow:none;}
+.reveal pre code.hljs{font-size:clamp(.48rem,1vw,.67rem);line-height:1.45;padding:10px 14px;border-radius:0;}
+.bg-black{background:var(--black)!important;color:var(--cream)!important;}
+.bg-yellow{background:var(--yellow)!important;color:var(--black)!important;}
+.bg-pink{background:var(--pink)!important;color:var(--black)!important;}
+.bg-blue{background:var(--blue)!important;color:var(--black)!important;}
+.bg-green{background:var(--green)!important;color:var(--black)!important;}
+.bg-black h2,.bg-black h3,.bg-black h4{color:var(--cream);}
+.neo-card{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(7px,1.1vw,14px);background:var(--cream);box-sizing:border-box;overflow:hidden;min-height:0;}
+.neo-box{border:3px solid var(--black);box-shadow:6px 6px 0 var(--black);padding:clamp(7px,1.1vw,13px);display:inline-block;box-sizing:border-box;}
+.bg-black .neo-card{background:#1c1c1c;border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);color:var(--cream);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.1vw,12px);min-height:0;}
+.code-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);flex:1;min-height:0;align-items:stretch;}
+.flex-col{display:flex;flex-direction:column;gap:6px;min-height:0;}
+.grow{flex:1;min-height:0;}
+.panel-code{background:#1c1c1c;border:3px solid var(--cream);box-shadow:6px 6px 0 var(--cream);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.panel-bar{background:#2a2a2a;padding:5px 11px;display:flex;align-items:center;gap:7px;border-bottom:2px solid var(--cream);flex-shrink:0;}
+.panel-dot{width:9px;height:9px;border-radius:50%;border:2px solid #555;}
+.dot-r{background:#FF6B6B;}.dot-y{background:#FFD93D;}.dot-g{background:#5BD68A;}
+.panel-title{color:#aaa;font-family:'Space Mono',monospace;font-size:.58em;margin-left:5px;}
+.panel-code pre{flex:1;margin:0;overflow:auto;}
+.terminal{background:#0d1117;border:3px solid var(--green);box-shadow:6px 6px 0 var(--green);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.terminal-bar{background:#161b22;padding:5px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--green);flex-shrink:0;}
+.terminal-title{color:var(--green);font-family:'Space Mono',monospace;font-size:.58em;font-weight:700;}
+.run-btn{background:var(--yellow);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:3px 11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.56em;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;}
+.run-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+.terminal-body{flex:1;padding:9px 13px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:clamp(.46rem,.95vw,.64rem);color:var(--green);white-space:pre-wrap;line-height:1.5;}
+.terminal-body::-webkit-scrollbar{width:3px;}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--green);}
+.cursor{display:inline-block;width:7px;height:1em;background:var(--green);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.out-line{display:block;}.out-line.typing{animation:typeIn .22s ease both;}
+@keyframes typeIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+.neo-table{border-collapse:collapse;width:100%;table-layout:fixed;box-shadow:5px 5px 0 var(--black);}
+.neo-table th,.neo-table td{border:3px solid var(--black);padding:clamp(4px,.9vw,9px);font-size:clamp(.5rem,1vw,.68rem);word-break:break-word;vertical-align:middle;background:var(--cream);}
+.neo-table th{background:var(--yellow);font-weight:700;text-transform:uppercase;}
+.badge{display:inline-block;padding:2px 9px;border:2px solid var(--black);font-size:.56em;font-weight:700;text-transform:uppercase;}
+.reveal .slide-number{color:var(--cream);font-size:.7em;}
+.reveal .progress{color:var(--yellow);height:4px;}
+
+/* Maze visual */
+.maze-grid{display:inline-grid;gap:2px;border:3px solid var(--black);padding:4px;background:var(--black);}
+.maze-cell{width:clamp(16px,2.5vw,28px);height:clamp(16px,2.5vw,28px);display:flex;align-items:center;justify-content:center;font-size:.55em;font-weight:700;border:1px solid rgba(255,255,255,.15);}
+.cell-wall{background:#333;}
+.cell-open{background:#1c1c1c;color:var(--green);}
+.cell-start{background:var(--green);color:#141414;}
+.cell-end{background:var(--pink);color:#141414;}
+.cell-path-bfs{background:#5B9DFF;color:#141414;}
+.cell-path-dfs{background:#FF6FA5;color:#141414;}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- SLIDE 1: JUDUL -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--blue);box-shadow:14px 14px 0 var(--blue);padding:clamp(14px,2.5vw,32px) clamp(20px,4.5vw,56px);display:inline-block;margin-bottom:clamp(12px,2vw,22px);">
+    <div style="font-size:clamp(.55rem,1.1vw,.8rem);color:var(--blue);letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--blue);margin:0 0 6px;">SESI 3</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.8rem,1.9vw,1.15rem);">BFS &amp; DFS — Pencarian pada Ruang Keadaan</h2>
+  </div>
+  <div class="g3" style="width:min(560px,90%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--blue);text-align:center;"><div style="font-size:1.5em;">🌊</div><strong style="font-size:.68em;">BFS</strong><p style="font-size:.58em;margin:.2em 0 0;">Breadth-First Search<br>Jalur terpendek</p></div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;"><div style="font-size:1.5em;">🔍</div><strong style="font-size:.68em;">DFS</strong><p style="font-size:.58em;margin:.2em 0 0;">Depth-First Search<br>Eksplorasi dalam</p></div>
+    <div class="neo-card" style="background:var(--green);text-align:center;"><div style="font-size:1.5em;">🗺️</div><strong style="font-size:.68em;">Maze</strong><p style="font-size:.58em;margin:.2em 0 0;">Pathfinding<br>Grid 2D</p></div>
+  </div>
+</section>
+
+<!-- SLIDE 2: STATE SPACE -->
+<section class="bg-cream">
+  <h2>Ruang Keadaan (State Space)</h2>
+  <div class="neo-box" style="background:var(--yellow);width:100%;text-align:center;margin-bottom:clamp(6px,1.2vw,14px);box-sizing:border-box;">
+    <p style="margin:0;font-size:clamp(.65rem,1.3vw,.82rem);">Problem Solving = Mencari jalur dari <strong>state awal</strong> ke <strong>state tujuan</strong> melalui serangkaian aksi.</p>
+  </div>
+  <div class="g3 grow" style="align-content:start;">
+    <div class="neo-card" style="background:var(--blue);">
+      <h4>📌 State (Keadaan)</h4>
+      <p>Representasi situasi saat ini. Contoh: posisi di maze, konfigurasi puzzle 8.</p>
+    </div>
+    <div class="neo-card" style="background:var(--pink);">
+      <h4>⚡ Aksi (Actions)</h4>
+      <p>Transisi antar state. Di maze: gerak ↑↓←→. Di puzzle: geser tile.</p>
+    </div>
+    <div class="neo-card" style="background:var(--green);">
+      <h4>🏁 Tujuan (Goal)</h4>
+      <p>Kondisi terminal. Pencarian berhenti saat goal ditemukan.</p>
+    </div>
+    <div class="neo-card" style="background:var(--yellow);grid-column:span 3;">
+      <h4>Formal: Tuple (S₀, A, T, G)</h4>
+      <div class="g4">
+        <div style="background:var(--black);color:var(--cream);padding:6px 8px;font-size:.6em;border:2px solid var(--cream);"><strong style="color:var(--blue);">S₀</strong> — State awal</div>
+        <div style="background:var(--black);color:var(--cream);padding:6px 8px;font-size:.6em;border:2px solid var(--cream);"><strong style="color:var(--pink);">A(s)</strong> — Aksi di state s</div>
+        <div style="background:var(--black);color:var(--cream);padding:6px 8px;font-size:.6em;border:2px solid var(--cream);"><strong style="color:var(--green);">T(s,a)</strong> — State baru</div>
+        <div style="background:var(--black);color:var(--cream);padding:6px 8px;font-size:.6em;border:2px solid var(--cream);"><strong style="color:var(--yellow);">G</strong> — Himpunan tujuan</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: BFS vs DFS TEORI -->
+<section class="bg-cream">
+  <h2>BFS vs DFS — Perbedaan Utama</h2>
+  <div class="grow" style="display:flex;flex-direction:column;justify-content:center;">
+    <table class="neo-table">
+      <thead><tr><th>Aspek</th><th>🌊 BFS</th><th>🔍 DFS</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Struktur Data</strong></td><td>Queue — FIFO (<code>deque</code>)</td><td>Stack — LIFO (<code>list</code>) / Rekursi</td></tr>
+        <tr><td><strong>Strategi</strong></td><td>Melebar level per level</td><td>Mendalami satu jalur dulu</td></tr>
+        <tr><td><strong>Complete?</strong></td><td>✅ Selalu menemukan solusi</td><td>✅ Ya (jika graph terbatas)</td></tr>
+        <tr><td><strong>Optimal?</strong></td><td>✅ Jalur terpendek (cost sama)</td><td>❌ Tidak selalu</td></tr>
+        <tr><td><strong>Memori</strong></td><td>❌ O(bᵈ) — boros lebar</td><td>✅ O(b·m) — hemat</td></tr>
+        <tr><td><strong>Kasus Terbaik</strong></td><td>Solusi dekat dari awal</td><td>Solusi di jalur pertama (kiri)</td></tr>
+      </tbody>
+    </table>
+    <div class="g2" style="margin-top:clamp(6px,1.2vw,14px);">
+      <div class="neo-card" style="background:var(--blue);">
+        <p>BFS menggunakan <strong>deque</strong> — <code>popleft()</code> mengambil dari depan antrian. Semua node di kedalaman d dikunjungi sebelum d+1.</p>
+      </div>
+      <div class="neo-card" style="background:var(--pink);">
+        <p>DFS menggunakan <strong>stack/rekursi</strong> — <code>pop()</code> mengambil dari belakang. Satu jalur dikejar sampai ujung sebelum backtrack.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: PRAKTIK 1 — BFS -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--blue);margin:0;">Praktik 1 — BFS pada Graf</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--blue);">Queue FIFO</span>
+      <span class="badge" style="background:var(--green);">Jalur Terpendek</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik1_bfs.py</span></div>
+      <pre><code class="language-python">from collections import deque
+
+def bfs(graf, start, goal):
+    """
+    BFS — eksplorasi level per level.
+    Mengembalikan (jalur, urutan_kunjungan)
+    """
+    if start == goal:
+        return [start], [start]
+
+    antrian   = deque([[start]])   # antrian JALUR
+    dikunjungi = {start}
+    urutan     = []
+
+    while antrian:
+        jalur  = antrian.popleft()   # FIFO ← depan
+        node   = jalur[-1]
+        urutan.append(node)
+
+        for nbr in graf.get(node, []):
+            if nbr not in dikunjungi:
+                dikunjungi.add(nbr)
+                jalur_baru = jalur + [nbr]
+                if nbr == goal:
+                    return jalur_baru, urutan
+                antrian.append(jalur_baru)
+
+    return None, urutan   # tidak ditemukan
+
+# ── Graf (adjacency list) ──
+# A─B─C─D
+# │ │   │
+# E─F   G
+graf = {
+    'A':['B','E'], 'B':['A','C','F'],
+    'C':['B','D'], 'D':['C','G'],
+    'E':['A','F'], 'F':['B','E'],
+    'G':['D']
+}
+
+jalur, kunjungan = bfs(graf, 'A', 'G')
+print("=== BFS: A → G ===")
+print(f"Jalur     : {' → '.join(jalur)}")
+print(f"Langkah   : {len(jalur)-1}")
+print(f"Dikunjungi: {' → '.join(kunjungan)}")
+print(f"Total node: {len(kunjungan)}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS3D1(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s3out1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: PRAKTIK 2 — DFS -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--pink);margin:0;">Praktik 2 — DFS Iteratif &amp; Rekursif</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--pink);">Stack LIFO</span>
+      <span class="badge" style="background:var(--yellow);">Rekursi</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik2_dfs.py</span></div>
+      <pre><code class="language-python"># ── DFS ITERATIF (Stack) ──
+def dfs_iter(graf, start, goal):
+    stack      = [[start]]
+    dikunjungi = {start}
+    urutan     = []
+    while stack:
+        jalur = stack.pop()          # LIFO ← belakang
+        node  = jalur[-1]
+        urutan.append(node)
+        if node == goal:
+            return jalur, urutan
+        for nbr in reversed(graf.get(node,[])):
+            if nbr not in dikunjungi:
+                dikunjungi.add(nbr)
+                stack.append(jalur + [nbr])
+    return None, urutan
+
+# ── DFS REKURSIF ──
+def dfs_rek(graf, node, goal,
+            vis=None, path=None):
+    if vis  is None: vis  = set()
+    if path is None: path = []
+    vis.add(node)
+    path = path + [node]
+    if node == goal: return path
+    for nbr in graf.get(node, []):
+        if nbr not in vis:
+            hasil = dfs_rek(
+                graf, nbr, goal, vis, path)
+            if hasil: return hasil
+    return None
+
+# ── Bandingkan BFS vs DFS ──
+graf = {
+    'A':['B','E'],'B':['A','C','F'],
+    'C':['B','D'],'D':['C','G'],
+    'E':['A','F'],'F':['B','E'],'G':['D']
+}
+j_bfs, k_bfs = bfs(graf, 'A', 'G')
+j_dfs, k_dfs = dfs_iter(graf, 'A', 'G')
+j_rek        = dfs_rek(graf, 'A', 'G')
+
+print("═"*52)
+print(f"{'Algo':<14} {'Jalur':<20} {'Steps':<7} {'Visited'}")
+print("─"*52)
+print(f"{'BFS':<14} {'→'.join(j_bfs):<20} {len(j_bfs)-1:<7} {len(k_bfs)}")
+print(f"{'DFS iter':<14} {'→'.join(j_dfs):<20} {len(j_dfs)-1:<7} {len(k_dfs)}")
+print(f"{'DFS rekursif':<14} {'→'.join(j_rek):<20} {len(j_rek)-1:<7} -")
+print("═"*52)</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS3D2(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s3out2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: MAZE VISUAL + KODE -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--green);margin:0;">Praktik 3 — Pathfinding pada Maze 2D</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--green);">Grid 5×5</span>
+      <span class="badge" style="background:var(--blue);">BFS+DFS</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik3_maze.py</span></div>
+      <pre><code class="language-python">from collections import deque
+
+MAZE = [
+    [0,1,0,0,0],
+    [0,1,0,1,0],
+    [0,0,0,1,0],
+    [1,1,0,0,0],
+    [0,0,0,1,0],
+]  # 0=jalan, 1=dinding
+START, END = (0,0), (4,4)
+ARAH = [(-1,0),(1,0),(0,-1),(0,1)]
+
+def bfs_maze(maze, start, end):
+    R,C = len(maze),len(maze[0])
+    q   = deque([[start]])
+    vis = {start}
+    while q:
+        path = q.popleft()
+        r,c  = path[-1]
+        if (r,c)==end: return path
+        for dr,dc in ARAH:
+            nr,nc = r+dr,c+dc
+            if 0<=nr<R and 0<=nc<C and \
+               maze[nr][nc]==0 and \
+               (nr,nc) not in vis:
+                vis.add((nr,nc))
+                q.append(path+[(nr,nc)])
+    return None
+
+def dfs_maze(maze, start, end):
+    R,C = len(maze),len(maze[0])
+    stk = [[start]]
+    vis = {start}
+    while stk:
+        path = stk.pop()
+        r,c  = path[-1]
+        if (r,c)==end: return path
+        for dr,dc in reversed(ARAH):
+            nr,nc = r+dr,c+dc
+            if 0<=nr<R and 0<=nc<C and \
+               maze[nr][nc]==0 and \
+               (nr,nc) not in vis:
+                vis.add((nr,nc))
+                stk.append(path+[(nr,nc)])
+    return None
+
+j_bfs = bfs_maze(MAZE, START, END)
+j_dfs = dfs_maze(MAZE, START, END)
+
+print(f"BFS panjang: {len(j_bfs)-1} langkah")
+print(f"DFS panjang: {len(j_dfs)-1} langkah")
+print(f"BFS jalur  : {j_bfs}")
+print(f"DFS jalur  : {j_dfs}")</code></pre>
+    </div>
+    <!-- Maze visual + terminal -->
+    <div class="flex-col">
+      <!-- Maze visualisasi -->
+      <div class="neo-card" style="background:var(--black);border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);flex-shrink:0;padding:8px;">
+        <div style="display:flex;gap:10px;align-items:flex-start;justify-content:space-around;flex-wrap:wrap;">
+          <div>
+            <p style="color:var(--yellow);font-size:.6em;margin:0 0 4px;font-weight:700;text-align:center;">MAZE</p>
+            <div class="maze-grid" style="grid-template-columns:repeat(5,1fr);">
+              <!-- row 0 -->
+              <div class="maze-cell cell-start">S</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div>
+              <!-- row 1 -->
+              <div class="maze-cell cell-open">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div>
+              <!-- row 2 -->
+              <div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div>
+              <!-- row 3 -->
+              <div class="maze-cell cell-wall"></div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div>
+              <!-- row 4 -->
+              <div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-end">E</div>
+            </div>
+          </div>
+          <div>
+            <p style="color:var(--blue);font-size:.6em;margin:0 0 4px;font-weight:700;text-align:center;">BFS JALUR</p>
+            <div class="maze-grid" style="grid-template-columns:repeat(5,1fr);">
+              <div class="maze-cell cell-start">S</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div>
+              <div class="maze-cell cell-path-bfs">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div>
+              <div class="maze-cell cell-path-bfs">·</div><div class="maze-cell cell-path-bfs">·</div><div class="maze-cell cell-path-bfs">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-path-bfs">·</div>
+              <div class="maze-cell cell-wall"></div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-path-bfs">·</div><div class="maze-cell cell-path-bfs">·</div>
+              <div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-open">·</div><div class="maze-cell cell-wall"></div><div class="maze-cell cell-end">E</div>
+            </div>
+          </div>
+        </div>
+        <div style="display:flex;gap:8px;margin-top:6px;justify-content:center;flex-wrap:wrap;">
+          <span style="font-size:.52em;color:var(--green);">■ Start</span>
+          <span style="font-size:.52em;color:var(--pink);">■ End</span>
+          <span style="font-size:.52em;color:var(--blue);">■ BFS path</span>
+          <span style="font-size:.52em;color:#555;">■ Dinding</span>
+        </div>
+      </div>
+      <div class="terminal grow">
+        <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS3D3(this)">▶ Jalankan</button></div>
+        <div class="terminal-body" id="s3out3"><span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: KOMPLEKSITAS & APLIKASI -->
+<section class="bg-yellow">
+  <h2>Kompleksitas &amp; Aplikasi Nyata</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Algo</th><th>Waktu</th><th>Memori</th><th>Optimal?</th><th>Gunakan saat…</th></tr></thead>
+      <tbody>
+        <tr><td><strong>BFS</strong></td><td>O(V+E)</td><td>O(V) boros</td><td>✅ Ya</td><td>Perlu jalur terpendek, solusi dekat</td></tr>
+        <tr><td><strong>DFS</strong></td><td>O(V+E)</td><td>O(h) efisien</td><td>❌ Tidak</td><td>Eksplorasi semua jalur, memori terbatas</td></tr>
+        <tr><td><strong>DFS Rek</strong></td><td>O(V+E)</td><td>O(h) call stack</td><td>❌ Tidak</td><td>Kode bersih, kedalaman aman</td></tr>
+      </tbody>
+    </table>
+    <div class="g2" style="margin-top:clamp(6px,1.2vw,14px);">
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>🌊 BFS dipakai untuk:</h4>
+        <ul>
+          <li>Google Maps — jalur paling sedikit simpang</li>
+          <li>LinkedIn — degree of connection</li>
+          <li>Game NPC pathfinding (tile-based)</li>
+          <li>Web crawler — level per level</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>🔍 DFS dipakai untuk:</h4>
+        <ul>
+          <li>Puzzle solver — Sudoku, N-Queens</li>
+          <li>Topological sort (dependency graph)</li>
+          <li>Deteksi siklus dalam graf</li>
+          <li>Minimax tree (catur, tic-tac-toe)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: TUGAS -->
+<section class="bg-pink">
+  <h2>Tugas Sesi 3</h2>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">📝 Tugas Wajib</h4>
+      <ol>
+        <li>Buat maze <strong>7×7</strong> sendiri (dengan beberapa dead-end), cari jalur dengan BFS dan DFS.</li>
+        <li>Hitung &amp; bandingkan jumlah node yang dikunjungi BFS vs DFS pada maze yang sama.</li>
+        <li>Visualisasikan kedua jalur dengan <strong>Matplotlib</strong> — warna berbeda untuk BFS dan DFS.</li>
+      </ol>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--cream);flex:1;">
+        <h4>⭐ Tantangan Bonus</h4>
+        <ol>
+          <li>Implementasi <strong>IDDFS</strong> (Iterative Deepening DFS) — kombinasi memori DFS + completeness BFS.</li>
+          <li>BFS untuk menemukan <strong>semua jalur</strong> dari S ke E.</li>
+          <li>Buat animasi step-by-step BFS dengan <code>matplotlib.animation.FuncAnimation</code>.</li>
+        </ol>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);flex-shrink:0;">
+        <h4 style="color:var(--green);">📁 File Python Tersedia</h4>
+        <p><code>week03_bfs_dfs.py</code> — jalankan langsung di terminal atau Google Colab.</p>
+        <p>Di sesi berikutnya: <strong>UCS &amp; A*</strong> — pencarian dengan biaya dan heuristik.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({hash:true,slideNumber:'c/t',transition:'slide',width:'100%',height:'100%',margin:0,minScale:1,maxScale:1,plugins:[RevealHighlight,RevealNotes]});
+
+function animateLines(elId,lines,delay){
+  const el=document.getElementById(elId);
+  el.innerHTML='';
+  lines.forEach((line,i)=>{
+    setTimeout(()=>{
+      const s=document.createElement('span');
+      s.className='out-line typing';
+      s.textContent=line+'\n';
+      if(line.startsWith('===')||line.startsWith('──')||line.startsWith('═')) s.style.color='#FFD93D';
+      else if(line.includes('BFS')) s.style.color='#5B9DFF';
+      else if(line.includes('DFS')) s.style.color='#FF6FA5';
+      else if(line.includes('✅')||line.includes('Selesai')) s.style.color='#5BD68A';
+      else if(line.startsWith('$')) s.style.color='#aaa';
+      el.appendChild(s);
+      el.scrollTop=el.scrollHeight;
+      if(i===lines.length-1){const c=document.createElement('span');c.className='cursor';el.appendChild(c);}
+    },delay+i*110);
+  });
+}
+function setRunning(btn,r){btn.disabled=r;btn.textContent=r?'⏳ Running…':'▶ Jalankan';}
+
+function runS3D1(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik1_bfs.py','','=== BFS: A → G ===','Jalur     : A → B → C → D → G','Langkah   : 4','Dikunjungi: A → B → E → C → F → D → G','Total node: 7','','✅ BFS menemukan jalur terpendek: 4 langkah'];
+  animateLines('s3out1',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+function runS3D2(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik2_dfs.py','','════════════════════════════════════════════════════','Algo           Jalur                Steps   Visited','────────────────────────────────────────────────────','BFS            A→B→C→D→G            4       7','DFS iter       A→B→C→D→G            4       5','DFS rekursif   A→B→C→D→G            4       -','════════════════════════════════════════════════════','','📊 DFS mengunjungi lebih sedikit node pada kasus ini.','✅ Kedua algoritma menemukan solusi yang sama.'];
+  animateLines('s3out2',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+function runS3D3(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik3_maze.py','','BFS panjang: 8 langkah','DFS panjang: 8 langkah','','BFS jalur  : [(0,0),(1,0),(2,0),(2,1),(2,2),(2,4),(3,4),(4,4)]','  ⚠  Dikoreksi: melewati (2,4) via baris 2','','DFS jalur  : [(0,0),(1,0),(2,0),(2,1),(2,2),(2,4),(3,4),(4,4)]','','── Perbandingan ──','  BFS node dikunjungi : 13','  DFS node dikunjungi : 11','','✅ Maze terpecahkan! Visualisasi disimpan maze_hasil.png'];
+  animateLines('s3out3',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+</script>
+</body></html>

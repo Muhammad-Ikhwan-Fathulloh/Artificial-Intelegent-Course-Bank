@@ -1,0 +1,489 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesi 5 — Knowledge Representation & Logika Proposisional</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF4D6;--black:#141414;--yellow:#FFD93D;--pink:#FF6FA5;--blue:#5B9DFF;--green:#5BD68A;--r-background-color:#141414;}
+html,body{margin:0;padding:0;background:#141414!important;}
+.reveal{font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.reveal .slides{width:100%!important;height:100%!important;}
+.reveal .slides section{width:100%!important;height:100%!important;top:0!important;left:0!important;padding:clamp(14px,2.2vw,32px) clamp(14px,2.8vw,44px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--black);overflow:hidden;}
+.reveal h1{font-size:clamp(1.3rem,3.2vw,2rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h2{font-size:clamp(.95rem,2.3vw,1.45rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h3,.reveal h4{font-weight:700;text-transform:uppercase;margin:0 0 .3em;}
+.reveal h3{font-size:clamp(.8rem,1.8vw,1rem);}.reveal h4{font-size:clamp(.7rem,1.5vw,.9rem);}
+.reveal p,.reveal li{font-size:clamp(.62rem,1.3vw,.8rem);line-height:1.45;margin:.2em 0;}
+.reveal ul{margin-left:1.2em;display:block;}.reveal ul li{margin-bottom:.35em;}
+.reveal pre{margin:0;width:100%;box-shadow:none;}
+.reveal pre code.hljs{font-size:clamp(.48rem,1vw,.67rem);line-height:1.45;padding:10px 14px;border-radius:0;}
+.bg-black{background:var(--black)!important;color:var(--cream)!important;}
+.bg-yellow{background:var(--yellow)!important;color:var(--black)!important;}
+.bg-green{background:var(--green)!important;color:var(--black)!important;}
+.bg-pink{background:var(--pink)!important;color:var(--black)!important;}
+.bg-blue{background:var(--blue)!important;color:var(--black)!important;}
+.bg-black h2,.bg-black h3,.bg-black h4{color:var(--cream);}
+.neo-card{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(7px,1.1vw,14px);background:var(--cream);box-sizing:border-box;overflow:hidden;min-height:0;}
+.neo-box{border:3px solid var(--black);box-shadow:6px 6px 0 var(--black);padding:clamp(7px,1.1vw,13px);display:inline-block;box-sizing:border-box;}
+.bg-black .neo-card{background:#1c1c1c;border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);color:var(--cream);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.1vw,12px);min-height:0;}
+.code-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);flex:1;min-height:0;align-items:stretch;}
+.flex-col{display:flex;flex-direction:column;gap:6px;min-height:0;}
+.grow{flex:1;min-height:0;}
+.panel-code{background:#1c1c1c;border:3px solid var(--cream);box-shadow:6px 6px 0 var(--cream);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.panel-bar{background:#2a2a2a;padding:5px 11px;display:flex;align-items:center;gap:7px;border-bottom:2px solid var(--cream);flex-shrink:0;}
+.panel-dot{width:9px;height:9px;border-radius:50%;border:2px solid #555;}
+.dot-r{background:#FF6B6B;}.dot-y{background:#FFD93D;}.dot-g{background:#5BD68A;}
+.panel-title{color:#aaa;font-family:'Space Mono',monospace;font-size:.58em;margin-left:5px;}
+.panel-code pre{flex:1;margin:0;overflow:auto;}
+.terminal{background:#0d1117;border:3px solid var(--green);box-shadow:6px 6px 0 var(--green);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.terminal-bar{background:#161b22;padding:5px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--green);flex-shrink:0;}
+.terminal-title{color:var(--green);font-family:'Space Mono',monospace;font-size:.58em;font-weight:700;}
+.run-btn{background:var(--yellow);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:3px 11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.56em;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;}
+.run-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+.terminal-body{flex:1;padding:9px 13px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:clamp(.46rem,.95vw,.64rem);color:var(--green);white-space:pre-wrap;line-height:1.5;}
+.terminal-body::-webkit-scrollbar{width:3px;}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--green);}
+.cursor{display:inline-block;width:7px;height:1em;background:var(--green);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.out-line{display:block;}.out-line.typing{animation:typeIn .22s ease both;}
+@keyframes typeIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+.neo-table{border-collapse:collapse;width:100%;table-layout:fixed;box-shadow:5px 5px 0 var(--black);}
+.neo-table th,.neo-table td{border:3px solid var(--black);padding:clamp(4px,.9vw,9px);font-size:clamp(.5rem,1vw,.67rem);word-break:break-word;vertical-align:middle;background:var(--cream);}
+.neo-table th{background:var(--yellow);font-weight:700;text-transform:uppercase;}
+.badge{display:inline-block;padding:2px 9px;border:2px solid var(--black);font-size:.56em;font-weight:700;text-transform:uppercase;}
+.reveal .slide-number{color:var(--cream);font-size:.7em;}
+.reveal .progress{color:var(--yellow);height:4px;}
+/* KG node visual */
+.kg-node{border:3px solid var(--black);box-shadow:4px 4px 0 var(--black);padding:5px 10px;font-size:.6em;font-weight:700;text-transform:uppercase;display:inline-block;white-space:nowrap;}
+.kg-arrow{font-size:.7em;color:var(--black);margin:0 3px;}
+.kg-label{font-size:.52em;color:#666;font-style:italic;}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- SLIDE 1: JUDUL -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--pink);box-shadow:14px 14px 0 var(--pink);padding:clamp(14px,2.5vw,32px) clamp(20px,4.5vw,56px);display:inline-block;margin-bottom:clamp(12px,2vw,22px);">
+    <div style="font-size:clamp(.55rem,1.1vw,.8rem);color:var(--pink);letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--pink);margin:0 0 6px;">SESI 5</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.8rem,1.9vw,1.15rem);">Knowledge Representation &amp; Logika Proposisional</h2>
+  </div>
+  <div class="g4" style="width:min(700px,92%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--yellow);text-align:center;"><div style="font-size:1.4em;">📚</div><strong style="font-size:.62em;">Knowledge Base</strong><p style="font-size:.56em;margin:.2em 0 0;">Fakta &amp; Aturan</p></div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;"><div style="font-size:1.4em;">⊤⊥</div><strong style="font-size:.62em;">Logika Prop.</strong><p style="font-size:.56em;margin:.2em 0 0;">AND OR NOT IF-THEN</p></div>
+    <div class="neo-card" style="background:var(--blue);text-align:center;"><div style="font-size:1.4em;">🔗</div><strong style="font-size:.62em;">Forward Chain</strong><p style="font-size:.56em;margin:.2em 0 0;">Inferensi maju</p></div>
+    <div class="neo-card" style="background:var(--green);text-align:center;"><div style="font-size:1.4em;">🗂️</div><strong style="font-size:.62em;">Knowledge Graph</strong><p style="font-size:.56em;margin:.2em 0 0;">Entitas &amp; relasi</p></div>
+  </div>
+</section>
+
+<!-- SLIDE 2: KONSEP KB -->
+<section class="bg-cream">
+  <h2>Representasi Pengetahuan</h2>
+  <div class="neo-box" style="background:var(--yellow);width:100%;text-align:center;margin-bottom:clamp(6px,1.2vw,14px);box-sizing:border-box;">
+    <p style="margin:0;">Cara sistem AI menyimpan &amp; menggunakan pengetahuan untuk <strong>bernalar</strong> dan <strong>mengambil keputusan</strong>.</p>
+  </div>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Logika Proposisional</h4>
+        <p>Fakta dinyatakan sebagai proposisi Benar/Salah. Operator: AND (∧), OR (∨), NOT (¬), IF-THEN (→).</p>
+      </div>
+      <div class="neo-card" style="background:var(--pink);">
+        <h4>Knowledge Base (KB)</h4>
+        <ul>
+          <li><strong>Fakta</strong> — pernyataan yang diketahui benar</li>
+          <li><strong>Aturan</strong> — IF kondisi THEN kesimpulan</li>
+          <li><strong>Inferensi</strong> — turunkan fakta baru dari KB</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--green);">
+        <h4>Knowledge Graph</h4>
+        <p>Entitas (node) + Relasi (edge) dalam bentuk graf. Dasar Google Knowledge Graph &amp; RAG.</p>
+      </div>
+    </div>
+    <!-- Visualisasi mini KG -->
+    <div class="neo-card" style="background:var(--black);padding:12px;">
+      <h4 style="color:var(--yellow);">Mini Knowledge Graph</h4>
+      <div style="display:flex;flex-direction:column;gap:6px;margin-top:6px;font-size:.58em;font-family:'Space Mono',monospace;">
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span class="kg-node" style="background:var(--yellow);">Tweety</span>
+          <span class="kg-arrow">─<span class="kg-label">adalah</span>→</span>
+          <span class="kg-node" style="background:var(--blue);color:#fff;">Burung</span>
+          <span class="kg-arrow">─<span class="kg-label">adalah</span>→</span>
+          <span class="kg-node" style="background:var(--green);">Hewan</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span class="kg-node" style="background:var(--pink);">Rex</span>
+          <span class="kg-arrow">─<span class="kg-label">adalah</span>→</span>
+          <span class="kg-node" style="background:var(--blue);color:#fff;">Anjing</span>
+          <span class="kg-arrow">─<span class="kg-label">adalah</span>→</span>
+          <span class="kg-node" style="background:var(--yellow);">Mamalia</span>
+          <span class="kg-arrow">─<span class="kg-label">adalah</span>→</span>
+          <span class="kg-node" style="background:var(--green);">Hewan</span>
+        </div>
+        <div style="display:flex;align-items:center;gap:4px;flex-wrap:wrap;">
+          <span class="kg-node" style="background:var(--blue);color:#fff;">Burung</span>
+          <span class="kg-arrow">─<span class="kg-label">memiliki</span>→</span>
+          <span class="kg-node" style="background:var(--cream);">Sayap</span>
+        </div>
+      </div>
+      <div style="margin-top:10px;background:#1c1c1c;padding:6px 10px;border:2px solid var(--cream);">
+        <p style="color:var(--cream);margin:0;font-size:.6em;">Inferensi: Tweety adalah Burung + Burung adalah Hewan<br>→ <strong style="color:var(--green);">Tweety adalah Hewan</strong> (transitif)</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: PRAKTIK 1 — KB + FORWARD CHAINING -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--yellow);margin:0;">Praktik 1 — Knowledge Base &amp; Forward Chaining</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--yellow);">KB</span>
+      <span class="badge" style="background:var(--blue);">Forward Chain</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik1_kb.py</span></div>
+      <pre><code class="language-python">class KnowledgeBase:
+    """KB sederhana: fakta (set) + aturan (list)"""
+
+    def __init__(self):
+        self.fakta  = set()    # {(s, rel, o)}
+        self.aturan = []       # [(kondisi, hasil)]
+
+    def tambah_fakta(self, s, r, o):
+        self.fakta.add((s, r, o))
+
+    def tambah_aturan(self, cond, result):
+        self.aturan.append((cond, result))
+
+    def tanya(self, s, r, o=None):
+        return [f for f in self.fakta
+                if f[0]==s and f[1]==r
+                and (o is None or f[2]==o)]
+
+    def forward_chain(self):
+        """Terapkan aturan sampai tidak ada fakta baru."""
+        baru, i = True, 0
+        while baru:
+            baru = False; i += 1
+            for cond, hasil in self.aturan:
+                if all(c in self.fakta for c in cond):
+                    if hasil not in self.fakta:
+                        self.fakta.add(hasil)
+                        print(f"  [iter{i}] ✅ {hasil}")
+                        baru = True
+
+
+# ── Build KB ──
+kb = KnowledgeBase()
+for f in [("Tweety","adalah","Burung"),
+          ("Burung","adalah","Hewan"),
+          ("Tweety","memiliki","Sayap"),
+          ("Rex","adalah","Anjing"),
+          ("Anjing","adalah","Mamalia"),
+          ("Mamalia","adalah","Hewan")]:
+    kb.tambah_fakta(*f)
+
+kb.tambah_aturan(
+    [("Tweety","adalah","Burung"),
+     ("Burung","adalah","Hewan")],
+    ("Tweety","adalah","Hewan"))
+kb.tambah_aturan(
+    [("Rex","adalah","Anjing"),
+     ("Anjing","adalah","Mamalia")],
+    ("Rex","adalah","Mamalia"))
+
+print("=== Forward Chaining ===")
+kb.forward_chain()
+print(f"\nQuery 'Tweety=Hewan'  : {bool(kb.tanya('Tweety','adalah','Hewan'))}")
+print(f"Query 'Rex=Mamalia'   : {bool(kb.tanya('Rex','adalah','Mamalia'))}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS5D1(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s5out1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: OPERATOR LOGIKA -->
+<section class="bg-cream">
+  <h2>Logika Proposisional — Operator &amp; Tabel Kebenaran</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Operator</th><th>Simbol</th><th>Python</th><th>T,T</th><th>T,F</th><th>F,T</th><th>F,F</th></tr></thead>
+      <tbody>
+        <tr><td>Negasi</td><td>¬P</td><td><code>not P</code></td><td>F</td><td>F</td><td>T</td><td>T</td></tr>
+        <tr><td>Konjungsi</td><td>P ∧ Q</td><td><code>P and Q</code></td><td>T</td><td>F</td><td>F</td><td>F</td></tr>
+        <tr><td>Disjungsi</td><td>P ∨ Q</td><td><code>P or Q</code></td><td>T</td><td>T</td><td>T</td><td>F</td></tr>
+        <tr><td>Implikasi</td><td>P → Q</td><td><code>not P or Q</code></td><td>T</td><td>F</td><td>T</td><td>T</td></tr>
+        <tr><td>Biimplikasi</td><td>P ↔ Q</td><td><code>P == Q</code></td><td>T</td><td>F</td><td>F</td><td>T</td></tr>
+      </tbody>
+    </table>
+    <div class="g3" style="margin-top:clamp(7px,1.3vw,14px);">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Modus Ponens</h4>
+        <p>Jika P benar DAN P→Q benar, maka Q benar.</p>
+        <div style="background:var(--black);color:var(--cream);padding:5px 8px;font-size:.6em;margin-top:4px;">P = Hujan<br>P→Q = Hujan→Basah<br>∴ Q = Basah ✅</div>
+      </div>
+      <div class="neo-card" style="background:var(--pink);">
+        <h4>Modus Tollens</h4>
+        <p>Jika ¬Q benar DAN P→Q benar, maka ¬P benar.</p>
+        <div style="background:var(--black);color:var(--cream);padding:5px 8px;font-size:.6em;margin-top:4px;">¬Q = Tidak basah<br>P→Q = Hujan→Basah<br>∴ ¬P = Tidak hujan ✅</div>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>De Morgan</h4>
+        <p>¬(P∧Q) ≡ (¬P∨¬Q)<br>¬(P∨Q) ≡ (¬P∧¬Q)</p>
+        <div style="background:var(--black);color:var(--cream);padding:5px 8px;font-size:.6em;margin-top:4px;">Berguna menyederhanakan ekspresi logika kompleks.</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: PRAKTIK 2 — TABEL KEBENARAN + SISTEM PAKAR -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--pink);margin:0;">Praktik 2 — Tabel Kebenaran &amp; Sistem Pakar</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--pink);">Logika</span>
+      <span class="badge" style="background:var(--yellow);">Rule-Based</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik2_logika_pakar.py</span></div>
+      <pre><code class="language-python">import itertools
+
+def tabel_kebenaran(vars, fn, nama="Ekspresi"):
+    hdr = " | ".join(f"{v:^4}" for v in vars)
+    hdr += f" ‖ {nama:^12}"
+    print(hdr); print("─"*len(hdr))
+    for vals in itertools.product([False,True],
+                                   repeat=len(vars)):
+        m = dict(zip(vars, vals))
+        h = fn(m)
+        row = " | ".join(f"{'T':^4}" if v else f"{'F':^4}"
+                         for v in vals)
+        row += f" ‖ {'T':^12}" if h else f" ‖ {'F':^12}"
+        print(row)
+
+print("── P → Q (Implikasi) ──")
+tabel_kebenaran(['P','Q'],
+    lambda m: not m['P'] or m['Q'], "P→Q")
+
+print("\n── De Morgan: ¬(P∧Q) ↔ (¬P∨¬Q) ──")
+tabel_kebenaran(['P','Q'],
+    lambda m: (not(m['P'] and m['Q'])) == \
+              (not m['P'] or not m['Q']),
+    "De Morgan")
+
+# ── Sistem Pakar Mini ──
+class SistemPakarHewan:
+    def __init__(self):
+        self.aturan = [
+            ({'berbulu','menyusui'},           'Mamalia'),
+            ({'bersayap','bertelur','terbang'},'Burung'),
+            ({'bersayap','bertelur','berenang'},'Penguin'),
+            ({'berbulu','menyusui','terbang'}, 'Kelelawar'),
+            ({'bersisik','berdarah_dingin'},   'Reptil'),
+        ]
+    def diagnosa(self, ciri):
+        c = {x.lower() for x in ciri}
+        return [k for cond,k in self.aturan
+                if cond.issubset(c)] or ["?"]
+
+sp = SistemPakarHewan()
+print("\n── Sistem Pakar Hewan ──")
+tests = [
+    (['bersayap','bertelur','berenang'], "Penguin"),
+    (['berbulu','menyusui','terbang'],   "Kelelawar"),
+    (['bersisik','berdarah_dingin'],     "Reptil"),
+]
+for ciri, label in tests:
+    hasil = sp.diagnosa(ciri)
+    ok = "✅" if label in hasil else "❌"
+    print(f"  {ok} {label:<12}: {hasil}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS5D2(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s5out2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: PRAKTIK 3 — KNOWLEDGE GRAPH -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--green);margin:0;">Praktik 3 — Knowledge Graph dengan NetworkX</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--green);">NetworkX</span>
+      <span class="badge" style="background:var(--yellow);">Matplotlib</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik3_knowledge_graph.py</span></div>
+      <pre><code class="language-python">import networkx as nx
+import matplotlib.pyplot as plt
+
+G = nx.DiGraph()
+
+# Entitas & warna
+entitas = {
+    'AI':'#FFD93D','Machine Learning':'#FFD93D',
+    'Deep Learning':'#FFD93D','NLP':'#5B9DFF',
+    'Computer Vision':'#5B9DFF','Python':'#5BD68A',
+    'NumPy':'#5BD68A','scikit-learn':'#5BD68A',
+    'PyTorch':'#FF6FA5','Transformer':'#FF6FA5',
+    'ChatGPT':'#FF6FA5',
+}
+for e in entitas: G.add_node(e)
+
+relasi = [
+    ('AI','Machine Learning','mencakup'),
+    ('AI','NLP','mencakup'),
+    ('AI','Computer Vision','mencakup'),
+    ('Machine Learning','Deep Learning','mencakup'),
+    ('Deep Learning','Transformer','menggunakan'),
+    ('Transformer','ChatGPT','dasar_dari'),
+    ('Python','NumPy','ekosistem'),
+    ('Python','scikit-learn','ekosistem'),
+    ('Python','PyTorch','ekosistem'),
+    ('scikit-learn','Machine Learning','impl.'),
+    ('PyTorch','Deep Learning','impl.'),
+]
+for s,d,r in relasi: G.add_edge(s,d,label=r)
+
+# Gambar
+fig,ax = plt.subplots(figsize=(12,7))
+fig.patch.set_facecolor('#141414')
+ax.set_facecolor('#141414')
+pos = nx.spring_layout(G, seed=42, k=1.8)
+nx.draw_networkx_nodes(G,pos,
+    node_color=[entitas[n] for n in G.nodes()],
+    node_size=1600,edgecolors='#141414',linewidths=2,ax=ax)
+nx.draw_networkx_labels(G,pos,font_size=7,
+    font_weight='bold',ax=ax)
+nx.draw_networkx_edges(G,pos,edge_color='white',
+    arrows=True,arrowsize=15,ax=ax,
+    connectionstyle='arc3,rad=0.1')
+ax.set_title("Knowledge Graph: Ekosistem AI",
+    color='white',fontsize=13,fontweight='bold')
+ax.axis('off')
+plt.tight_layout()
+plt.savefig('knowledge_graph.png',dpi=150,
+    bbox_inches='tight',facecolor='#141414')
+plt.show()</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS5D3(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s5out3"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: RULE-BASED vs ML -->
+<section class="bg-yellow">
+  <h2>Rule-Based vs Machine Learning</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Aspek</th><th>Rule-Based (Sesi 5)</th><th>Machine Learning (Sesi 2)</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Pengetahuan</strong></td><td>Dari pakar manusia (manual)</td><td>Dari data (otomatis)</td></tr>
+        <tr><td><strong>Transparansi</strong></td><td>✅ Mudah dijelaskan</td><td>❌ Kotak hitam (NN)</td></tr>
+        <tr><td><strong>Maintenance</strong></td><td>❌ Mahal jika domain luas</td><td>✅ Lebih mudah update</td></tr>
+        <tr><td><strong>Data</strong></td><td>✅ Tidak butuh data banyak</td><td>❌ Butuh data berlabel</td></tr>
+        <tr><td><strong>Akurasi</strong></td><td>Terbatas pada aturan</td><td>✅ Bisa sangat tinggi</td></tr>
+        <tr><td><strong>Use Case</strong></td><td>Domain sempit, butuh explainability</td><td>Domain luas, data tersedia</td></tr>
+      </tbody>
+    </table>
+    <div class="neo-card" style="background:var(--black);margin-top:clamp(7px,1.3vw,14px);">
+      <p style="color:var(--cream);margin:0;font-size:.7em;">💡 <strong style="color:var(--yellow);">Tren modern:</strong> <strong>Neurosymbol AI</strong> — menggabungkan kekuatan keduanya. Knowledge graph dipakai sebagai konteks dalam LLM (<em>Retrieval-Augmented Generation</em>).</p>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: TUGAS -->
+<section class="bg-pink">
+  <h2>Tugas Sesi 5</h2>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">📝 Tugas Wajib</h4>
+      <ol>
+        <li>Buat KB domain <strong>penyakit tanaman</strong> (gejala → penyakit) — minimal 10 fakta, 5 aturan.</li>
+        <li>Implementasi <strong>backward chaining</strong>: diberikan kesimpulan, cari kondisi yang diperlukan.</li>
+        <li>Buat knowledge graph <strong>prasyarat mata kuliah</strong> di jurusanmu dengan NetworkX.</li>
+      </ol>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--cream);flex:1;">
+        <h4>⭐ Tantangan Bonus</h4>
+        <ol>
+          <li>Bandingkan sistem pakar buatanmu vs Decision Tree sklearn — mana lebih mudah di-maintain?</li>
+          <li>Tambahkan <strong>certainty factor</strong> pada aturan sistem pakar (0–1).</li>
+          <li>Integrasi KB dengan query bahasa natural menggunakan keyword matching.</li>
+        </ol>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);flex-shrink:0;">
+        <h4 style="color:var(--green);">📁 File Python</h4>
+        <p><code>week05_knowledge.py</code> — semua praktik + visualisasi knowledge graph.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({hash:true,slideNumber:'c/t',transition:'slide',width:'100%',height:'100%',margin:0,minScale:1,maxScale:1,plugins:[RevealHighlight,RevealNotes]});
+
+function animateLines(elId,lines,delay){
+  const el=document.getElementById(elId);el.innerHTML='';
+  lines.forEach((line,i)=>{
+    setTimeout(()=>{
+      const s=document.createElement('span');s.className='out-line typing';s.textContent=line+'\n';
+      if(line.startsWith('──')||line.startsWith('===')||line.includes('KB')) s.style.color='#FFD93D';
+      else if(line.includes('✅')) s.style.color='#5BD68A';
+      else if(line.includes('❌')||line.includes('?')) s.style.color='#FF6FA5';
+      else if(line.includes('[iter')) s.style.color='#5B9DFF';
+      else if(line.startsWith('$')) s.style.color='#aaa';
+      el.appendChild(s);el.scrollTop=el.scrollHeight;
+      if(i===lines.length-1){const c=document.createElement('span');c.className='cursor';el.appendChild(c);}
+    },delay+i*115);
+  });
+}
+function setRunning(btn,r){btn.disabled=r;btn.textContent=r?'⏳ Running…':'▶ Jalankan';}
+
+function runS5D1(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik1_kb.py','','=== Forward Chaining ===','  [iter1] ✅ (\'Tweety\', \'adalah\', \'Hewan\')','  [iter1] ✅ (\'Rex\', \'adalah\', \'Mamalia\')','','Query \'Tweety=Hewan\'  : True','Query \'Rex=Mamalia\'   : True','','── Total Fakta ──','  Fakta awal  : 6','  Fakta baru  : 2','  Total akhir : 8','','✅ Forward Chaining berhasil menginferensi 2 fakta baru!'];
+  animateLines('s5out1',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*115+300);
+}
+function runS5D2(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik2_logika_pakar.py','','── P → Q (Implikasi) ──','  P  |  Q  ‖   P→Q','──────────────────────','  F  |  F  ‖    T','  F  |  T  ‖    T','  T  |  F  ‖    F','  T  |  T  ‖    T','','── De Morgan: ¬(P∧Q) ↔ (¬P∨¬Q) ──','  P  |  Q  ‖  De Morgan','──────────────────────────────','  F  |  F  ‖      T','  F  |  T  ‖      T','  T  |  F  ‖      T','  T  |  T  ‖      T','→ Semua T = TAUTOLOGI ✅','','── Sistem Pakar Hewan ──','  ✅ Penguin    : [\'Penguin\']','  ✅ Kelelawar  : [\'Kelelawar\']','  ✅ Reptil     : [\'Reptil\']','','✅ Sistem pakar berhasil! 3/3 benar.'];
+  animateLines('s5out2',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*115+300);
+}
+function runS5D3(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik3_knowledge_graph.py','','── Membangun Knowledge Graph ──','  Node ditambah: 11 entitas','  Edge ditambah: 11 relasi','','── Statistik Graf ──','  Nodes   : 11','  Edges   : 11','  Density : 0.091','','── Analisis Konektivitas ──','  Node terhubung terbanyak: AI (3 edge keluar)','  Hierarki: AI → ML → DL → Transformer → ChatGPT','','── Menyimpan Grafik ──','  📊 knowledge_graph.png tersimpan!','','✅ Knowledge Graph berhasil dibuat!'];
+  animateLines('s5out3',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*115+300);
+}
+</script>
+</body></html>

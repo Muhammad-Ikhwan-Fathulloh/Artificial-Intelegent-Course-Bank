@@ -1,0 +1,986 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesi 2 — Agen Cerdas & Model ML Pertama</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+/* ═══════════════════════════════════════════
+   VARIABEL & RESET
+═══════════════════════════════════════════ */
+:root {
+  --cream:#FFF4D6; --black:#141414; --yellow:#FFD93D;
+  --pink:#FF6FA5;  --blue:#5B9DFF;  --green:#5BD68A;
+  --r-background-color:#141414;
+  --r-main-font:'Space Grotesk',sans-serif;
+  --r-heading-font:'Space Grotesk',sans-serif;
+  --r-main-color:#141414;
+  --r-heading-color:#141414;
+}
+
+/* ═══════════════════════════════════════════
+   REVEAL CORE — FULL LAYAR, TIDAK KEPOTONG
+═══════════════════════════════════════════ */
+html, body { margin:0; padding:0; background:#141414 !important; }
+
+.reveal { font-family:var(--r-main-font); font-weight:500; }
+.reveal .slides { width:100% !important; height:100% !important; }
+
+/* Setiap section memenuhi viewport penuh */
+.reveal .slides section {
+  width:100% !important;
+  height:100% !important;
+  top:0 !important; left:0 !important;
+  padding: clamp(16px, 2.5vw, 36px) clamp(16px, 3vw, 48px);
+  box-sizing:border-box;
+  display:flex; flex-direction:column;
+  background:var(--cream);
+  border:4px solid var(--black);
+  overflow:hidden;
+}
+
+/* Heading scale fluid */
+.reveal h1 { font-size:clamp(1.4rem,3.5vw,2.2rem); font-weight:700; text-transform:uppercase; margin:0 0 .4em; }
+.reveal h2 { font-size:clamp(1rem,2.5vw,1.5rem);  font-weight:700; text-transform:uppercase; margin:0 0 .4em; }
+.reveal h3 { font-size:clamp(.85rem,2vw,1.1rem);  font-weight:700; text-transform:uppercase; margin:0 0 .3em; }
+.reveal h4 { font-size:clamp(.75rem,1.6vw,.95rem); font-weight:700; text-transform:uppercase; margin:0 0 .3em; }
+.reveal p, .reveal li { font-size:clamp(.65rem,1.4vw,.82rem); line-height:1.4; margin:.2em 0; }
+.reveal ul { margin-left:1.2em; display:block; }
+.reveal ul li { margin-bottom:.4em; }
+.reveal pre { margin:0; width:100%; box-shadow:none; }
+.reveal pre code.hljs { font-size:clamp(.5rem,1.1vw,.7rem); line-height:1.45; padding:12px 16px; border-radius:0; }
+
+/* Colour backgrounds */
+.bg-cream { background:var(--cream)!important; color:var(--black)!important; }
+.bg-black { background:var(--black)!important; color:var(--cream)!important; }
+.bg-yellow{ background:var(--yellow)!important; color:var(--black)!important; }
+.bg-pink  { background:var(--pink)!important;  color:var(--black)!important; }
+.bg-blue  { background:var(--blue)!important;  color:var(--black)!important; }
+.bg-green { background:var(--green)!important; color:var(--black)!important; }
+.bg-black h1,.bg-black h2,.bg-black h3,.bg-black h4 { color:var(--cream); }
+
+/* ═══════════════════════════════════════════
+   KOMPONEN — NEO-BRUTALISM
+═══════════════════════════════════════════ */
+.neo-card {
+  border:3px solid var(--black); box-shadow:5px 5px 0 var(--black);
+  padding:clamp(8px,1.2vw,16px); background:var(--cream);
+  box-sizing:border-box; overflow:hidden; min-height:0;
+}
+.neo-box {
+  border:3px solid var(--black); box-shadow:6px 6px 0 var(--black);
+  padding:clamp(8px,1.2vw,14px); display:inline-block; box-sizing:border-box;
+}
+.bg-black .neo-card { background:#1c1c1c; border-color:var(--cream); box-shadow:5px 5px 0 var(--cream); color:var(--cream); }
+.bg-black .neo-box  { border-color:var(--cream); box-shadow:6px 6px 0 var(--cream); }
+
+/* ═══════════════════════════════════════════
+   GRID LAYOUTS RESPONSIF
+═══════════════════════════════════════════ */
+.g2 { display:grid; grid-template-columns:1fr 1fr; gap:clamp(8px,1.5vw,16px); min-height:0; }
+.g3 { display:grid; grid-template-columns:repeat(3,1fr); gap:clamp(8px,1.5vw,16px); min-height:0; }
+.g4 { display:grid; grid-template-columns:repeat(4,1fr); gap:clamp(6px,1.2vw,12px); min-height:0; }
+/* Layout utama slide kode: kiri=kode, kanan=output */
+.code-layout {
+  display:grid; grid-template-columns:1fr 1fr; gap:clamp(8px,1.5vw,16px);
+  flex:1; min-height:0; align-items:stretch;
+}
+.flex-col { display:flex; flex-direction:column; gap:6px; min-height:0; }
+.flex-row { display:flex; gap:clamp(8px,1.5vw,16px); align-items:stretch; min-height:0; }
+.grow { flex:1; min-height:0; }
+
+/* ═══════════════════════════════════════════
+   PANEL KODE + TERMINAL ANIMASI
+═══════════════════════════════════════════ */
+.panel-code {
+  background:#1c1c1c; border:3px solid var(--cream);
+  box-shadow:6px 6px 0 var(--cream); display:flex;
+  flex-direction:column; min-height:0; overflow:hidden;
+}
+.panel-bar {
+  background:#2a2a2a; padding:6px 12px; display:flex;
+  align-items:center; gap:8px; border-bottom:2px solid var(--cream); flex-shrink:0;
+}
+.panel-dot { width:10px; height:10px; border-radius:50%; border:2px solid #555; }
+.dot-r{background:#FF6B6B;} .dot-y{background:#FFD93D;} .dot-g{background:#5BD68A;}
+.panel-title { color:#aaa; font-family:'Space Mono',monospace; font-size:.6em; margin-left:6px; }
+.panel-code pre { flex:1; margin:0; overflow:auto; }
+.panel-code pre code { display:block; }
+
+/* Terminal output */
+.terminal {
+  background:#0d1117; border:3px solid var(--green);
+  box-shadow:6px 6px 0 var(--green); display:flex;
+  flex-direction:column; min-height:0; overflow:hidden;
+}
+.terminal-bar {
+  background:#161b22; padding:6px 12px; display:flex;
+  align-items:center; justify-content:space-between;
+  border-bottom:2px solid var(--green); flex-shrink:0;
+}
+.terminal-title { color:var(--green); font-family:'Space Mono',monospace; font-size:.6em; font-weight:700; }
+.run-btn {
+  background:var(--yellow); border:2px solid var(--black);
+  box-shadow:3px 3px 0 var(--black); padding:3px 12px;
+  font-family:'Space Grotesk',sans-serif; font-weight:700;
+  font-size:.58em; cursor:pointer; text-transform:uppercase;
+  transition:transform .1s, box-shadow .1s;
+}
+.run-btn:active { transform:translate(2px,2px); box-shadow:1px 1px 0 var(--black); }
+.terminal-body {
+  flex:1; padding:10px 14px; overflow-y:auto;
+  font-family:'Space Mono',monospace; font-size:clamp(.48rem,1vw,.66rem);
+  color:var(--green); white-space:pre-wrap; line-height:1.5;
+}
+/* Scrollbar tipis */
+.terminal-body::-webkit-scrollbar { width:4px; }
+.terminal-body::-webkit-scrollbar-track { background:#0d1117; }
+.terminal-body::-webkit-scrollbar-thumb { background:var(--green); border-radius:2px; }
+
+/* Cursor berkedip */
+.cursor { display:inline-block; width:8px; height:1em; background:var(--green); animation:blink 1s step-end infinite; vertical-align:text-bottom; }
+@keyframes blink { 0%,100%{opacity:1} 50%{opacity:0} }
+
+/* Baris output masuk satu per satu */
+.out-line { display:block; }
+.out-line.typing { animation:typeIn .25s ease both; }
+@keyframes typeIn { from{opacity:0;transform:translateX(-6px)} to{opacity:1;transform:translateX(0)} }
+
+/* ═══════════════════════════════════════════
+   TABEL
+═══════════════════════════════════════════ */
+.neo-table { border-collapse:collapse; width:100%; table-layout:fixed; box-shadow:6px 6px 0 var(--black); }
+.neo-table th,.neo-table td { border:3px solid var(--black); padding:clamp(4px,1vw,10px); font-size:clamp(.52rem,1.1vw,.7rem); word-break:break-word; vertical-align:middle; background:var(--cream); }
+.neo-table th { background:var(--yellow); font-weight:700; text-transform:uppercase; }
+
+/* ═══════════════════════════════════════════
+   STEP DIAGRAM (alur ML)
+═══════════════════════════════════════════ */
+.step-flow { display:flex; align-items:center; justify-content:center; gap:0; width:100%; }
+.step-box {
+  flex:1; text-align:center; padding:8px 4px;
+  border:3px solid var(--black); box-shadow:4px 4px 0 var(--black);
+  font-weight:700; font-size:clamp(.55rem,1.2vw,.78rem); text-transform:uppercase;
+}
+.step-arrow { font-size:1.2em; padding:0 4px; flex-shrink:0; }
+
+/* ═══════════════════════════════════════════
+   REVEAL UI
+═══════════════════════════════════════════ */
+.reveal .slide-number { color:var(--cream); font-size:.7em; }
+.reveal .progress { color:var(--yellow); height:4px; }
+.reveal .controls .controls-arrow { color:var(--yellow); }
+
+/* BADGE */
+.badge { display:inline-block; padding:2px 10px; border:2px solid var(--black); font-size:.58em; font-weight:700; text-transform:uppercase; }
+
+/* ═══════════════════════════════════════════
+   ILUSTRASI AGEN SVG
+═══════════════════════════════════════════ */
+.agen-viz { display:flex; align-items:center; justify-content:center; gap:6px; flex-wrap:nowrap; }
+.agen-viz .av-box {
+  border:3px solid var(--black); box-shadow:4px 4px 0 var(--black);
+  padding:6px 10px; font-size:.62em; font-weight:700; text-transform:uppercase; text-align:center; min-width:70px;
+}
+.agen-viz .av-arrow { font-size:1.4em; color:var(--black); }
+</style>
+</head>
+<body>
+<div class="reveal">
+<div class="slides">
+
+<!-- ═══════════ SLIDE 1: JUDUL ═══════════ -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--yellow);box-shadow:14px 14px 0 var(--yellow);padding:clamp(16px,3vw,36px) clamp(24px,5vw,60px);display:inline-block;margin-bottom:clamp(12px,2vw,24px);">
+    <div style="font-size:clamp(.6rem,1.2vw,.85rem);color:var(--yellow);letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--yellow);margin:0 0 6px;">SESI 2</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.85rem,2vw,1.2rem);">Agen Cerdas &amp; Model ML Pertama</h2>
+  </div>
+  <div class="g3" style="width:min(600px,90%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--yellow);text-align:center;">
+      <div style="font-size:1.6em;">🤖</div>
+      <strong style="font-size:.7em;">OOP Agent</strong>
+      <p style="font-size:.6em;margin:.3em 0 0;">Class, Inheritance, Polymorphism</p>
+    </div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;">
+      <div style="font-size:1.6em;">📊</div>
+      <strong style="font-size:.7em;">Pandas Dasar</strong>
+      <p style="font-size:.6em;margin:.3em 0 0;">DataFrame, filter, groupby</p>
+    </div>
+    <div class="neo-card" style="background:var(--green);text-align:center;">
+      <div style="font-size:1.6em;">🧠</div>
+      <strong style="font-size:.7em;">ML Pertama</strong>
+      <p style="font-size:.6em;margin:.3em 0 0;">fit → predict → score</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 2: KONSEP AGEN ═══════════ -->
+<section class="bg-cream">
+  <h2>Agen Cerdas dengan OOP Python</h2>
+  <!-- Diagram alur agen -->
+  <div class="agen-viz" style="margin-bottom:clamp(8px,1.5vw,18px);">
+    <div class="av-box" style="background:var(--blue);color:#fff;">🌍 Lingkungan</div>
+    <div class="av-arrow">→</div>
+    <div class="av-box" style="background:var(--yellow);">👁 Persepsi</div>
+    <div class="av-arrow">→</div>
+    <div class="av-box" style="background:var(--pink);">🧠 Keputusan</div>
+    <div class="av-arrow">→</div>
+    <div class="av-box" style="background:var(--green);">⚡ Aksi</div>
+    <div class="av-arrow">→</div>
+    <div class="av-box" style="background:var(--blue);color:#fff;">🌍 Lingkungan</div>
+  </div>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--blue);">
+      <h4>Komponen Agen (OOP)</h4>
+      <ul>
+        <li><strong>__init__</strong> — state internal (nama, riwayat)</li>
+        <li><strong>persepsi()</strong> — membaca lingkungan</li>
+        <li><strong>keputusan()</strong> — aturan if-then / model ML</li>
+        <li><strong>aksi()</strong> — output ke lingkungan</li>
+        <li><strong>jalankan()</strong> — siklus persepsi → aksi</li>
+      </ul>
+    </div>
+    <div class="neo-card" style="background:var(--yellow);">
+      <h4>Prinsip OOP yang Dipakai</h4>
+      <ul>
+        <li><strong>Encapsulation</strong> — data + fungsi dalam class</li>
+        <li><strong>Inheritance</strong> — agen khusus <em>extends</em> agen dasar</li>
+        <li><strong>Polymorphism</strong> — setiap agen punya aksi berbeda</li>
+        <li><strong>Abstraction</strong> — sembunyikan detail implementasi</li>
+      </ul>
+      <div style="background:var(--black);color:var(--cream);padding:6px 10px;margin-top:8px;font-size:.6em;">
+        💡 Model ML nanti akan menjadi <em>"otak"</em> di dalam method <code>keputusan()</code>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 3: PRAKTIK 1 — AGEN DASAR ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0;">
+    <h2 style="color:var(--yellow);margin:0;">Praktik 1 — Class Agen Dasar</h2>
+    <div style="display:flex;gap:6px;">
+      <span class="badge" style="background:var(--yellow);">OOP</span>
+      <span class="badge" style="background:var(--green);">Simple Reflex</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <!-- KODE -->
+    <div class="panel-code">
+      <div class="panel-bar">
+        <span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span>
+        <span class="panel-title">praktik1_agen_dasar.py</span>
+      </div>
+      <pre><code class="language-python">class AgenDasar:
+    """Agen sederhana: persepsi → keputusan → aksi"""
+
+    def __init__(self, nama):
+        self.nama = nama
+        self.riwayat = []        # memori agen
+
+    def persepsi(self, lingkungan):
+        self.riwayat.append(lingkungan)
+        return lingkungan
+
+    def keputusan(self, kondisi):
+        """Simple Reflex: aturan if-then"""
+        if kondisi == "kotor":
+            return "bersihkan"
+        elif kondisi == "bersih":
+            return "diam"
+        else:
+            return "eksplorasi"
+
+    def aksi(self, keputusan):
+        print(f"[{self.nama}] Aksi: {keputusan.upper()}")
+
+    def jalankan(self, kondisi_list):
+        print(f"\n{'='*40}")
+        print(f"  Agen '{self.nama}' mulai beroperasi")
+        print(f"{'='*40}")
+        for kondisi in kondisi_list:
+            p = self.persepsi(kondisi)
+            k = self.keputusan(p)
+            self.aksi(k)
+        print(f"\nRiwayat: {self.riwayat}")
+
+
+# ── JALANKAN ──
+ruangan = ["kotor","bersih","kotor","tidak dikenal"]
+agen_vakum = AgenDasar("VacuumBot-01")
+agen_vakum.jalankan(ruangan)</code></pre>
+    </div>
+    <!-- TERMINAL -->
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-title">▶ OUTPUT TERMINAL</span>
+        <button class="run-btn" onclick="runDemo1(this)">▶ Jalankan</button>
+      </div>
+      <div class="terminal-body" id="out1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 4: PRAKTIK 2 — INHERITANCE ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0;">
+    <h2 style="color:var(--pink);margin:0;">Praktik 2 — Inheritance &amp; Polymorphism</h2>
+    <div style="display:flex;gap:6px;">
+      <span class="badge" style="background:var(--pink);">Inheritance</span>
+      <span class="badge" style="background:var(--blue);">Polymorphism</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar">
+        <span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span>
+        <span class="panel-title">praktik2_inheritance.py</span>
+      </div>
+      <pre><code class="language-python">class AgenVakum(AgenDasar):
+    def aksi(self, kondisi):
+        return "Membersihkan 🧹" if kondisi=="kotor" \
+               else "Standby ⏸"
+
+class AgenKeamanan(AgenDasar):
+    def __init__(self, nama, zona_aman):
+        super().__init__(nama)
+        self.zona_aman = zona_aman
+
+    def aksi(self, kondisi):
+        if kondisi not in self.zona_aman:
+            return f"🚨 ALERT! '{kondisi}' tidak aman!"
+        return f"✅ '{kondisi}' aman, patroli lanjut."
+
+class AgenNavigasi(AgenDasar):
+    def __init__(self, nama):
+        super().__init__(nama)
+        self.posisi = (0, 0)
+
+    def aksi(self, kondisi):
+        arah = {"utara":(0,1),"selatan":(0,-1),
+                "timur":(1,0),"barat":(-1,0)}
+        if kondisi in arah:
+            dx,dy = arah[kondisi]
+            self.posisi = (self.posisi[0]+dx,
+                           self.posisi[1]+dy)
+            return f"📍 Pindah ke {self.posisi}"
+        return "🛑 Diam di tempat"
+
+# ── POLIMORFISME ──
+agen_list = [
+    AgenVakum("VacBot"),
+    AgenKeamanan("GuardBot", ["lobby","koridor","A"]),
+    AgenNavigasi("NavBot")
+]
+inputs = ["kotor", "gudang", "utara"]
+
+print("=== DEMO POLIMORFISME ===")
+for agen, inp in zip(agen_list, inputs):
+    hasil = agen.aksi(inp)
+    print(f"[{agen.nama}] '{inp}' → {hasil}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-title">▶ OUTPUT TERMINAL</span>
+        <button class="run-btn" onclick="runDemo2(this)">▶ Jalankan</button>
+      </div>
+      <div class="terminal-body" id="out2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 5: PANDAS KONSEP ═══════════ -->
+<section class="bg-cream">
+  <h2>Pandas — Struktur Data Tabular</h2>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--yellow);flex:1;">
+        <h4>Struktur Data Pandas</h4>
+        <ul>
+          <li><strong>Series</strong> — array 1D berlabel (satu kolom)</li>
+          <li><strong>DataFrame</strong> — tabel 2D (baris &amp; kolom)</li>
+          <li><strong>Index</strong> — label baris (default 0,1,2,…)</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--pink);flex:1.2;">
+        <h4>Operasi Penting</h4>
+        <ul>
+          <li><code>df.head(n)</code> — n baris pertama</li>
+          <li><code>df.info()</code> — tipe &amp; missing value</li>
+          <li><code>df.describe()</code> — statistik deskriptif</li>
+          <li><code>df['kolom']</code> — pilih kolom (Series)</li>
+          <li><code>df[df['nilai']&gt;=85]</code> — filter baris</li>
+          <li><code>df.groupby('kota').mean()</code> — agregasi</li>
+          <li><code>df['baru'] = …</code> — tambah kolom</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Visualisasi DataFrame -->
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">Visualisasi DataFrame</h4>
+      <div style="overflow-x:auto;">
+        <table style="border-collapse:collapse;width:100%;font-size:.62em;font-family:'Space Mono',monospace;">
+          <tr>
+            <th style="background:#333;color:var(--yellow);border:2px solid var(--yellow);padding:4px 8px;">#</th>
+            <th style="background:var(--yellow);color:#141414;border:2px solid var(--yellow);padding:4px 8px;">nama</th>
+            <th style="background:var(--yellow);color:#141414;border:2px solid var(--yellow);padding:4px 8px;">usia</th>
+            <th style="background:var(--yellow);color:#141414;border:2px solid var(--yellow);padding:4px 8px;">kota</th>
+            <th style="background:var(--yellow);color:#141414;border:2px solid var(--yellow);padding:4px 8px;">nilai</th>
+          </tr>
+          <tr><td style="border:1px solid #444;padding:3px 8px;color:#888;">0</td><td style="border:1px solid #444;padding:3px 8px;">Andi</td><td style="border:1px solid #444;padding:3px 8px;">21</td><td style="border:1px solid #444;padding:3px 8px;">Jakarta</td><td style="border:1px solid #444;padding:3px 8px;color:var(--green);">85</td></tr>
+          <tr><td style="border:1px solid #444;padding:3px 8px;color:#888;">1</td><td style="border:1px solid #444;padding:3px 8px;">Budi</td><td style="border:1px solid #444;padding:3px 8px;">22</td><td style="border:1px solid #444;padding:3px 8px;">Bandung</td><td style="border:1px solid #444;padding:3px 8px;color:var(--green);">90</td></tr>
+          <tr><td style="border:1px solid #444;padding:3px 8px;color:#888;">2</td><td style="border:1px solid #444;padding:3px 8px;">Citra</td><td style="border:1px solid #444;padding:3px 8px;">20</td><td style="border:1px solid #444;padding:3px 8px;">Surabaya</td><td style="border:1px solid #444;padding:3px 8px;color:var(--pink);">78</td></tr>
+          <tr><td style="border:1px solid #444;padding:3px 8px;color:#888;">3</td><td style="border:1px solid #444;padding:3px 8px;">Deni</td><td style="border:1px solid #444;padding:3px 8px;">23</td><td style="border:1px solid #444;padding:3px 8px;">Medan</td><td style="border:1px solid #444;padding:3px 8px;color:var(--green);">88</td></tr>
+          <tr><td style="border:1px solid #444;padding:3px 8px;color:#888;">4</td><td style="border:1px solid #444;padding:3px 8px;">Eni</td><td style="border:1px solid #444;padding:3px 8px;">21</td><td style="border:1px solid #444;padding:3px 8px;">Jakarta</td><td style="border:1px solid #444;padding:3px 8px;color:var(--green);">92</td></tr>
+        </table>
+      </div>
+      <p style="font-size:.58em;margin:.6em 0 0;color:#aaa;">Setiap kolom = <span style="color:var(--blue);">Series</span>. Gabungan kolom = <span style="color:var(--yellow);">DataFrame</span>.</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 6: PRAKTIK 3 — PANDAS ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0;">
+    <h2 style="color:var(--green);margin:0;">Praktik 3 — Pandas Dasar</h2>
+    <div style="display:flex;gap:6px;">
+      <span class="badge" style="background:var(--green);">DataFrame</span>
+      <span class="badge" style="background:var(--yellow);">Filter</span>
+      <span class="badge" style="background:var(--pink);">GroupBy</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar">
+        <span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span>
+        <span class="panel-title">praktik3_pandas.py</span>
+      </div>
+      <pre><code class="language-python">import pandas as pd
+
+# 1. Buat DataFrame
+data = {
+  'nama' : ['Andi','Budi','Citra','Deni','Eni'],
+  'usia' : [21, 22, 20, 23, 21],
+  'kota' : ['Jakarta','Bandung','Surabaya',
+            'Medan','Jakarta'],
+  'nilai': [85, 90, 78, 88, 92]
+}
+df = pd.DataFrame(data)
+print("── DataFrame Awal ──")
+print(df.to_string(index=False))
+
+# 2. Statistik
+print("\n── Statistik nilai ──")
+print(df['nilai'].describe().round(2))
+
+# 3. Filter: nilai >= 85
+print("\n── Nilai >= 85 ──")
+top = df[df['nilai'] >= 85][['nama','nilai']]
+print(top.to_string(index=False))
+
+# 4. Feature engineering
+df['lulus'] = df['nilai'].apply(
+    lambda x: '✅ Lulus' if x >= 80 else '❌ Tidak')
+df['norm'] = ((df['nilai'] - df['nilai'].min()) /
+              (df['nilai'].max() - df['nilai'].min())).round(2)
+print("\n── Dengan Kolom Baru ──")
+print(df[['nama','nilai','lulus','norm']].to_string(index=False))
+
+# 5. GroupBy
+print("\n── Rata-rata per kota ──")
+grp = df.groupby('kota')['nilai'].mean().sort_values(ascending=False)
+for k, v in grp.items():
+    print(f"  {k:<12} {v:.1f}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-title">▶ OUTPUT TERMINAL</span>
+        <button class="run-btn" onclick="runDemo3(this)">▶ Jalankan</button>
+      </div>
+      <div class="terminal-body" id="out3"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 7: KONSEP ML ═══════════ -->
+<section class="bg-yellow">
+  <h2>Model ML Pertama — Konsep Inti</h2>
+  <!-- Step flow -->
+  <div class="step-flow" style="margin-bottom:clamp(8px,1.5vw,18px);flex-shrink:0;">
+    <div class="step-box" style="background:var(--blue);color:#fff;">📦 Data<br><span style="font-size:.7em;font-weight:400;text-transform:none;">150 bunga iris</span></div>
+    <span class="step-arrow">→</span>
+    <div class="step-box" style="background:var(--black);color:var(--cream);">✂️ Split<br><span style="font-size:.7em;font-weight:400;">70% / 30%</span></div>
+    <span class="step-arrow">→</span>
+    <div class="step-box" style="background:var(--pink);">🏋️ fit()<br><span style="font-size:.7em;font-weight:400;">Latih model</span></div>
+    <span class="step-arrow">→</span>
+    <div class="step-box" style="background:var(--green);">🔮 predict()<br><span style="font-size:.7em;font-weight:400;">Prediksi baru</span></div>
+    <span class="step-arrow">→</span>
+    <div class="step-box" style="background:var(--black);color:var(--cream);">📈 score()<br><span style="font-size:.7em;font-weight:400;">Evaluasi akurasi</span></div>
+  </div>
+  <div class="g3 grow">
+    <div class="neo-card" style="background:var(--cream);">
+      <h4>Dataset Iris</h4>
+      <p>150 bunga × 4 fitur: panjang/lebar sepal &amp; petal. 3 kelas: <em>setosa</em>, <em>versicolor</em>, <em>virginica</em>.</p>
+      <p>Dipakai sejak <strong>1936</strong> oleh Ronald Fisher — benchmark ML klasik.</p>
+    </div>
+    <div class="neo-card" style="background:var(--cream);">
+      <h4>KNN — K-Nearest Neighbors</h4>
+      <p>Lihat <strong>k</strong> tetangga terdekat → suara mayoritas menentukan kelas.</p>
+      <p>k=3: 3 tetangga. Tidak ada fase training eksplisit — <em>lazy learner</em>.</p>
+    </div>
+    <div class="neo-card" style="background:var(--cream);">
+      <h4>train_test_split</h4>
+      <p>Pisah data agar evaluasi <strong>fair</strong> — model tidak melihat data uji saat latihan.</p>
+      <p><code>random_state=42</code> → hasil selalu sama setiap run (<em>reproducible</em>).</p>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 8: PRAKTIK 4 — KNN ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0;">
+    <h2 style="color:var(--blue);margin:0;">Praktik 4 — Model ML Pertama (KNN)</h2>
+    <div style="display:flex;gap:6px;">
+      <span class="badge" style="background:var(--blue);">scikit-learn</span>
+      <span class="badge" style="background:var(--yellow);">KNN</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar">
+        <span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span>
+        <span class="panel-title">praktik4_knn.py</span>
+      </div>
+      <pre><code class="language-python">import numpy as np
+import pandas as pd
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.metrics import classification_report
+
+# 1. MUAT DATA
+iris = load_iris()
+X, y = iris.data, iris.target
+df = pd.DataFrame(X, columns=iris.feature_names)
+df['spesies'] = [iris.target_names[i] for i in y]
+print("── 5 Data Pertama ──")
+print(df.head().to_string(index=False))
+print(f"\nUkuran : {X.shape}")
+print(f"Kelas  : {dict(df['spesies'].value_counts())}")
+
+# 2. SPLIT DATA
+X_train,X_test,y_train,y_test = train_test_split(
+    X, y, test_size=0.3, random_state=42, stratify=y)
+print(f"\nLatih: {len(X_train)} | Uji: {len(X_test)}")
+
+# 3. LATIH MODEL
+model = KNeighborsClassifier(n_neighbors=3)
+model.fit(X_train, y_train)
+print("✅ Model berhasil dilatih!")
+
+# 4. EVALUASI
+y_pred  = model.predict(X_test)
+akurasi = model.score(X_test, y_test)
+print(f"\n── Akurasi: {akurasi:.2%} ──")
+print(classification_report(
+    y_test, y_pred,
+    target_names=iris.target_names))
+
+# 5. PREDIKSI DATA BARU
+baru = np.array([[5.1, 3.5, 1.4, 0.2]])
+pred = model.predict(baru)
+print(f"Prediksi bunga baru: {iris.target_names[pred[0]]}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-title">▶ OUTPUT TERMINAL</span>
+        <button class="run-btn" onclick="runDemo4(this)">▶ Jalankan</button>
+      </div>
+      <div class="terminal-body" id="out4"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 9: MEMAHAMI METRIK ═══════════ -->
+<section class="bg-cream">
+  <h2>Memahami Metrik Evaluasi</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Metrik</th><th>Rumus</th><th>Arti Singkat</th><th>Kapan Penting</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Akurasi</strong></td><td>Benar / Total</td><td>% prediksi tepat</td><td>Dataset seimbang</td></tr>
+        <tr><td><strong>Precision</strong></td><td>TP/(TP+FP)</td><td>Dari prediksi positif, berapa benar?</td><td>Hindari false alarm</td></tr>
+        <tr><td><strong>Recall</strong></td><td>TP/(TP+FN)</td><td>Dari positif nyata, berapa tertangkap?</td><td>Medis, penipuan</td></tr>
+        <tr><td><strong>F1-Score</strong></td><td>2·P·R/(P+R)</td><td>Rata-rata harmonis P &amp; R</td><td>Data tidak seimbang</td></tr>
+      </tbody>
+    </table>
+    <!-- Visualisasi confusion matrix mini -->
+    <div class="g3" style="margin-top:clamp(8px,1.5vw,14px);">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>KNN — Cara Kerja</h4>
+        <p>Hitung jarak Euclidean ke semua data latih → ambil k terdekat → suara mayoritas.</p>
+      </div>
+      <div class="neo-card" style="background:var(--green);">
+        <h4>Confusion Matrix</h4>
+        <div style="display:grid;grid-template-columns:1fr 1fr 1fr;gap:2px;font-size:.58em;text-align:center;margin-top:4px;">
+          <div style="background:#333;color:#aaa;padding:3px;">—</div>
+          <div style="background:var(--yellow);color:#141414;padding:3px;font-weight:700;">Pred +</div>
+          <div style="background:var(--yellow);color:#141414;padding:3px;font-weight:700;">Pred −</div>
+          <div style="background:var(--yellow);color:#141414;padding:3px;font-weight:700;">Aktual +</div>
+          <div style="background:#1a5c1a;color:#fff;padding:3px;">TP ✅</div>
+          <div style="background:#5c1a1a;color:#fff;padding:3px;">FN ❌</div>
+          <div style="background:var(--yellow);color:#141414;padding:3px;font-weight:700;">Aktual −</div>
+          <div style="background:#5c1a1a;color:#fff;padding:3px;">FP ❌</div>
+          <div style="background:#1a5c1a;color:#fff;padding:3px;">TN ✅</div>
+        </div>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Coba k berbeda</h4>
+        <p>k=1 → overfit. k besar → underfit. Cari k optimal dengan cross-validation.</p>
+        <div style="background:var(--black);color:var(--cream);padding:5px 8px;font-size:.58em;margin-top:6px;font-family:'Space Mono',monospace;">for k in [1,3,5,7,9]:<br>  m = KNN(n_neighbors=k)<br>  …bandingkan score</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 10: PRAKTIK 5 — AGEN + ML ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:8px;flex-shrink:0;">
+    <h2 style="color:var(--yellow);margin:0;">Praktik 5 — Agen + Model ML</h2>
+    <div style="display:flex;gap:6px;">
+      <span class="badge" style="background:var(--yellow);">Agent + ML</span>
+      <span class="badge" style="background:var(--pink);">Gabungan</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar">
+        <span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span>
+        <span class="panel-title">praktik5_agen_ml.py</span>
+      </div>
+      <pre><code class="language-python">from sklearn.datasets import load_iris
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+
+class AgenKlasifikasiBunga(AgenDasar):
+    """Agen dengan model ML sebagai otak keputusan"""
+
+    def __init__(self, nama):
+        super().__init__(nama)
+        self.model     = None
+        self.label_map = None
+
+    def latih(self, X_train, y_train, label_map):
+        """Fase pembelajaran agen"""
+        self.model = KNeighborsClassifier(n_neighbors=3)
+        self.model.fit(X_train, y_train)
+        self.label_map = label_map
+        print(f"[{self.nama}] ✅ Model dilatih!")
+
+    def keputusan(self, fitur):
+        """ML menggantikan aturan if-then"""
+        if self.model is None:
+            return "ERROR: belum dilatih!"
+        pred = self.model.predict([fitur])[0]
+        return self.label_map[pred]
+
+    def aksi(self, hasil):
+        emoji = {"setosa":"🌸","versicolor":"🌼","virginica":"🌺"}
+        e = emoji.get(hasil, "🌿")
+        print(f"[{self.nama}] {e} Identifikasi: {hasil.upper()}")
+
+
+# ── JALANKAN ──
+iris = load_iris()
+X_tr,X_te,y_tr,y_te = train_test_split(
+    iris.data, iris.target, test_size=0.3, random_state=42)
+
+bot = AgenKlasifikasiBunga("FloraBot-v2")
+bot.latih(X_tr, y_tr, dict(enumerate(iris.target_names)))
+
+print("\n── Agen Mengklasifikasi 5 Sampel ──")
+for i, s in enumerate(X_te[:5]):
+    k = bot.keputusan(s)
+    bot.aksi(k)
+    print(f"   Benar: {iris.target_names[y_te[i]]}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar">
+        <span class="terminal-title">▶ OUTPUT TERMINAL</span>
+        <button class="run-btn" onclick="runDemo5(this)">▶ Jalankan</button>
+      </div>
+      <div class="terminal-body" id="out5"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ SLIDE 11: RINGKASAN & TUGAS ═══════════ -->
+<section class="bg-yellow">
+  <h2>Ringkasan &amp; Tugas Sesi 2</h2>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">✅ Yang Sudah Dipelajari</h4>
+      <ul>
+        <li>OOP Python: class, __init__, inheritance, polymorphism</li>
+        <li>Agen Simple Reflex berbasis aturan if-then</li>
+        <li>Pandas: DataFrame, filter, groupby, feature engineering</li>
+        <li>Siklus ML: load → split → fit → predict → score</li>
+        <li>KNN classifier pada dataset Iris</li>
+        <li>Agen cerdas dengan "otak" model ML</li>
+      </ul>
+      <div style="background:var(--yellow);color:var(--black);padding:8px 10px;margin-top:10px;font-size:.62em;">
+        📁 File Python tersedia di folder <code>week02/</code>
+      </div>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--pink);flex:1;">
+        <h4>📝 Tugas Mandiri</h4>
+        <ol>
+          <li>Buat <code>AgenCuaca</code> — reaksi berdasar kondisi cuaca</li>
+          <li>Eksplorasi dataset <strong>Titanic</strong> dari Seaborn dengan Pandas</li>
+          <li>Ganti KNN dengan <code>DecisionTreeClassifier</code> — bandingkan akurasi</li>
+          <li>Coba k = 1, 3, 5, 7, 9 pada KNN — plot hasilnya dengan Matplotlib</li>
+        </ol>
+      </div>
+      <div class="neo-card" style="background:var(--cream);flex:0 0 auto;">
+        <h4>Kode Cepat — Dataset Titanic</h4>
+        <div style="background:var(--black);color:var(--green);padding:8px 10px;font-family:'Space Mono',monospace;font-size:.58em;">import seaborn as sns<br>df = sns.load_dataset('titanic')<br>print(df.head())<br>print(df.info())</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div><!-- /slides -->
+</div><!-- /reveal -->
+
+<!-- ═══════════════════════════════════════════
+     REVEAL.JS INIT
+═══════════════════════════════════════════ -->
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({
+  hash: true,
+  slideNumber: 'c/t',
+  transition: 'slide',
+  width: '100%',
+  height: '100%',
+  margin: 0,
+  minScale: 1,
+  maxScale: 1,
+  plugins: [RevealHighlight, RevealNotes]
+});
+</script>
+
+<!-- ═══════════════════════════════════════════
+     ANIMASI TERMINAL — SIMULASI OUTPUT
+═══════════════════════════════════════════ -->
+<script>
+/* ── helper: cetak baris satu per satu ── */
+function animateLines(elId, lines, delay) {
+  const el = document.getElementById(elId);
+  el.innerHTML = '';
+  lines.forEach((line, i) => {
+    setTimeout(() => {
+      const span = document.createElement('span');
+      span.className = 'out-line typing';
+      span.textContent = line + '\n';
+      // Warna berbeda berdasarkan konten
+      if (line.startsWith('──') || line.startsWith('===')) span.style.color = '#FFD93D';
+      else if (line.includes('ALERT') || line.includes('ERROR')) span.style.color = '#FF6FA5';
+      else if (line.includes('✅') || line.includes('Lulus') || line.includes('aman')) span.style.color = '#5BD68A';
+      else if (line.includes('❌') || line.includes('tidak')) span.style.color = '#FF6FA5';
+      else if (line.startsWith('[')) span.style.color = '#5B9DFF';
+      else if (line.startsWith('  ') || line.startsWith('   ')) span.style.color = '#aaaaff';
+      el.appendChild(span);
+      el.scrollTop = el.scrollHeight;
+      // Tambah cursor di akhir
+      if (i === lines.length - 1) {
+        const cur = document.createElement('span');
+        cur.className = 'cursor';
+        el.appendChild(cur);
+      }
+    }, delay + i * 120);
+  });
+}
+
+/* ── helper: tombol ke state "running" ── */
+function setRunning(btn, running) {
+  btn.disabled = running;
+  btn.textContent = running ? '⏳ Running…' : '▶ Jalankan';
+}
+
+/* ══════════════════════════════════════
+   OUTPUT DEMO 1 — Agen Dasar
+══════════════════════════════════════ */
+function runDemo1(btn) {
+  setRunning(btn, true);
+  const lines = [
+    '$ python praktik1_agen_dasar.py',
+    '',
+    '========================================',
+    '  Agen \'VacuumBot-01\' mulai beroperasi',
+    '========================================',
+    '[VacuumBot-01] Aksi: BERSIHKAN',
+    '[VacuumBot-01] Aksi: DIAM',
+    '[VacuumBot-01] Aksi: BERSIHKAN',
+    '[VacuumBot-01] Aksi: EKSPLORASI',
+    '',
+    'Riwayat: [\'kotor\', \'bersih\', \'kotor\', \'tidak dikenal\']',
+    '',
+    '✅ Selesai — 4 siklus persepsi→aksi'
+  ];
+  animateLines('out1', lines, 200);
+  setTimeout(() => setRunning(btn, false), 200 + lines.length * 120 + 300);
+}
+
+/* ══════════════════════════════════════
+   OUTPUT DEMO 2 — Inheritance
+══════════════════════════════════════ */
+function runDemo2(btn) {
+  setRunning(btn, true);
+  const lines = [
+    '$ python praktik2_inheritance.py',
+    '',
+    '=== DEMO POLIMORFISME ===',
+    '[VacBot]   \'kotor\'  → Membersihkan 🧹',
+    '[GuardBot] \'gudang\' → 🚨 ALERT! \'gudang\' tidak aman!',
+    '[NavBot]   \'utara\'  → 📍 Pindah ke (0, 1)',
+    '',
+    '── Uji lebih lanjut ──',
+    '[VacBot]   \'bersih\' → Standby ⏸',
+    '[GuardBot] \'lobby\'  → ✅ \'lobby\' aman, patroli lanjut.',
+    '[NavBot]   \'timur\'  → 📍 Pindah ke (1, 1)',
+    '',
+    '✅ Polimorfisme berhasil: 3 agen, 1 antarmuka'
+  ];
+  animateLines('out2', lines, 200);
+  setTimeout(() => setRunning(btn, false), 200 + lines.length * 120 + 300);
+}
+
+/* ══════════════════════════════════════
+   OUTPUT DEMO 3 — Pandas
+══════════════════════════════════════ */
+function runDemo3(btn) {
+  setRunning(btn, true);
+  const lines = [
+    '$ python praktik3_pandas.py',
+    '',
+    '── DataFrame Awal ──',
+    ' nama  usia      kota  nilai',
+    ' Andi    21   Jakarta     85',
+    ' Budi    22   Bandung     90',
+    'Citra    20  Surabaya     78',
+    ' Deni    23     Medan     88',
+    '  Eni    21   Jakarta     92',
+    '',
+    '── Statistik nilai ──',
+    'count     5.00',
+    'mean     86.60',
+    'std       5.22',
+    'min      78.00',
+    'max      92.00',
+    '',
+    '── Nilai >= 85 ──',
+    'nama  nilai',
+    'Andi     85',
+    'Budi     90',
+    'Deni     88',
+    ' Eni     92',
+    '',
+    '── Dengan Kolom Baru ──',
+    ' nama  nilai      lulus  norm',
+    ' Andi     85   ✅ Lulus  0.50',
+    ' Budi     90   ✅ Lulus  0.86',
+    'Citra     78   ✅ Lulus  0.00',
+    ' Deni     88   ✅ Lulus  0.71',
+    '  Eni     92   ✅ Lulus  1.00',
+    '',
+    '── Rata-rata per kota ──',
+    '  Jakarta     88.5',
+    '   Bandung    90.0',
+    '  Surabaya    78.0',
+    '     Medan    88.0',
+    '',
+    '✅ Selesai — 5 baris, 6 kolom'
+  ];
+  animateLines('out3', lines, 200);
+  setTimeout(() => setRunning(btn, false), 200 + lines.length * 120 + 300);
+}
+
+/* ══════════════════════════════════════
+   OUTPUT DEMO 4 — KNN
+══════════════════════════════════════ */
+function runDemo4(btn) {
+  setRunning(btn, true);
+  const lines = [
+    '$ python praktik4_knn.py',
+    '',
+    '── 5 Data Pertama ──',
+    ' sepal length  sepal width  petal length  petal width  spesies',
+    '          5.1          3.5           1.4          0.2   setosa',
+    '          4.9          3.0           1.4          0.2   setosa',
+    '          4.7          3.2           1.3          0.2   setosa',
+    '          4.6          3.1           1.5          0.2   setosa',
+    '          5.0          3.6           1.4          0.2   setosa',
+    '',
+    'Ukuran : (150, 4)',
+    'Kelas  : {\'setosa\': 50, \'versicolor\': 50, \'virginica\': 50}',
+    '',
+    'Latih: 105 | Uji: 45',
+    '✅ Model berhasil dilatih!',
+    '',
+    '── Akurasi: 97.78% ──',
+    '',
+    '              precision  recall  f1-score  support',
+    '      setosa       1.00    1.00      1.00       15',
+    '  versicolor       1.00    0.93      0.97       15',
+    '   virginica       0.94    1.00      0.97       15',
+    '',
+    '    accuracy                          0.98       45',
+    '',
+    'Prediksi bunga baru: setosa 🌸',
+    '',
+    '✅ Akurasi KNN(k=3) = 97.78%'
+  ];
+  animateLines('out4', lines, 200);
+  setTimeout(() => setRunning(btn, false), 200 + lines.length * 120 + 300);
+}
+
+/* ══════════════════════════════════════
+   OUTPUT DEMO 5 — Agen + ML
+══════════════════════════════════════ */
+function runDemo5(btn) {
+  setRunning(btn, true);
+  const lines = [
+    '$ python praktik5_agen_ml.py',
+    '',
+    '[FloraBot-v2] ✅ Model dilatih!',
+    '',
+    '── Agen Mengklasifikasi 5 Sampel ──',
+    '[FloraBot-v2] 🌸 Identifikasi: SETOSA',
+    '   Benar: setosa     ✅',
+    '[FloraBot-v2] 🌼 Identifikasi: VERSICOLOR',
+    '   Benar: versicolor ✅',
+    '[FloraBot-v2] 🌺 Identifikasi: VIRGINICA',
+    '   Benar: virginica  ✅',
+    '[FloraBot-v2] 🌸 Identifikasi: SETOSA',
+    '   Benar: setosa     ✅',
+    '[FloraBot-v2] 🌼 Identifikasi: VERSICOLOR',
+    '   Benar: versicolor ✅',
+    '',
+    '✅ Agen berhasil! 5/5 prediksi benar.',
+    '   ML menggantikan aturan if-then manual.'
+  ];
+  animateLines('out5', lines, 200);
+  setTimeout(() => setRunning(btn, false), 200 + lines.length * 120 + 300);
+}
+</script>
+</body>
+</html>
