@@ -1,0 +1,1731 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Praktik Pandas · Hands-On Session 3</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;600&display=swap" rel="stylesheet">
+<style>
+/* ============ TOKENS ============ */
+:root{
+  --bg-base:#ffffff;
+  --bg-elevated:#f6f8fa;
+  --bg-code:#f6f8fa;
+  --bg-code-header:#eaeef2;
+  --border:#d0d7de;
+  --border-soft:#e6e8eb;
+  --text-primary:#1f2328;
+  --text-secondary:#656d76;
+  --accent-orange:#FF4500;
+  --accent-cyan:#096980;
+  --accent-yellow:#9a6700;
+  --accent-green:#1a7f37;
+  --accent-red:#cf222e;
+  --accent-purple:#8250df;
+  --font-sans:'Inter','Segoe UI',system-ui,-apple-system,sans-serif;
+  --font-mono:'JetBrains Mono','Fira Code','Cascadia Code',Consolas,monospace;
+}
+
+*{box-sizing:border-box;margin:0;padding:0}
+html,body{height:100%;overflow:hidden;background:#e4e7ea;color:var(--text-primary);font-family:var(--font-sans);}
+
+body{display:flex;align-items:center;justify-content:center;}
+
+/* ============ DECK SCALER ============ */
+.deck{
+  position:absolute;
+  top:50%;left:50%;
+  width:1280px;height:720px;
+  transform-origin:center center;
+  transform:translate(-50%,-50%);
+  background:var(--bg-base);
+  box-shadow:0 30px 80px rgba(0,0,0,.18);
+  overflow:hidden;
+}
+
+/* ============ SLIDE ============ */
+.slide{
+  position:absolute;inset:0;
+  padding:48px 64px 56px;
+  display:flex;flex-direction:column;
+  background:var(--bg-base);
+  opacity:0;visibility:hidden;
+  transition:opacity .35s ease, transform .35s ease;
+  transform:translateX(40px);
+}
+.slide::before{
+  content:"";position:absolute;top:0;left:0;right:0;height:4px;
+  background:linear-gradient(90deg,var(--accent-orange) 0%,#ff7b3d 100%);
+  z-index:1;
+}
+.slide.active{opacity:1;visibility:visible;transform:translateX(0);z-index:5;}
+.slide.prev{transform:translateX(-40px);}
+
+/* slide chrome */
+.slide-tag{
+  position:absolute;top:22px;left:64px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.18em;
+  color:var(--text-secondary);text-transform:uppercase;font-weight:600;
+}
+.slide-tag::before{content:"";display:inline-block;width:8px;height:8px;background:var(--accent-orange);
+  border-radius:2px;margin-right:8px;vertical-align:1px;}
+.slide-num{
+  position:absolute;top:20px;right:64px;
+  font-family:var(--font-mono);font-size:13px;color:var(--text-secondary);font-weight:600;
+}
+.slide-num b{color:var(--accent-orange);}
+
+.slide-footer{
+  position:absolute;bottom:18px;left:64px;right:64px;
+  display:flex;justify-content:space-between;
+  font-size:11px;color:var(--text-secondary);font-family:var(--font-mono);
+}
+.progress-track{
+  position:absolute;bottom:0;left:0;right:0;height:3px;background:#eaeef2;
+}
+.progress-fill{height:100%;background:linear-gradient(90deg,var(--accent-orange),#ff7b3d);transition:width .4s ease;}
+
+/* ============ HEADINGS ============ */
+h1.slide-title{
+  font-size:42px;font-weight:800;line-height:1.1;letter-spacing:-.02em;
+  color:var(--text-primary);margin-bottom:8px;
+}
+.slide-title .accent{color:var(--accent-orange);}
+.slide-subtitle{font-size:18px;color:var(--text-secondary);font-weight:500;margin-bottom:24px;}
+.slide-eyebrow{
+  font-family:var(--font-mono);font-size:13px;color:var(--accent-orange);font-weight:600;
+  letter-spacing:.05em;margin-bottom:10px;
+}
+h2{font-size:24px;font-weight:700;color:var(--text-primary);}
+h3{font-size:18px;font-weight:600;color:var(--text-primary);}
+
+/* ============ COVER SLIDE ============ */
+.cover{
+  background:
+    radial-gradient(ellipse at top left, rgba(255,69,0,.10), transparent 55%),
+    radial-gradient(ellipse at bottom right, rgba(130,80,223,.06), transparent 55%),
+    var(--bg-base);
+  justify-content:center;
+}
+.cover-hero{max-width:900px;}
+.cover-eyebrow{
+  font-family:var(--font-mono);font-size:14px;color:var(--accent-orange);
+  letter-spacing:.2em;text-transform:uppercase;font-weight:600;margin-bottom:18px;
+}
+.cover-title{
+  font-size:84px;font-weight:800;line-height:.95;letter-spacing:-.04em;
+  margin-bottom:18px;
+  background:linear-gradient(135deg,#1f2328 0%,#3a3f47 60%,#FF4500 100%);
+  -webkit-background-clip:text;background-clip:text;-webkit-text-fill-color:transparent;
+}
+.cover-sub{
+  font-size:24px;color:var(--text-secondary);font-weight:500;margin-bottom:38px;letter-spacing:-.01em;
+}
+.cover-terminal{
+  background:var(--bg-code);border:1px solid var(--border);border-radius:8px;
+  max-width:640px;overflow:hidden;
+  box-shadow:0 4px 12px rgba(0,0,0,.06);
+}
+.cover-terminal-head{
+  display:flex;align-items:center;gap:6px;padding:10px 14px;background:var(--bg-code-header);border-bottom:1px solid var(--border);
+}
+.cover-terminal-head i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+.cover-terminal-head i:nth-child(1){background:#ff5f56;}
+.cover-terminal-head i:nth-child(2){background:#ffbd2e;}
+.cover-terminal-head i:nth-child(3){background:#27c93f;}
+.cover-terminal-head .fn{margin-left:auto;font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.cover-terminal-body{padding:18px 20px;font-family:var(--font-mono);font-size:15px;line-height:1.7;color:var(--text-primary);}
+.cover-terminal-body .prompt{color:var(--accent-cyan);}
+.cover-terminal-body .kw{color:#cf222e;}
+.cover-terminal-body .bi{color:#953800;}
+.cover-terminal-body .cm{color:var(--text-secondary);font-style:italic;}
+.cover-terminal-body .cursor{display:inline-block;width:8px;height:16px;background:var(--accent-orange);vertical-align:-3px;margin-left:2px;animation:blink 1s steps(1) infinite;}
+@keyframes blink{50%{opacity:0;}}
+
+.cover-meta{
+  position:absolute;bottom:60px;left:64px;right:64px;
+  display:flex;justify-content:space-between;align-items:flex-end;
+}
+.cover-meta-left{font-size:13px;color:var(--text-secondary);line-height:1.6;font-family:var(--font-mono);}
+.cover-meta-left b{color:var(--text-primary);font-weight:600;}
+.cover-meta-right{text-align:right;font-size:11px;color:var(--text-secondary);font-family:var(--font-mono);max-width:380px;line-height:1.5;}
+.cover-meta-right .src{color:var(--text-secondary);opacity:.7;}
+
+/* ============ TOC ============ */
+.toc-grid{
+  display:grid;grid-template-columns:repeat(5,1fr);gap:14px;margin-top:18px;
+}
+.toc-cell{
+  background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;
+  padding:16px 14px;display:flex;align-items:flex-start;gap:10px;
+  transition:border-color .2s, transform .2s, box-shadow .2s;
+  min-height:84px;
+}
+.toc-cell:hover{border-color:var(--accent-orange);box-shadow:0 4px 12px rgba(255,69,0,.10);}
+.toc-num{
+  flex-shrink:0;width:26px;height:26px;border-radius:50%;
+  background:rgba(255,69,0,.10);border:1px solid var(--accent-orange);
+  color:var(--accent-orange);font-weight:700;font-size:13px;font-family:var(--font-mono);
+  display:flex;align-items:center;justify-content:center;
+}
+.toc-label{font-size:13px;font-weight:600;color:var(--text-primary);line-height:1.25;}
+.toc-cell.toc-exercise{border-style:dashed;border-color:var(--accent-cyan);}
+.toc-cell.toc-exercise .toc-num{background:rgba(9,105,128,.10);border-color:var(--accent-cyan);color:var(--accent-cyan);}
+.toc-cell.toc-exercise .toc-label{color:var(--accent-cyan);}
+
+/* ============ INFO CARDS ============ */
+.cards-3{display:grid;grid-template-columns:repeat(3,1fr);gap:20px;margin-top:18px;}
+.info-card{
+  background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;
+  padding:22px 22px;display:flex;flex-direction:column;gap:10px;
+  position:relative;overflow:hidden;
+  box-shadow:0 2px 6px rgba(0,0,0,.04);
+}
+.info-card::before{content:"";position:absolute;top:0;left:0;width:4px;height:100%;background:var(--accent-orange);}
+.info-card.cyan::before{background:var(--accent-cyan);}
+.info-card.yellow::before{background:var(--accent-yellow);}
+.info-card-label{font-family:var(--font-mono);font-size:11px;letter-spacing:.16em;color:var(--text-secondary);text-transform:uppercase;font-weight:600;}
+.info-card-value{font-size:17px;font-weight:600;color:var(--text-primary);line-height:1.4;}
+.info-card-sub{font-size:13px;color:var(--text-secondary);line-height:1.5;}
+.info-card-icon{font-size:22px;font-family:var(--font-mono);color:var(--accent-orange);font-weight:700;}
+.info-card.cyan .info-card-icon{color:var(--accent-cyan);}
+.info-card.yellow .info-card-icon{color:var(--accent-yellow);}
+
+/* ============ CALLOUTS ============ */
+.callout{
+  border-radius:8px;padding:14px 18px 14px 18px;
+  border-left:4px solid var(--border);
+  background:#f6f8fa;
+  display:flex;flex-direction:column;gap:6px;
+  font-size:15px;line-height:1.55;color:var(--text-primary);
+}
+.callout-title{
+  display:flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:12px;font-weight:700;
+  letter-spacing:.12em;text-transform:uppercase;
+}
+.callout-title .dot{width:7px;height:7px;border-radius:50%;display:inline-block;}
+.callout-body{font-size:14px;color:var(--text-primary);line-height:1.55;}
+.callout-body code{font-family:var(--font-mono);font-size:13px;color:var(--accent-cyan);background:rgba(9,105,128,.10);padding:1px 5px;border-radius:3px;}
+.callout-green{border-left-color:var(--accent-green);background:rgba(26,127,55,.08);}
+.callout-green .callout-title{color:var(--accent-green);}
+.callout-green .callout-title .dot{background:var(--accent-green);}
+.callout-red{border-left-color:var(--accent-red);background:rgba(207,34,46,.08);}
+.callout-red .callout-title{color:var(--accent-red);}
+.callout-red .callout-title .dot{background:var(--accent-red);}
+.callout-yellow{border-left-color:var(--accent-yellow);background:rgba(154,103,0,.10);}
+.callout-yellow .callout-title{color:var(--accent-yellow);}
+.callout-yellow .callout-title .dot{background:var(--accent-yellow);}
+.callout-cyan{border-left-color:var(--accent-cyan);background:rgba(9,105,128,.08);}
+.callout-cyan .callout-title{color:var(--accent-cyan);}
+.callout-cyan .callout-title .dot{background:var(--accent-cyan);}
+.callout-purple{border-left-color:var(--accent-purple);background:rgba(130,80,223,.08);}
+.callout-purple .callout-title{color:var(--accent-purple);}
+.callout-purple .callout-title .dot{background:var(--accent-purple);}
+
+/* ============ CODE BLOCKS ============ */
+.code-block{
+  background:var(--bg-code);border:1px solid var(--border);border-radius:8px;
+  overflow:hidden;display:flex;flex-direction:column;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.code-header{
+  display:flex;align-items:center;gap:6px;
+  padding:8px 12px;background:var(--bg-code-header);border-bottom:1px solid var(--border);
+}
+.code-header i{width:11px;height:11px;border-radius:50%;display:inline-block;}
+.code-header i:nth-child(1){background:#ff5f56;}
+.code-header i:nth-child(2){background:#ffbd2e;}
+.code-header i:nth-child(3){background:#27c93f;}
+.code-header .filename{margin-left:10px;font-family:var(--font-mono);font-size:11px;color:var(--text-secondary);}
+.code-header .copy{margin-left:auto;font-family:var(--font-mono);font-size:10px;color:var(--text-secondary);letter-spacing:.1em;text-transform:uppercase;opacity:.6;}
+.code-block pre{
+  margin:0;padding:14px 18px;overflow:auto;
+  font-family:var(--font-mono);font-size:13.5px;line-height:1.55;
+  color:var(--text-primary);
+  max-height:480px;
+}
+.code-block.compact pre{font-size:12px;line-height:1.5;}
+.code-block pre::-webkit-scrollbar{height:8px;width:8px;}
+.code-block pre::-webkit-scrollbar-thumb{background:#b3bdc7;border-radius:4px;}
+.code-block pre::-webkit-scrollbar-track{background:transparent;}
+.code-block pre code{font-family:inherit;}
+
+/* Prism override - GitHub Light inspired */
+.token.keyword,.token.operator,.token.boolean{color:#cf222e;}
+.token.class-name{color:#953800;}
+.token.string,.token.char,.token.attr-value{color:#0a3069;}
+.token.function,.token.method{color:#8250df;}
+.token.comment,.token.prolog,.token.doctype,.token.cdata{color:#6e7781;font-style:italic;}
+.token.number,.token.constant,.token.symbol{color:#0550ae;}
+.token.builtin,.token.class-name.pd{color:#953800;}
+.token.punctuation{color:#1f2328;}
+.token.decorator,.token.annotation{color:#953800;}
+.token.parameter{color:#953800;}
+
+/* inline code */
+:not(pre)>code{
+  font-family:var(--font-mono);font-size:.92em;
+  background:#eaeef2;padding:1px 6px;border-radius:4px;
+  color:#1f2328;border:1px solid var(--border);
+}
+
+/* ============ TABLES ============ */
+.tbl{
+  width:100%;border-collapse:collapse;font-size:14px;
+  background:#fff;border:1px solid var(--border);border-radius:8px;overflow:hidden;
+}
+.tbl thead th{
+  background:#fff5f0;text-align:left;padding:11px 14px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent-orange);font-weight:700;border-bottom:2px solid var(--accent-orange);
+}
+.tbl tbody td{padding:10px 14px;border-top:1px solid var(--border-soft);color:var(--text-primary);line-height:1.5;vertical-align:top;}
+.tbl tbody tr:nth-child(even){background:#f9fafb;}
+.tbl tbody tr:hover{background:rgba(255,69,0,.05);}
+.tbl tbody td code{font-family:var(--font-mono);font-size:12.5px;color:var(--accent-cyan);background:rgba(9,105,128,.08);padding:1px 5px;border-radius:3px;}
+.tbl tbody td strong{color:var(--text-primary);font-weight:600;}
+
+/* ============ LAYOUT HELPERS ============ */
+.row{display:grid;gap:18px;margin-top:14px;}
+.row.two{grid-template-columns:1fr 1fr;}
+.row.three{grid-template-columns:1fr 1fr 1fr;}
+.row.four{grid-template-columns:repeat(4,1fr);}
+.row.uneven-2-1{grid-template-columns:2fr 1fr;}
+.row.uneven-1-1{grid-template-columns:1fr 1fr;}
+.col{display:flex;flex-direction:column;gap:10px;}
+.mt-s{margin-top:8px;}
+.mt-m{margin-top:14px;}
+.mt-l{margin-top:20px;}
+.mb-s{margin-bottom:8px;}
+.mb-m{margin-bottom:14px;}
+
+/* ============ DIAGRAM (split-apply-combine) ============ */
+.diagram-sac{display:grid;grid-template-columns:1fr auto 1fr auto 1fr;align-items:center;gap:14px;margin-top:18px;}
+.sac-box{
+  background:var(--bg-elevated);border:1px solid var(--border);border-radius:8px;
+  padding:14px;text-align:center;box-shadow:0 2px 6px rgba(0,0,0,.04);
+}
+.sac-box .sac-label{font-family:var(--font-mono);font-size:11px;color:var(--accent-orange);letter-spacing:.12em;text-transform:uppercase;font-weight:700;margin-bottom:6px;}
+.sac-box .sac-name{font-size:16px;font-weight:600;color:var(--text-primary);}
+.sac-box .sac-sub{font-size:12px;color:var(--text-secondary);margin-top:4px;line-height:1.4;}
+.sac-arrow{color:var(--accent-orange);font-size:22px;font-weight:700;}
+
+/* ============ CARDS (latihan) ============ */
+.exercise-card{
+  background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;
+  padding:22px;display:flex;flex-direction:column;gap:14px;height:100%;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.exercise-card .ex-tag{
+  display:inline-flex;align-items:center;gap:8px;
+  font-family:var(--font-mono);font-size:11px;letter-spacing:.14em;text-transform:uppercase;
+  color:var(--accent-orange);font-weight:700;
+}
+.exercise-card .ex-tag .num{
+  width:24px;height:24px;border-radius:50%;background:rgba(255,69,0,.10);
+  border:1px solid var(--accent-orange);color:var(--accent-orange);
+  display:flex;align-items:center;justify-content:center;font-weight:700;
+}
+.exercise-card h3{font-size:18px;font-weight:700;color:var(--text-primary);}
+.exercise-card .ex-body{font-size:14px;color:var(--text-primary);line-height:1.6;}
+.exercise-card .ex-body ol,.exercise-card .ex-body ul{padding-left:20px;display:flex;flex-direction:column;gap:6px;}
+.exercise-card .ex-body li{margin-bottom:2px;}
+.exercise-card .ex-body code{font-family:var(--font-mono);font-size:12.5px;color:var(--accent-cyan);background:rgba(9,105,128,.08);padding:1px 5px;border-radius:3px;}
+
+/* ============ SUMMARY TABLE (slide 30) ============ */
+.summary-table{font-size:13px;}
+.summary-table thead th{padding:9px 12px;font-size:10.5px;}
+.summary-table tbody td{padding:9px 12px;}
+
+/* ============ CLOSING ============ */
+.closing-cards{display:grid;grid-template-columns:repeat(2,1fr);gap:16px;margin-top:20px;}
+.closing-card{
+  background:var(--bg-elevated);border:1px solid var(--border);border-radius:10px;
+  padding:18px 20px;display:flex;gap:14px;align-items:flex-start;
+  box-shadow:0 2px 8px rgba(0,0,0,.05);
+}
+.closing-card .cc-num{
+  flex-shrink:0;width:38px;height:38px;border-radius:8px;
+  background:rgba(255,69,0,.10);border:1px solid var(--accent-orange);
+  color:var(--accent-orange);font-family:var(--font-mono);font-weight:700;font-size:18px;
+  display:flex;align-items:center;justify-content:center;
+}
+.closing-card .cc-body{font-size:14px;color:var(--text-primary);line-height:1.55;}
+.closing-card .cc-body b{color:var(--accent-orange);font-weight:700;}
+.closing-card .cc-body code{font-family:var(--font-mono);font-size:12.5px;color:var(--accent-cyan);background:rgba(9,105,128,.08);padding:1px 5px;border-radius:3px;}
+
+.closing-footer{
+  margin-top:auto;padding-top:22px;border-top:1px solid var(--border);
+  display:flex;justify-content:space-between;align-items:center;
+  font-family:var(--font-mono);font-size:12px;color:var(--text-secondary);
+}
+.closing-footer b{color:var(--accent-orange);font-weight:600;}
+
+/* ============ OVERVIEW MODE ============ */
+.deck.overview{transform:translate(-50%,-50%) scale(.18);}
+.deck.overview .slide{
+  opacity:.5;visibility:visible;transform:scale(1);
+  pointer-events:none;border:1px solid var(--border);
+}
+.deck.overview .slide.active{opacity:1;border:2px solid var(--accent-orange);}
+.deck.overview-mode{overflow:auto;background:#e4e7ea;}
+
+/* ============ NAV UI ============ */
+.nav-help{
+  position:fixed;bottom:14px;right:18px;z-index:100;
+  background:rgba(255,255,255,.92);border:1px solid var(--border);
+  border-radius:6px;padding:6px 10px;
+  font-family:var(--font-mono);font-size:10.5px;color:var(--text-secondary);
+  backdrop-filter:blur(8px);display:flex;gap:14px;
+  opacity:.8;transition:opacity .2s;
+  box-shadow:0 2px 8px rgba(0,0,0,.08);
+}
+.nav-help:hover{opacity:1;}
+.nav-help kbd{
+  background:#fff;border:1px solid var(--border);border-bottom-width:2px;
+  border-radius:3px;padding:1px 5px;color:var(--text-primary);font-size:10px;
+}
+
+@media print{
+  @page{size:1280px 720px;margin:0;}
+  html,body{height:auto;overflow:visible;background:#fff;}
+  .deck{position:static;transform:none;width:1280px;height:720px;box-shadow:none;page-break-after:always;}
+  .slide{opacity:1!important;visibility:visible!important;position:relative;page-break-after:always;break-after:page;transform:none!important;}
+  .nav-help{display:none;}
+}
+</style>
+</head>
+<body>
+
+<div class="deck" id="deck">
+
+<!-- ============================ SLIDE 1 — COVER ============================ -->
+<section class="slide cover active" data-slide="1">
+  <div class="cover-hero">
+    <div class="cover-eyebrow">Hands-On Session 3 · Pandas</div>
+    <div class="cover-title">Praktik Pandas</div>
+    <div class="cover-sub">Manipulasi Data dan Feature Engineering</div>
+    <div class="cover-terminal">
+      <div class="cover-terminal-head">
+        <i></i><i></i><i></i>
+        <span class="fn">praktik_pandas.ipynb — Python 3</span>
+      </div>
+      <div class="cover-terminal-body">
+        <div><span class="prompt">&gt;&gt;&gt;</span> <span class="kw">import</span> <span class="bi">pandas</span> <span class="kw">as</span> <span class="bi">pd</span></div>
+        <div><span class="prompt">&gt;&gt;&gt;</span> <span class="kw">import</span> <span class="bi">numpy</span> <span class="kw">as</span> <span class="bi">np</span></div>
+        <div><span class="prompt">&gt;&gt;&gt;</span> <span class="cm"># Selamat datang di sesi praktik 2–3 jam</span></div>
+        <div><span class="prompt">&gt;&gt;&gt;</span> <span class="bi">pd</span>.<span style="color:#8250df">__version__</span><span class="cursor"></span></div>
+      </div>
+    </div>
+  </div>
+  <div class="cover-meta">
+    <div class="cover-meta-left">
+      <b>Hands-On Session 3</b> · NusaShop Dataset · 2026<br>
+      Transaksi e-commerce (simulasi, 500 baris × 10 kolom)
+    </div>
+    <div class="cover-meta-right">
+      Berbasis<br>
+      <span class="src">github.com/Muhammad-Ikhwan-Fathulloh/<br>Artificial-Intelegent-Course-Bank</span>
+    </div>
+  </div>
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>01</b> / 31</div>
+  <div class="progress-track"><div class="progress-fill" style="width:3.2%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 2 — TOC ============================ -->
+<section class="slide" data-slide="2">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>02</b> / 31</div>
+  <div class="slide-eyebrow">DAFTAR ISI</div>
+  <h1 class="slide-title">Daftar <span class="accent">Langkah</span></h1>
+  <p class="slide-subtitle">15 langkah berurutan + latihan mandiri. Setiap langkah membangun di atas langkah sebelumnya.</p>
+  <div class="toc-grid">
+    <div class="toc-cell"><div class="toc-num">0</div><div class="toc-label">Persiapan</div></div>
+    <div class="toc-cell"><div class="toc-num">1</div><div class="toc-label">Membuat Dataset</div></div>
+    <div class="toc-cell"><div class="toc-num">2</div><div class="toc-label">Inspeksi Data</div></div>
+    <div class="toc-cell"><div class="toc-num">3</div><div class="toc-label">Seleksi Data</div></div>
+    <div class="toc-cell"><div class="toc-num">4</div><div class="toc-label">Manipulasi Kolom</div></div>
+    <div class="toc-cell"><div class="toc-num">5</div><div class="toc-label">Groupby &amp; Agregasi</div></div>
+    <div class="toc-cell"><div class="toc-num">6</div><div class="toc-label">Merge &amp; Pivot</div></div>
+    <div class="toc-cell"><div class="toc-num">7</div><div class="toc-label">String</div></div>
+    <div class="toc-cell"><div class="toc-num">8</div><div class="toc-label">Datetime</div></div>
+    <div class="toc-cell"><div class="toc-num">9</div><div class="toc-label">Binning</div></div>
+    <div class="toc-cell"><div class="toc-num">10</div><div class="toc-label">Encoding</div></div>
+    <div class="toc-cell"><div class="toc-num">11</div><div class="toc-label">Scaling</div></div>
+    <div class="toc-cell"><div class="toc-num">12</div><div class="toc-label">Feature Extraction</div></div>
+    <div class="toc-cell"><div class="toc-num">13</div><div class="toc-label">Korelasi</div></div>
+    <div class="toc-cell"><div class="toc-num">14</div><div class="toc-label">Pipeline</div></div>
+    <div class="toc-cell toc-exercise"><div class="toc-num">★</div><div class="toc-label">Latihan Mandiri</div></div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>02 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:6.5%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 3 — INFORMASI UMUM ============================ -->
+<section class="slide" data-slide="3">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>03</b> / 31</div>
+  <div class="slide-eyebrow">PENGANTAR</div>
+  <h1 class="slide-title">Informasi <span class="accent">Umum</span></h1>
+  <p class="slide-subtitle">Apa yang akan Anda kerjakan dalam sesi 2–3 jam ke depan.</p>
+  <div class="cards-3">
+    <div class="info-card">
+      <div class="info-card-icon">[ dataset ]</div>
+      <div class="info-card-label">DATASET</div>
+      <div class="info-card-value">Transaksi e-commerce NusaShop</div>
+      <div class="info-card-sub">Simulasi · 500 baris × 10 kolom. Dataset sengaja dibuat "kotor" untuk praktik cleaning.</div>
+    </div>
+    <div class="info-card cyan">
+      <div class="info-card-icon">[ waktu ]</div>
+      <div class="info-card-label">ESTIMASI WAKTU</div>
+      <div class="info-card-value">2 – 3 jam</div>
+      <div class="info-card-sub">Termasuk menjalankan kode, mencocokkan output, dan mengerjakan bagian Coba Sendiri.</div>
+    </div>
+    <div class="info-card yellow">
+      <div class="info-card-icon">[ syarat ]</div>
+      <div class="info-card-label">PRASYARAT</div>
+      <div class="info-card-value">Python dasar</div>
+      <div class="info-card-sub">Serta dasar <code>pandas</code> dan <code>numpy</code>. Pernah membaca DataFrame dan Series.</div>
+    </div>
+  </div>
+  <div class="callout callout-yellow mt-l">
+    <div class="callout-title"><span class="dot"></span>Catatan Penting</div>
+    <div class="callout-body">Jalankan sel secara berurutan. Banyak langkah memakai kolom yang dibuat pada langkah sebelumnya — jika melompat, akan muncul <code>KeyError</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>03 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:9.7%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 4 — LANGKAH 0 ============================ -->
+<section class="slide" data-slide="4">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>04</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 0</div>
+  <h1 class="slide-title">Persiapan</h1>
+  <p class="slide-subtitle">Pasang library yang dibutuhkan, lalu import semuanya di satu sel.</p>
+  <div class="row two">
+    <div class="col">
+      <h3>Install (terminal)</h3>
+      <div class="code-block">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">bash · terminal</span><span class="copy">COPY</span></div>
+<pre><code class="language-bash">pip install pandas numpy matplotlib \
+            seaborn scikit-learn</code></pre>
+      </div>
+    </div>
+    <div class="col">
+      <h3>Import (notebook)</h3>
+      <div class="code-block">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah0.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">import pandas as pd
+import numpy as np
+import matplotlib.pyplot as plt
+import seaborn as sns
+import warnings
+warnings.filterwarnings('ignore')
+
+plt.rcParams['figure.figsize'] = (10, 5)
+plt.rcParams['font.size'] = 11
+
+print('Library berhasil diimport')</code></pre>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-green mt-m">
+    <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+    <div class="callout-body">Library berhasil diimport</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>04 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:12.9%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 5 — LANGKAH 1 (KONSEP) ============================ -->
+<section class="slide" data-slide="5">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>05</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 1 · KONSEP</div>
+  <h1 class="slide-title">Membuat <span class="accent">Dataset</span></h1>
+  <p class="slide-subtitle">Dataset sengaja dibuat "kotor": nama kota tidak konsisten, tanggal masih berupa string, dan ada rating kosong.</p>
+  <table class="tbl">
+    <thead><tr><th style="width:22%">Kolom</th><th style="width:18%">Tipe</th><th>Deskripsi</th></tr></thead>
+    <tbody>
+      <tr><td><code>order_id</code></td><td>string</td><td>ID transaksi, format <code>ORD-XXXX</code></td></tr>
+      <tr><td><code>user_id</code></td><td>string</td><td>ID pengguna, format <code>USR-XXX</code></td></tr>
+      <tr><td><code>nama_produk</code></td><td>string</td><td>Nama + kode produk, mis. <code>Lipstik-PRD014</code></td></tr>
+      <tr><td><code>kategori</code></td><td>string</td><td>Elektronik, Fashion, Makanan, Kecantikan, Olahraga</td></tr>
+      <tr><td><code>harga</code></td><td>float</td><td>Harga satuan dalam Rupiah</td></tr>
+      <tr><td><code>qty</code></td><td>int</td><td>Jumlah unit yang dibeli</td></tr>
+      <tr><td><code>kota</code></td><td>string</td><td>Kota pembeli — sengaja kotor (case &amp; spasi)</td></tr>
+      <tr><td><code>tanggal_order</code></td><td>string</td><td>Tanggal transaksi, format <code>YYYY-MM-DD</code></td></tr>
+      <tr><td><code>status</code></td><td>string</td><td>Selesai, Dikirim, Diproses, Dibatalkan</td></tr>
+      <tr><td><code>rating</code></td><td>float</td><td>Rating 1–5 — terdapat ~24 nilai kosong</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>05 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:16.1%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 6 — LANGKAH 1 (KODE) ============================ -->
+<section class="slide" data-slide="6">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>06</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 1 · KODE</div>
+  <h1 class="slide-title">Kode Pembuatan <span class="accent">Dataset</span></h1>
+  <div class="code-block compact mt-s">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah1.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">np.random.seed(42)
+n = 500
+kategori_list = ['Elektronik', 'Fashion', 'Makanan', 'Kecantikan', 'Olahraga']
+kota_kotor    = ['Jakarta', 'jakarta', ' Bandung', 'Bandung ', 'Surabaya',
+                 'SURABAYA', 'Medan', 'medan', 'Yogyakarta', 'yogyakarta']
+status_list   = ['Selesai', 'Dikirim', 'Diproses', 'Dibatalkan']
+
+df = pd.DataFrame({
+    'order_id':      [f'ORD-{str(i+1).zfill(4)}' for i in range(n)],
+    'user_id':       [f'USR-{str(np.random.randint(1, 100)).zfill(3)}' for _ in range(n)],
+    'nama_produk':   [f'{np.random.choice(["Lipstik","Baju","Roti","Shampo","Bola",
+                                              "Laptop","Smartphone","Sepatu","Buku","Sabun"])}-PRD{str(i).zfill(3)}'
+                      for i in range(n)],
+    'kategori':      np.random.choice(kategori_list, n),
+    'harga':         np.random.uniform(10_000, 5_000_000, n).round(0),
+    'qty':           np.random.randint(1, 6, n),
+    'kota':          np.random.choice(kota_kotor, n),
+    'tanggal_order': pd.date_range('2024-01-01', periods=n, freq='3h').astype(str),
+    'status':        np.random.choice(status_list, n, p=[0.57, 0.23, 0.12, 0.08]),
+    'rating':        np.where(np.random.rand(n) > 0.048, np.random.randint(1, 6, n), np.nan),
+})
+df_diskon = pd.DataFrame({
+    'kategori':     kategori_list,
+    'batas_min_qty':[3, 2, 5, 2, 4],
+    'persen_diskon':[0.10, 0.15, 0.05, 0.12, 0.08],
+})
+
+print(f'Dataset: {df.shape[0]} baris x {df.shape[1]} kolom')
+df.head(8)</code></pre>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+    <div class="callout-body">Dataset: 500 baris x 10 kolom. Baris pertama berisi <code>ORD-0001</code>, <code>USR-016</code>, <code>Lipstik-PRD014</code>, <code>Kecantikan</code>, dan harga <code>373000.0</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>06 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:19.4%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 7 — LANGKAH 2 ============================ -->
+<section class="slide" data-slide="7">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>07</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 2</div>
+  <h1 class="slide-title">Inspeksi <span class="accent">Data</span></h1>
+  <div class="row uneven-1-1">
+    <div class="col">
+      <div class="code-block">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah2.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df.info()
+df.describe(include='all')</code></pre>
+      </div>
+    </div>
+    <div class="col">
+      <table class="tbl">
+        <thead><tr><th>Temuan</th><th>Masalah</th></tr></thead>
+        <tbody>
+          <tr><td><code>rating</code> hanya 476 non-null</td><td>Ada 24 nilai kosong (missing value)</td></tr>
+          <tr><td><code>tanggal_order</code> bertipe <code>object</code></td><td>Belum bertipe datetime</td></tr>
+          <tr><td><code>kota</code> memiliki 10 nilai unik</td><td>Seharusnya hanya 5 kota</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="callout callout-green mt-m">
+    <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+    <div class="callout-body">Tampilkan jumlah missing value per kolom dengan <code>df.isnull().sum()</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>07 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:22.6%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 8 — LANGKAH 3.1 ============================ -->
+<section class="slide" data-slide="8">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>08</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 3.1</div>
+  <h1 class="slide-title"><span class="accent">loc</span> dan <span class="accent">iloc</span></h1>
+  <p class="slide-subtitle">Dua accessor dasar untuk seleksi baris dan kolom di Pandas.</p>
+  <table class="tbl">
+    <thead><tr><th style="width:20%"></th><th>loc</th><th>iloc</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Dasar</strong></td><td>Label</td><td>Posisi integer</td></tr>
+      <tr><td><strong>Batas akhir slice</strong></td><td>Inklusif</td><td>Eksklusif</td></tr>
+      <tr><td><strong>Indeks kolom</strong></td><td>Nama kolom</td><td>Urutan integer</td></tr>
+    </tbody>
+  </table>
+  <div class="row two mt-m">
+    <div class="code-block">
+      <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah3.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">print(df.loc[0:4, 'nama_produk':'qty'])
+print(df.iloc[10:15, 0:4])</code></pre>
+    </div>
+    <div class="callout callout-green">
+      <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+      <div class="callout-body"><code>loc</code> menampilkan 5 baris (index 0–4), <code>iloc</code> menampilkan 5 baris (index 10–14) dengan 4 kolom pertama.</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>08 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:25.8%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 9 — LANGKAH 3.2 ============================ -->
+<section class="slide" data-slide="9">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>09</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 3.2</div>
+  <h1 class="slide-title">Boolean <span class="accent">Filtering</span></h1>
+  <div class="callout callout-yellow mb-m">
+    <div class="callout-title"><span class="dot"></span>Tip</div>
+    <div class="callout-body">Gunakan <code>&amp;</code> (AND), <code>|</code> (OR), dan <code>~</code> (NOT). Selalu beri tanda kurung pada setiap kondisi.</div>
+  </div>
+  <div class="row two">
+    <div class="code-block compact">
+      <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah3.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python"># Elektronik dengan harga > 1 juta
+mahal = df[(df['kategori'] == 'Elektronik') &amp;
+           (df['harga'] > 1_000_000)]
+print(f'Elektronik > 1 juta: {len(mahal)}')
+
+# Order Selesai atau Dikirim
+aktif = df[df['status'].isin(['Selesai', 'Dikirim'])]
+print(f'Order aktif: {len(aktif)}')
+
+# Rating di bawah 3
+buruk = df[df['rating'] < 3]
+print(f'Rating < 3: {len(buruk)}')</code></pre>
+    </div>
+    <div class="col">
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+        <div class="callout-body" style="font-family:var(--font-mono);font-size:13px;line-height:1.7">
+          Elektronik &gt; 1 juta: <b style="color:var(--accent-orange)">104</b><br>
+          Order aktif: <b style="color:var(--accent-orange)">401</b><br>
+          Rating &lt; 3: <b style="color:var(--accent-orange)">56</b>
+        </div>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+        <div class="callout-body">Tampilkan order berstatus <code>Dibatalkan</code> dengan <code>qty</code> ≥ 4.</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>09 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:29.0%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 10 — LANGKAH 4.1 ============================ -->
+<section class="slide" data-slide="10">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>10</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 4.1</div>
+  <h1 class="slide-title">Menambah <span class="accent">Kolom</span></h1>
+  <p class="slide-subtitle">Operasi vektor antar kolom — jauh lebih cepat daripada loop <code>for</code>.</p>
+  <div class="row two">
+    <div class="code-block">
+      <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah4.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['total_harga'] = df['harga'] * df['qty']
+df['ppn']         = df['total_harga'] * 0.11
+df['harga_final'] = df['total_harga'] + df['ppn']
+
+df[['harga', 'qty', 'total_harga',
+    'ppn', 'harga_final']].head()</code></pre>
+    </div>
+    <div class="col">
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+        <div class="callout-body">Baris 0 memiliki <code>total_harga = 1492000.0</code>, <code>ppn = 164120.0</code>, dan <code>harga_final = 1656120.0</code>.</div>
+      </div>
+      <table class="tbl">
+        <thead><tr><th>Kolom baru</th><th>Rumus</th></tr></thead>
+        <tbody>
+          <tr><td><code>total_harga</code></td><td>harga × qty</td></tr>
+          <tr><td><code>ppn</code></td><td>total_harga × 0.11</td></tr>
+          <tr><td><code>harga_final</code></td><td>total_harga + ppn</td></tr>
+        </tbody>
+      </table>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>10 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:32.3%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 11 — LANGKAH 4.2 & 4.3 ============================ -->
+<section class="slide" data-slide="11">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>11</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 4.2 &amp; 4.3</div>
+  <h1 class="slide-title">Sorting &amp; <span class="accent">apply</span></h1>
+  <div class="row two">
+    <div class="col">
+      <h3>4.2 — Sorting</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah4.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df.sort_values('total_harga',
+               ascending=False)[
+    ['order_id', 'nama_produk',
+     'harga', 'qty', 'total_harga']
+].head()</code></pre>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output</div>
+        <div class="callout-body">Transaksi terbesar adalah <code>ORD-0024</code> (<code>Smartphone-PRD002</code>) senilai <code>39340000.0</code>.</div>
+      </div>
+    </div>
+    <div class="col">
+      <h3>4.3 — apply</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah4.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">def label_transaksi(total):
+    if total >= 1_000_000:
+        return 'Besar'
+    elif total >= 200_000:
+        return 'Sedang'
+    else:
+        return 'Kecil'
+
+df['label_transaksi'] = df['total_harga'].apply(label_transaksi)
+print(df['label_transaksi'].value_counts())</code></pre>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output</div>
+        <div class="callout-body" style="font-family:var(--font-mono);font-size:13px">Besar <b style="color:var(--accent-orange)">252</b> · Sedang <b style="color:var(--accent-orange)">185</b> · Kecil <b style="color:var(--accent-orange)">63</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="row two mt-s">
+    <div class="callout callout-yellow">
+      <div class="callout-title"><span class="dot"></span>Tip</div>
+      <div class="callout-body">Hindari loop <code>for</code> manual pada DataFrame; gunakan <code>apply</code>.</div>
+    </div>
+    <div class="callout callout-green">
+      <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+      <div class="callout-body">Buat kolom <code>is_mahal</code> (True jika <code>harga</code> &gt; 1 juta) menggunakan <code>apply(lambda ...)</code>.</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>11 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:35.5%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 12 — LANGKAH 5.1 ============================ -->
+<section class="slide" data-slide="12">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>12</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 5</div>
+  <h1 class="slide-title">Groupby &amp; <span class="accent">Agregasi</span></h1>
+  <p class="slide-subtitle">Pola klasik: <em>Split → Apply → Combine</em>.</p>
+  <div class="diagram-sac">
+    <div class="sac-box">
+      <div class="sac-label">1. Split</div>
+      <div class="sac-name">groupBy('kategori')</div>
+      <div class="sac-sub">Pisahkan DataFrame per kategori</div>
+    </div>
+    <div class="sac-arrow">→</div>
+    <div class="sac-box">
+      <div class="sac-label">2. Apply</div>
+      <div class="sac-name">.agg(sum, mean, count)</div>
+      <div class="sac-sub">Hitung agregasi per grup</div>
+    </div>
+    <div class="sac-arrow">→</div>
+    <div class="sac-box">
+      <div class="sac-label">3. Combine</div>
+      <div class="sac-name">DataFrame baru</div>
+      <div class="sac-sub">Satu baris hasil per kategori</div>
+    </div>
+  </div>
+  <div class="code-block compact mt-m">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah5.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">penjualan_kategori = df.groupby('kategori').agg(
+    total_revenue = ('total_harga', 'sum'),
+    rata_harga    = ('harga',       'mean'),
+    jumlah_order  = ('order_id',    'count'),
+    rata_rating   = ('rating',      'mean'),
+).round(0)
+print(penjualan_kategori.sort_values('total_revenue', ascending=False))</code></pre>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+    <div class="callout-body">Elektronik teratas (sekitar 1,34 miliar), Makanan terendah (sekitar 23 juta).</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>12 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:38.7%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 13 — LANGKAH 5.2 & 5.3 ============================ -->
+<section class="slide" data-slide="13">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>13</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 5.2 &amp; 5.3</div>
+  <h1 class="slide-title">Visualisasi &amp; Statistik <span class="accent">per User</span></h1>
+  <div class="row two">
+    <div class="col">
+      <h3>5.2 — Visualisasi</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah5.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">ax = penjualan_kategori['total_revenue'] \
+        .sort_values().plot(
+    kind='barh', color='#FF4500',
+    edgecolor='white')
+
+ax.set_title('Total Revenue per Kategori',
+             fontsize=14, fontweight='bold')
+
+for bar in ax.patches:
+    ax.text(bar.get_width() + 1e6,
+            bar.get_y() + bar.get_height()/2,
+            f'Rp {bar.get_width()/1e6:.0f}jt',
+            va='center', fontsize=10)
+
+plt.tight_layout()
+plt.show()</code></pre>
+      </div>
+    </div>
+    <div class="col">
+      <h3>5.3 — Per User</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah5.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">user_stats = df.groupby('user_id').agg(
+    total_belanja = ('total_harga', 'sum'),
+    jumlah_order  = ('order_id',    'count'),
+    avg_order     = ('total_harga', 'mean'),
+    rata_rating   = ('rating',      'mean'),
+).round(0)
+user_stats.sort_values(
+    'total_belanja', ascending=False).head()</code></pre>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output</div>
+        <div class="callout-body">98 user unik; teratas <code>USR-058</code> dengan total sekitar 62,8 juta.</div>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+    <div class="callout-body">Hitung total revenue per <code>status</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>13 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:41.9%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 14 — LANGKAH 6.1 ============================ -->
+<section class="slide" data-slide="14">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>14</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 6.1</div>
+  <h1 class="slide-title">Merge dengan Tabel <span class="accent">Diskon</span></h1>
+  <div class="callout callout-cyan mb-m">
+    <div class="callout-title"><span class="dot"></span>Note</div>
+    <div class="callout-body"><code>how='left'</code> mempertahankan semua baris transaksi.</div>
+  </div>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah6.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df_merged = pd.merge(df, df_diskon, on='kategori', how='left')
+
+df_merged['dapat_diskon']      = df_merged['qty'] >= df_merged['batas_min_qty']
+df_merged['nilai_diskon']      = np.where(
+    df_merged['dapat_diskon'],
+    df_merged['total_harga'] * df_merged['persen_diskon'],
+    0
+)
+df_merged['harga_setelah_diskon'] = df_merged['harga_final'] - df_merged['nilai_diskon']
+
+df_merged[['order_id', 'kategori', 'total_harga', 'persen_diskon',
+           'dapat_diskon', 'nilai_diskon', 'harga_setelah_diskon']].head(6)</code></pre>
+  </div>
+  <div class="callout callout-red mt-s">
+    <div class="callout-title"><span class="dot"></span>Checkpoint</div>
+    <div class="callout-body">Jumlah baris harus tetap 500. Jika bertambah, ada kunci duplikat pada tabel diskon.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>14 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:45.2%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 15 — LANGKAH 6.2 ============================ -->
+<section class="slide" data-slide="15">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>15</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 6.2</div>
+  <h1 class="slide-title">Pivot <span class="accent">Table</span></h1>
+  <p class="slide-subtitle">Reshape data: kategori × status, dengan revenue sebagai nilai.</p>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah6.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">pivot = pd.pivot_table(
+    df, values='total_harga',
+    index='kategori', columns='status',
+    aggfunc='sum', fill_value=0
+).round(0)
+
+plt.figure(figsize=(10, 4))
+sns.heatmap(pivot/1e6, annot=True, fmt='.0f', cmap='Oranges',
+            linewidths=0.5, cbar_kws={'label': 'Revenue (juta Rp)'})
+plt.title('Heatmap Revenue per Kategori x Status (juta Rp)',
+          fontweight='bold')
+plt.show()</code></pre>
+  </div>
+  <div class="callout callout-green mt-m">
+    <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+    <div class="callout-body">Buat pivot rata-rata <code>rating</code> per <code>kategori</code> × <code>status</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>15 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:48.4%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 16 — LANGKAH 7.1 & 7.2 ============================ -->
+<section class="slide" data-slide="16">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>16</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 7.1 &amp; 7.2</div>
+  <h1 class="slide-title">String: Temukan &amp; <span class="accent">Bersihkan</span></h1>
+  <div class="row two">
+    <div class="col">
+      <h3>7.1 — Temukan Masalah</h3>
+      <div class="code-block">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah7.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">print(sorted(df['kota'].unique()))
+print(f"Jumlah nilai unik: {df['kota'].nunique()}")</code></pre>
+      </div>
+      <div class="callout callout-red">
+        <div class="callout-title"><span class="dot"></span>Output</div>
+        <div class="callout-body">10 nilai unik, termasuk <code>' Bandung'</code>, <code>'Bandung '</code>, <code>'SURABAYA'</code>, dan <code>'medan'</code>.</div>
+      </div>
+    </div>
+    <div class="col">
+      <h3>7.2 — Bersihkan</h3>
+      <div class="code-block">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah7.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['kota_bersih'] = (
+    df['kota'].str.strip().str.title()
+)
+print(sorted(df['kota_bersih'].unique()))</code></pre>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output</div>
+        <div class="callout-body" style="font-family:var(--font-mono);font-size:13px">['Bandung', 'Jakarta', 'Medan', 'Surabaya', 'Yogyakarta']</div>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>16 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:51.6%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 17 — LANGKAH 7.3 & 7.4 ============================ -->
+<section class="slide" data-slide="17">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>17</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 7.3 &amp; 7.4</div>
+  <h1 class="slide-title">Regex &amp; <span class="accent">Pencarian</span></h1>
+  <div class="row two">
+    <div class="col">
+      <h3>7.3 — Extract &amp; Replace</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah7.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['kode_produk'] = (
+    df['nama_produk'].str.extract(r'(PRD\d+)')
+)
+df['nama_bersih'] = (
+    df['nama_produk'].str.replace(
+        r'-PRD\d+', '', regex=True)
+)
+df[['nama_produk', 'nama_bersih',
+    'kode_produk']].head(6)</code></pre>
+      </div>
+    </div>
+    <div class="col">
+      <h3>7.4 — Pencarian Kata</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah7.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['is_elektronik_premium'] = df['nama_bersih'].str.contains(
+    'Laptop|Smartphone|Tablet', case=False
+)
+print(df['is_elektronik_premium'].value_counts())</code></pre>
+      </div>
+      <div class="callout callout-green">
+        <div class="callout-title"><span class="dot"></span>Output</div>
+        <div class="callout-body" style="font-family:var(--font-mono);font-size:13px">False <b style="color:var(--accent-orange)">416</b> · True <b style="color:var(--accent-orange)">84</b></div>
+      </div>
+    </div>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+    <div class="callout-body">Buat kolom <code>nama_huruf_besar</code> berisi <code>nama_bersih</code> dalam huruf kapital (<code>.str.upper()</code>).</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>17 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:54.8%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 18 — LANGKAH 8.1 & 8.2 ============================ -->
+<section class="slide" data-slide="18">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>18</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 8.1 &amp; 8.2</div>
+  <h1 class="slide-title">Datetime — Konversi &amp; <span class="accent">Ekstraksi</span></h1>
+  <div class="row two">
+    <div class="col">
+      <h3>8.1 — Konversi Tipe</h3>
+      <div class="code-block">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah8.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">print(df['tanggal_order'].dtype)
+# object
+
+df['tanggal_order'] = pd.to_datetime(
+    df['tanggal_order']
+)
+
+print(df['tanggal_order'].dtype)
+# datetime64[ns]</code></pre>
+      </div>
+    </div>
+    <div class="col">
+      <h3>8.2 — Ekstraksi Komponen</h3>
+      <div class="code-block compact">
+        <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah8.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['tahun']       = df['tanggal_order'].dt.year
+df['bulan']       = df['tanggal_order'].dt.month
+df['hari']        = df['tanggal_order'].dt.day
+df['nama_bulan']  = df['tanggal_order'].dt.month_name()
+df['hari_minggu'] = df['tanggal_order'].dt.day_name()
+df['kuartal']     = df['tanggal_order'].dt.quarter
+df['is_weekend']  = df['tanggal_order'].dt.dayofweek >= 5</code></pre>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>18 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:58.1%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 19 — LANGKAH 8.3 ============================ -->
+<section class="slide" data-slide="19">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>19</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 8.3</div>
+  <h1 class="slide-title">Visualisasi <span class="accent">Tren</span></h1>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah8.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">fig, axes = plt.subplots(1, 2, figsize=(14, 4))
+
+df.groupby('bulan')['order_id'].count().plot(
+    kind='bar', ax=axes[0], color='#FF4500', edgecolor='white')
+axes[0].set_title('Jumlah Order per Bulan', fontweight='bold')
+
+df.groupby('is_weekend')['total_harga'].mean().plot(
+    kind='bar', ax=axes[1], color=['#033047', '#FF4500'], edgecolor='white')
+axes[1].set_title('Rata-rata Transaksi: Weekday vs Weekend', fontweight='bold')
+axes[1].set_xticklabels(['Weekday', 'Weekend'], rotation=0)
+
+plt.tight_layout()
+plt.show()</code></pre>
+  </div>
+  <div class="callout callout-green mt-m">
+    <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+    <div class="callout-body">Hitung jumlah order per <code>hari_minggu</code>. Hari apa yang paling ramai?</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>19 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:61.3%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 20 — LANGKAH 9 ============================ -->
+<section class="slide" data-slide="20">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>20</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 9</div>
+  <h1 class="slide-title">Binning — <span class="accent">cut</span> vs <span class="accent">qcut</span></h1>
+  <div class="row two">
+    <div class="col">
+      <table class="tbl">
+        <thead><tr><th></th><th>pd.cut</th><th>pd.qcut</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Pembagian</strong></td><td>Batas manual</td><td>Kuantil</td></tr>
+          <tr><td><strong>Distribusi</strong></td><td>Tidak merata</td><td>Merata per grup</td></tr>
+          <tr><td><strong>Cocok untuk</strong></td><td>Domain bisnis</td><td>Outlier-aware</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-green">
+      <div class="callout-title"><span class="dot"></span>Output segmen_harga</div>
+      <div class="callout-body" style="font-family:var(--font-mono);font-size:13px;line-height:1.7">
+        Budget <b style="color:var(--accent-orange)">88</b><br>
+        Mid-Range <b style="color:var(--accent-orange)">212</b><br>
+        Premium <b style="color:var(--accent-orange)">110</b><br>
+        Luxury <b style="color:var(--accent-orange)">90</b>
+      </div>
+    </div>
+  </div>
+  <div class="code-block compact mt-m">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah9.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['segmen_harga'] = pd.cut(
+    df['harga'],
+    bins=[0, 100_000, 500_000, 2_000_000, float('inf')],
+    labels=['Budget', 'Mid-Range', 'Premium', 'Luxury']
+)
+df['volume_order'] = pd.cut(
+    df['qty'], bins=[0, 1, 3, 5], labels=['Eceran', 'Normal', 'Grosir']
+)
+df['periode'] = pd.cut(
+    df['bulan'], bins=[0, 3, 6, 9, 12],
+    labels=['Q1 (Jan-Mar)', 'Q2 (Apr-Jun)', 'Q3 (Jul-Sep)', 'Q4 (Okt-Des)']
+)</code></pre>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+    <div class="callout-body">Bagi <code>harga</code> menjadi 4 kelompok dengan <code>pd.qcut</code>, lalu bandingkan dengan <code>pd.cut</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>20 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:64.5%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 21 — LANGKAH 10 ============================ -->
+<section class="slide" data-slide="21">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>21</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 10</div>
+  <h1 class="slide-title">Encoding — Kategori ke <span class="accent">Numerik</span></h1>
+  <div class="row two">
+    <div class="col">
+      <table class="tbl">
+        <thead><tr><th>Jenis data</th><th>Teknik</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Ordinal</strong> (ada urutan)</td><td>Map manual / Label Encoding</td></tr>
+          <tr><td><strong>Nominal</strong> (tanpa urutan)</td><td>One-Hot Encoding</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-yellow">
+      <div class="callout-title"><span class="dot"></span>Warning</div>
+      <div class="callout-body">Dummy variable trap: saat dipakai untuk model, gunakan <code>drop_first=True</code>.</div>
+    </div>
+  </div>
+  <div class="code-block compact mt-m">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah10.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">status_order = {'Dibatalkan': 0, 'Diproses': 1, 'Dikirim': 2, 'Selesai': 3}
+df['status_enc'] = df['status'].map(status_order)
+
+ohe_kategori = pd.get_dummies(df['kategori'], prefix='kat')
+ohe_kota     = pd.get_dummies(df['kota_bersih'], prefix='kota', drop_first=True)</code></pre>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Output &amp; Coba Sendiri</div>
+    <div class="callout-body"><code>status_enc</code> bernilai 0: 38, 1: 61, 2: 114, 3: 287. Kolom kota: <code>['kota_Jakarta', 'kota_Medan', 'kota_Surabaya', 'kota_Yogyakarta']</code>.<br>Lakukan One-Hot Encoding pada <code>hari_minggu</code>.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>21 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:67.7%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 22 — LANGKAH 11 ============================ -->
+<section class="slide" data-slide="22">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>22</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 11</div>
+  <h1 class="slide-title">Scaling — <span class="accent">Normalisasi</span></h1>
+  <div class="row two">
+    <div class="col">
+      <table class="tbl">
+        <thead><tr><th></th><th>Min-Max</th><th>Standard (Z-score)</th></tr></thead>
+        <tbody>
+          <tr><td><strong>Rumus</strong></td><td>(x − min) / (max − min)</td><td>(x − μ) / σ</td></tr>
+          <tr><td><strong>Hasil</strong></td><td>Rentang 0–1</td><td>Rata-rata 0, std 1</td></tr>
+          <tr><td><strong>Sensitif outlier</strong></td><td>Ya</td><td>Kurang</td></tr>
+        </tbody>
+      </table>
+    </div>
+    <div class="callout callout-yellow">
+      <div class="callout-title"><span class="dot"></span>Warning — Data Leakage</div>
+      <div class="callout-body">Pada proyek nyata, lakukan <code>fit</code> scaler hanya pada data <strong>train</strong>, lalu <code>transform</code> pada data <strong>test</strong>.</div>
+    </div>
+  </div>
+  <div class="code-block compact mt-m">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah11.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">from sklearn.preprocessing import MinMaxScaler, StandardScaler
+
+fitur_numerik = ['harga', 'qty', 'total_harga']
+
+df_mm = pd.DataFrame(
+    MinMaxScaler().fit_transform(df[fitur_numerik]),
+    columns=[f'{c}_minmax' for c in fitur_numerik]
+)
+df_std = pd.DataFrame(
+    StandardScaler().fit_transform(df[fitur_numerik]),
+    columns=[f'{c}_zscore' for c in fitur_numerik]
+)</code></pre>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>22 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:71.0%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 23 — LANGKAH 12 ============================ -->
+<section class="slide" data-slide="23">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>23</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 12</div>
+  <h1 class="slide-title">Feature <span class="accent">Extraction</span></h1>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah12.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">df['margin_estimasi']  = (df['total_harga'] * 0.25).round(0)
+df['is_repeat_buyer']  = df.groupby('user_id')['order_id'].transform('count') > 3
+df['total_spend_user'] = df.groupby('user_id')['total_harga'].transform('sum')
+df['avg_spend_user']   = df.groupby('user_id')['total_harga'].transform('mean').round(0)
+
+df['segmen_user'] = pd.qcut(df['total_spend_user'], q=3,
+                             labels=['Bronze', 'Silver', 'Gold'])</code></pre>
+  </div>
+  <div class="callout callout-cyan mt-s">
+    <div class="callout-title"><span class="dot"></span>Note — transform vs agg</div>
+    <div class="callout-body"><code>transform</code> mengembalikan hasil agregasi dengan jumlah baris yang sama seperti data asli, sehingga bisa langsung disimpan sebagai kolom baru. Ini berbeda dengan <code>agg</code>.</div>
+  </div>
+  <div class="row two mt-s">
+    <div class="callout callout-green">
+      <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+      <div class="callout-body">Rata-rata transaksi naik dari Bronze (≈1,25 jt) → Silver (≈3,38 jt) → Gold (≈6,13 jt).</div>
+    </div>
+    <div class="callout callout-green">
+      <div class="callout-title"><span class="dot"></span>Coba Sendiri</div>
+      <div class="callout-body">Buat fitur <code>selisih_dari_rata_user</code> = <code>total_harga</code> − <code>avg_spend_user</code>.</div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>23 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:74.2%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 24 — LANGKAH 13 ============================ -->
+<section class="slide" data-slide="24">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>24</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 13</div>
+  <h1 class="slide-title">Seleksi Fitur dengan <span class="accent">Korelasi</span></h1>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah13.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">numerik_cols = ['harga', 'qty', 'total_harga', 'ppn', 'harga_final',
+                'rating', 'status_enc', 'bulan', 'is_weekend',
+                'total_spend_user', 'avg_spend_user']
+corr_matrix = df[numerik_cols].corr()
+
+korelasi_target = (corr_matrix['total_harga']
+                   .drop('total_harga').abs().sort_values(ascending=False))
+print('\nKorelasi > 0.3:', korelasi_target[korelasi_target > 0.3].index.tolist())</code></pre>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Output yang Diharapkan</div>
+    <div class="callout-body"><code>ppn</code> dan <code>harga_final</code> bernilai 1.0, <code>harga</code> ≈ 0.87, <code>avg_spend_user</code> ≈ 0.40, <code>total_spend_user</code> ≈ 0.31.</div>
+  </div>
+  <div class="callout callout-purple mt-s">
+    <div class="callout-title"><span class="dot"></span>Diskusi</div>
+    <div class="callout-body">Mengapa <code>ppn</code> dan <code>harga_final</code> berkorelasi 1.0 dengan <code>total_harga</code>? Apakah keduanya layak dipakai bersamaan sebagai fitur?</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>24 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:77.4%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 25 — LANGKAH 14 (1/2) ============================ -->
+<section class="slide" data-slide="25">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>25</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 14 · 1/2</div>
+  <h1 class="slide-title">Pipeline End-to-End <span class="accent">(1/2)</span></h1>
+  <p class="slide-subtitle">Gabungkan semua langkah menjadi satu fungsi agar konsisten dan dapat dipakai ulang pada data baru.</p>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah14.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">def fe_pipeline(df_raw):
+    df_out = df_raw.copy()
+    # 1. Type casting
+    df_out['tanggal_order'] = pd.to_datetime(df_out['tanggal_order'])
+    # 2. String cleaning
+    df_out['kota'] = df_out['kota'].str.strip().str.title()
+    # 3. Ekstraksi datetime
+    df_out['bulan']      = df_out['tanggal_order'].dt.month
+    df_out['kuartal']    = df_out['tanggal_order'].dt.quarter
+    df_out['is_weekend'] = (df_out['tanggal_order'].dt.dayofweek >= 5).astype(int)
+    # 4. Kombinasi kolom
+    df_out['total_harga']      = df_out['harga'] * df_out['qty']
+    df_out['total_spend_user'] = df_out.groupby('user_id')['total_harga'].transform('sum')
+    df_out['is_repeat_buyer']  = (df_out.groupby('user_id')['order_id'].transform('count') > 3).astype(int)</code></pre>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>25 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:80.6%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 26 — LANGKAH 14 (2/2) ============================ -->
+<section class="slide" data-slide="26">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>26</b> / 31</div>
+  <div class="slide-eyebrow">LANGKAH 14 · 2/2</div>
+  <h1 class="slide-title">Pipeline End-to-End <span class="accent">(2/2)</span></h1>
+  <div class="code-block compact">
+    <div class="code-header"><i></i><i></i><i></i><span class="filename">langkah14.ipynb</span><span class="copy">COPY</span></div>
+<pre><code class="language-python">    # 5. Binning
+    df_out['segmen_harga'] = pd.cut(
+        df_out['harga'], bins=[0, 100_000, 500_000, 2_000_000, float('inf')],
+        labels=['Budget', 'Mid-Range', 'Premium', 'Luxury'])
+    # 6. Encoding
+    df_out['status_enc'] = df_out['status'].map(
+        {'Dibatalkan': 0, 'Diproses': 1, 'Dikirim': 2, 'Selesai': 3})
+    ohe_cols   = pd.get_dummies(df_out[['kategori', 'kota']], drop_first=True).astype(int)
+    ohe_segmen = pd.get_dummies(df_out['segmen_harga'], prefix='seg', drop_first=True).astype(int)
+    df_out = pd.concat([df_out, ohe_cols, ohe_segmen], axis=1)
+    # 7. Scaling
+    scale_cols = ['harga', 'qty', 'total_harga', 'total_spend_user']
+    df_out[[f'{c}_scaled' for c in scale_cols]] = MinMaxScaler().fit_transform(df_out[scale_cols])
+    # 8. Pilih fitur akhir
+    fitur_akhir = (['harga_scaled', 'qty_scaled', 'total_harga_scaled',
+                    'total_spend_user_scaled', 'bulan', 'kuartal', 'is_weekend',
+                    'is_repeat_buyer', 'status_enc', 'rating']
+                   + list(ohe_cols.columns) + list(ohe_segmen.columns))
+    return df_out[fitur_akhir]
+
+df_ml = fe_pipeline(df)
+print(f'Shape: {df_ml.shape}')
+df_ml['rating'] = df_ml['rating'].fillna(df_ml['rating'].median())</code></pre>
+  </div>
+  <div class="callout callout-green mt-s">
+    <div class="callout-title"><span class="dot"></span>Checkpoint</div>
+    <div class="callout-body">Akhir: <code>df_ml</code> berukuran 500 × 21, semua fitur numerik, tanpa missing value.</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>26 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:83.9%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 27 — LATIHAN 1 & 2 ============================ -->
+<section class="slide" data-slide="27">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>27</b> / 31</div>
+  <div class="slide-eyebrow">LATIHAN MANDIRI</div>
+  <h1 class="slide-title">Soal <span class="accent">1 &amp; 2</span></h1>
+  <p class="slide-subtitle">Kerjakan secara mandiri. Cocokkan dengan konsep di Langkah 3–5.</p>
+  <div class="row two">
+    <div class="exercise-card">
+      <div class="ex-tag"><span class="num">1</span>Seleksi &amp; Filtering</div>
+      <h3>Tampilkan 10 produk Fashion terfilter</h3>
+      <div class="ex-body">
+        Tampilkan 10 produk <strong>Fashion</strong> dengan:
+        <ul>
+          <li>harga <strong>100.000–400.000</strong></li>
+          <li>status <strong>Selesai</strong></li>
+          <li>rating <strong>≥ 4</strong></li>
+        </ul>
+        Urutkan <code>harga</code> dari tertinggi ke terendah.
+      </div>
+    </div>
+    <div class="exercise-card">
+      <div class="ex-tag"><span class="num">2</span>Groupby &amp; Agregasi</div>
+      <h3>Statistik per <code>kota_bersih</code></h3>
+      <div class="ex-body">
+        Per <code>kota_bersih</code>, hitung:
+        <ul>
+          <li>total revenue</li>
+          <li>rata-rata rating</li>
+          <li>jumlah order</li>
+          <li>persentase order berstatus <code>Selesai</code></li>
+        </ul>
+        Urutkan dari revenue tertinggi.
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>27 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:87.1%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 28 — LATIHAN 3 & 4 ============================ -->
+<section class="slide" data-slide="28">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>28</b> / 31</div>
+  <div class="slide-eyebrow">LATIHAN MANDIRI</div>
+  <h1 class="slide-title">Soal <span class="accent">3 &amp; 4</span></h1>
+  <div class="row two">
+    <div class="exercise-card">
+      <div class="ex-tag"><span class="num">3</span>String &amp; Datetime</div>
+      <h3>Kategori waktu + pivot</h3>
+      <div class="ex-body">
+        <ol>
+          <li>Buat kolom <code>jam_kategori</code>: Senin–Jumat → <code>Weekday</code>, Sabtu–Minggu → <code>Weekend</code>.</li>
+          <li>Buat pivot table rata-rata <code>total_harga</code> per <code>kategori</code> × <code>jam_kategori</code>.</li>
+        </ol>
+      </div>
+    </div>
+    <div class="exercise-card">
+      <div class="ex-tag"><span class="num">4</span>Feature Engineering</div>
+      <h3>Empat fitur baru + scaling</h3>
+      <div class="ex-body">
+        <ol>
+          <li>Buat <code>harga_per_unit</code> = <code>harga</code> / <code>qty</code>.</li>
+          <li>Buat <code>is_high_value</code> bernilai True jika <code>total_harga</code> di atas rata-rata keseluruhan.</li>
+          <li>Lakukan One-Hot Encoding pada <code>segmen_user</code>.</li>
+          <li>Terapkan <code>StandardScaler</code> pada <code>harga</code>, <code>qty</code>, dan <code>total_harga</code>.</li>
+        </ol>
+      </div>
+    </div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>28 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:90.3%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 29 — TANTANGAN ============================ -->
+<section class="slide" data-slide="29">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>29</b> / 31</div>
+  <div class="slide-eyebrow">TANTANGAN</div>
+  <h1 class="slide-title">Analisis Korelasi <span class="accent">Fitur</span></h1>
+  <p class="slide-subtitle">Tantangan akhir — gunakan <code>df_ml</code> hasil pipeline Langkah 14.</p>
+  <div class="row four mt-m">
+    <div class="info-card">
+      <div class="info-card-icon">01</div>
+      <div class="info-card-label">LANGKAH</div>
+      <div class="info-card-value" style="font-size:14px">Hitung korelasi semua fitur terhadap <code style="font-family:var(--font-mono);font-size:13px;color:var(--accent-cyan)">total_harga_scaled</code>.</div>
+    </div>
+    <div class="info-card cyan">
+      <div class="info-card-icon">02</div>
+      <div class="info-card-label">LANGKAH</div>
+      <div class="info-card-value" style="font-size:14px">Tampilkan <b style="color:var(--accent-orange)">5 fitur</b> dengan korelasi absolut tertinggi.</div>
+    </div>
+    <div class="info-card yellow">
+      <div class="info-card-icon">03</div>
+      <div class="info-card-label">LANGKAH</div>
+      <div class="info-card-value" style="font-size:14px">Buat <b style="color:var(--accent-orange)">bar chart horizontal</b> dari kelima fitur tersebut.</div>
+    </div>
+    <div class="info-card yellow">
+      <div class="info-card-icon">04</div>
+      <div class="info-card-label">LANGKAH</div>
+      <div class="info-card-value" style="font-size:14px"><b style="color:var(--accent-orange)">Interpretasikan</b>: fitur apa yang paling berpengaruh, dan mengapa?</div>
+    </div>
+  </div>
+  <div class="callout callout-purple mt-l">
+    <div class="callout-title"><span class="dot"></span>Pertanyaan Diskusi</div>
+    <div class="callout-body">Apakah fitur dengan korelasi tertinggi selalu yang paling "berguna"? Bagaimana dengan multikolinearitas antar fitur berkorelasi tinggi satu sama lain?</div>
+  </div>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>29 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:93.5%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 30 — RANGKUMAN ============================ -->
+<section class="slide" data-slide="30">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>30</b> / 31</div>
+  <div class="slide-eyebrow">RANGKUMAN</div>
+  <h1 class="slide-title">Tabel <span class="accent">Teknik</span></h1>
+  <table class="tbl summary-table">
+    <thead><tr><th style="width:18%">Topik</th><th style="width:30%">Teknik</th><th>Fungsi Python</th></tr></thead>
+    <tbody>
+      <tr><td><strong>Seleksi</strong></td><td>loc, iloc, Boolean</td><td><code>df.loc[]</code>, <code>df.iloc[]</code>, <code>df[kondisi]</code></td></tr>
+      <tr><td><strong>Kolom</strong></td><td>Tambah, sort, custom</td><td><code>df['baru']=</code>, <code>.sort_values()</code>, <code>.apply()</code></td></tr>
+      <tr><td><strong>Agregasi</strong></td><td>Split-Apply-Combine</td><td><code>.groupby().agg()</code></td></tr>
+      <tr><td><strong>Gabung &amp; reshape</strong></td><td>Join, pivot</td><td><code>pd.merge()</code>, <code>pd.pivot_table()</code></td></tr>
+      <tr><td><strong>String</strong></td><td>Cleaning, regex</td><td><code>.str.strip()</code>, <code>.str.extract()</code>, <code>.str.contains()</code></td></tr>
+      <tr><td><strong>Datetime</strong></td><td>Komponen waktu</td><td><code>.dt.year</code>, <code>.dt.month</code>, <code>.dt.dayofweek</code></td></tr>
+      <tr><td><strong>Binning</strong></td><td>Numerik → kategori</td><td><code>pd.cut()</code>, <code>pd.qcut()</code></td></tr>
+      <tr><td><strong>Encoding</strong></td><td>Kategori → numerik</td><td><code>.map()</code>, <code>pd.get_dummies()</code></td></tr>
+      <tr><td><strong>Scaling</strong></td><td>Normalisasi</td><td><code>MinMaxScaler</code>, <code>StandardScaler</code></td></tr>
+      <tr><td><strong>Extraction</strong></td><td>Fitur baru</td><td><code>.transform()</code>, kombinasi kolom</td></tr>
+    </tbody>
+  </table>
+  <div class="slide-footer"><span>Praktik Pandas · Hands-On Session 3</span><span>30 / 31</span></div>
+  <div class="progress-track"><div class="progress-fill" style="width:96.8%"></div></div>
+</section>
+
+<!-- ============================ SLIDE 31 — PENUTUP ============================ -->
+<section class="slide" data-slide="31">
+  <div class="slide-tag">L3 · PANDAS</div>
+  <div class="slide-num"><b>31</b> / 31</div>
+  <div class="slide-eyebrow">PENUTUP</div>
+  <h1 class="slide-title">Poin <span class="accent">Penting</span></h1>
+  <p class="slide-subtitle">Empat prinsip yang harus diingat setelah sesi ini.</p>
+  <div class="closing-cards">
+    <div class="closing-card">
+      <div class="cc-num">1</div>
+      <div class="cc-body"><b>Bersihkan data terlebih dahulu.</b> String yang tidak konsisten dan tipe data yang salah adalah sumber error nomor satu.</div>
+    </div>
+    <div class="closing-card">
+      <div class="cc-num">2</div>
+      <div class="cc-body"><b>Fit scaler hanya pada data train</b> untuk menghindari data leakage. Gunakan <code>fit_transform</code> di train, <code>transform</code> di test.</div>
+    </div>
+    <div class="closing-card">
+      <div class="cc-num">3</div>
+      <div class="cc-body">Gunakan <b><code>drop_first=True</code></b> pada One-Hot Encoding untuk menghindari dummy variable trap pada model linear.</div>
+    </div>
+    <div class="closing-card">
+      <div class="cc-num">4</div>
+      <div class="cc-body">Gunakan <b><code>transform()</code></b> alih-alih <code>agg()</code> saat ingin menambah kolom agregasi ke DataFrame asli.</div>
+    </div>
+  </div>
+  <div class="closing-footer">
+    <span>Selamat mencoba · <b>Hands-On Session 3</b></span>
+    <span>Berbasis repository Muhammad-Ikhwan-Fathulloh</span>
+  </div>
+  <div class="progress-track"><div class="progress-fill" style="width:100%"></div></div>
+</section>
+
+</div>
+
+<div class="nav-help" id="navHelp">
+  <span><kbd>←</kbd><kbd>→</kbd> navigasi</span>
+  <span><kbd>Space</kbd> maju</span>
+  <span><kbd>F</kbd> fullscreen</span>
+  <span><kbd>O</kbd> overview</span>
+</div>
+
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/prism-core.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/plugins/autoloader/prism-autoloader.min.js"></script>
+<script>
+(function(){
+  const deck = document.getElementById('deck');
+  const slides = Array.from(document.querySelectorAll('.slide'));
+  const total = slides.length;
+  let current = 0;
+  let overviewMode = false;
+
+  // ---- Hash sync ----
+  function getHashIndex(){
+    const m = location.hash.match(/slide(\d+)/);
+    if(m){ const i = parseInt(m[1],10)-1; if(i>=0 && i<total) return i; }
+    return 0;
+  }
+  function setHash(i){
+    history.replaceState(null,'', '#slide'+(i+1));
+  }
+
+  function show(i, push){
+    if(i<0) i=0; if(i>=total) i=total-1;
+    slides.forEach((s,idx)=>{
+      s.classList.remove('active','prev');
+      if(idx===i) s.classList.add('active');
+      else if(idx<i) s.classList.add('prev');
+    });
+    current = i;
+    setHash(i);
+  }
+
+  function next(){ if(current<total-1) show(current+1); }
+  function prev(){ if(current>0) show(current-1); }
+
+  // ---- Overview ----
+  function toggleOverview(force){
+    overviewMode = (force!==undefined) ? force : !overviewMode;
+    if(overviewMode){
+      deck.classList.add('overview');
+      document.body.classList.add('overview-mode');
+      // shrink + tile horizontally
+      layoutOverview();
+    } else {
+      deck.classList.remove('overview');
+      document.body.classList.remove('overview-mode');
+      deck.style.transform = 'translate(-50%,-50%) scale(' + computeScale() + ')';
+      deck.style.width = '1280px'; deck.style.height='720px';
+      deck.style.flexWrap = '';
+      deck.style.display = '';
+    }
+  }
+
+  function layoutOverview(){
+    // show all slides as a vertical scroll list, scaled small
+    const cols = 4;
+    const w = 1280, h = 720;
+    const scale = 0.22;
+    const cellW = w*scale + 24;
+    const cellH = h*scale + 24;
+    deck.style.width = (cols*cellW + 40)+'px';
+    deck.style.height = Math.ceil(total/cols)*cellH + 40 + 'px';
+    deck.style.transform = 'none';
+    deck.style.left = '0'; deck.style.top = '0';
+    deck.style.position = 'relative';
+    deck.style.display = 'flex';
+    deck.style.flexWrap = 'wrap';
+    deck.style.gap = '20px';
+    deck.style.padding = '20px';
+    deck.style.margin = '0 auto';
+    slides.forEach((s,idx)=>{
+      s.style.position = 'relative';
+      s.style.transform = 'scale('+scale+')';
+      s.style.transformOrigin = 'top left';
+      s.style.width = w+'px';
+      s.style.height = h+'px';
+      s.style.opacity = '1';
+      s.style.visibility = 'visible';
+      s.style.margin = '0';
+    });
+  }
+
+  // ---- Scaling for normal mode ----
+  function computeScale(){
+    const w = window.innerWidth;
+    const h = window.innerHeight;
+    return Math.min(w/1280, h/720) * 0.96;
+  }
+  function scaleDeck(){
+    if(overviewMode) return;
+    const s = computeScale();
+    deck.style.transform = 'translate(-50%,-50%) scale('+s+')';
+    deck.style.width = '1280px';
+    deck.style.height = '720px';
+    deck.style.position = 'absolute';
+    deck.style.left = '50%'; deck.style.top = '50%';
+    deck.style.display = '';
+    deck.style.flexWrap = '';
+    deck.style.padding = '';
+    deck.style.margin = '';
+    slides.forEach(s=>{ s.style.transform=''; s.style.position=''; s.style.width=''; s.style.height=''; s.style.opacity=''; s.style.visibility=''; s.style.margin=''; });
+  }
+
+  // ---- Keyboard ----
+  document.addEventListener('keydown', (e)=>{
+    if(e.key==='ArrowRight' || e.key==='PageDown' || (e.key===' ' && !e.shiftKey)){
+      e.preventDefault();
+      if(overviewMode){ toggleOverview(false); show(Math.min(current+1, total-1)); }
+      else next();
+    } else if(e.key==='ArrowLeft' || e.key==='PageUp' || (e.key===' ' && e.shiftKey)){
+      e.preventDefault();
+      if(overviewMode){ toggleOverview(false); show(Math.max(current-1,0)); }
+      else prev();
+    } else if(e.key==='Home'){
+      e.preventDefault(); if(overviewMode) toggleOverview(false); show(0);
+    } else if(e.key==='End'){
+      e.preventDefault(); if(overviewMode) toggleOverview(false); show(total-1);
+    } else if(e.key==='f' || e.key==='F'){
+      e.preventDefault();
+      if(!document.fullscreenElement) document.documentElement.requestFullscreen();
+      else document.exitFullscreen();
+    } else if(e.key==='o' || e.key==='O' || e.key==='Escape'){
+      e.preventDefault();
+      if(overviewMode && e.key==='Escape') toggleOverview(false);
+      else if(e.key!=='Escape') toggleOverview();
+    } else if(/^[1-9]$/.test(e.key)){
+      // jump to slide N (1-9)
+      const n = parseInt(e.key,10);
+      if(n<=total){ if(overviewMode) toggleOverview(false); show(n-1); }
+    }
+  });
+
+  // ---- Click on slide in overview ----
+  deck.addEventListener('click',(e)=>{
+    if(!overviewMode) return;
+    const slide = e.target.closest('.slide');
+    if(slide){
+      const idx = slides.indexOf(slide);
+      if(idx>=0){ toggleOverview(false); show(idx); }
+    }
+  });
+
+  // ---- Wheel scroll in overview ----
+  window.addEventListener('resize', ()=>{ if(overviewMode) layoutOverview(); else scaleDeck(); });
+
+  // ---- Init ----
+  window.addEventListener('load', ()=>{
+    // init Prism
+    if(window.Prism){
+      Prism.plugins.autoloader.languagesPath = 'https://cdnjs.cloudflare.com/ajax/libs/prism/1.29.0/components/';
+      Prism.highlightAll();
+    }
+    scaleDeck();
+    show(getHashIndex());
+  });
+
+  // run scale immediately too (in case load already fired)
+  scaleDeck();
+  show(getHashIndex());
+})();
+</script>
+</body>
+</html>
