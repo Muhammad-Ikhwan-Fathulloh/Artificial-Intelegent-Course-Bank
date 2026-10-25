@@ -1,127 +1,117 @@
-# Tugas Mandiri Pandas – Cara Pengerjaan
+# Tugas Hands-On 3: Pandas Lanjutan
 
-Lanjutan **Hands-On Session 3 (Praktik Pandas)**. Anda akan berlatih membersihkan data kotor dan merekayasa fitur pada tujuh dataset baru (A–G). Soal lengkap ada di dokumen tugas; README ini menjelaskan cara mengerjakannya.
+Tugas mandiri lanjutan dari **Hands-On Session 3** (Part 1: manipulasi data dan feature engineering, Part 2: data cleaning, time series, RFM, dan preprocessing). Pilih **satu** dari sepuluh dataset di bawah, lalu ulangi alur Part 2 pada dataset tersebut.
 
-## 1. Isi paket
+## Tujuan
 
-```
-paket_mahasiswa_tugas_pandas/
-├── README.md             <- file ini
-├── data_dictionary.md    <- penjelasan kolom tiap dataset
-└── datasets/
-    ├── A_orders.csv, A_customers.csv, A_products.csv, A_promo.csv
-    ├── B_hr_karyawan.csv
-    ├── C_sensor_iot.csv
-    ├── D_ulasan_produk.csv
-    ├── E_properti_jabodetabek.csv
-    ├── F_churn_telekomunikasi.csv
-    └── G_nilai_mahasiswa.csv
-```
+Setelah mengerjakan tugas ini, Anda mampu:
 
-Semua data bersifat sintetis (bukan data nyata atau pribadi) dan **sengaja kotor**.
+- mengaudit kualitas data (duplikat, missing value, outlier, tipe data),
+- membersihkan data dengan kode yang bisa diulang,
+- menganalisis data dengan `groupby` lanjutan, reshape, dan time series (bila ada kolom tanggal),
+- menyiapkan data untuk model tanpa data leakage (`train_test_split` + `ColumnTransformer`),
+- mendokumentasikan hasil dalam CSV bersih dan kamus data.
 
-## 2. Persiapan
+## Prasyarat
 
-Python 3.10+ dan Jupyter. Pasang library:
+- Part 1 dan Part 2 sudah dikerjakan (`Hands-On-Session3.md`, `Hands-On-Session3-Part2.md`).
+- Python 3.10+ dengan `pandas`, `numpy`, `matplotlib`, `seaborn`, `scikit-learn` (≥ 1.2).
+- Google Colab atau Jupyter Notebook.
 
 ```bash
-pip install pandas numpy matplotlib seaborn scikit-learn jupyter
+pip install pandas numpy matplotlib seaborn scikit-learn
 ```
 
-Letakkan folder `datasets/` sejajar dengan notebook Anda, lalu jalankan `jupyter notebook`.
+## Pilihan Dataset
 
-## 3. Paket pengerjaan
+Pilih **1 dari 10** studi kasus. Buka tautan, lalu unduh lewat **File → Download → CSV** dan simpan dengan nama file pada tabel.
 
-| Paket | Dataset wajib | Perkiraan waktu |
-|---|---|---|
-| Inti | A, B, F | 6–8 jam |
-| Lengkap | A sampai G | 14–18 jam |
-| Proyek akhir | Satu dataset B, E, atau F | +4 jam |
+| # | Kasus | Sektor | File | Baris | Jenis tugas | Dataset |
+| --- | --- | --- | --- | --- | --- | --- |
+| 01 | Credit Risk Prediction | Fintech | `case1_credit_risk.csv` | 2.500 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/16BvrUSi30QUc7AbzcVVuQyEiu0PZpr2BGK-ipSPQyGQ/edit?usp=sharing) |
+| 02 | Customer Churn Analysis | Telekomunikasi | `case2_customer_churn.csv` | 5.000 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1LVa38KCj7suilukuu3QuEenYDwgqsICnSwCWv4eIf3A/edit?usp=sharing) |
+| 03 | Product Recommendation | E-Commerce | `case3_ecommerce_transactions.csv` | 10.000 | Klasifikasi biner + clustering | [Buka](https://docs.google.com/spreadsheets/d/1hLVdH6LyQWzUprUonRxpQB27ech7jQ4iZbi2_ZYtZVg/edit?usp=sharing) |
+| 04 | Hospital Readmission | Healthcare | `case4_hospital_readmission.csv` | 1.500 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1hLVdH6LyQWzUprUonRxpQB27ech7jQ4iZbi2_ZYtZVg/edit?usp=sharing) |
+| 05 | Employee Attrition | HR Analytics | `case5_employee_attrition.csv` | 1.200 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1otMROchKlVchMtEOIfcbhHGyeoPbliTRm4y9wA9mel0/edit?usp=sharing) |
+| 06 | Traffic Accident Severity | Smart City | `case6_traffic_accident.csv` | 3.000 | Klasifikasi multi-kelas | [Buka](https://docs.google.com/spreadsheets/d/1zz6-KTh2kBeexOeAjFpByb-ez_z0FN1bhabecwpPbr0/edit?usp=sharing) |
+| 07 | House Price Prediction | Properti | `case7_house_price.csv` | 2.000 | Regresi | [Buka](https://docs.google.com/spreadsheets/d/1hIO4vVxjf4-K2YHq9PF9NHsY-7VUyOgqijhuntxj1Kk/edit?usp=sharing) |
+| 08 | Fraud Detection | Banking | `case8_fraud_detection.csv` | 8.000 | Klasifikasi biner (imbalanced) | [Buka](https://docs.google.com/spreadsheets/d/1uZold6CUfeMdkUjjnintOM3DHqo0OQovYPO5V1RmAN0/edit?usp=sharing) |
+| 09 | Student Performance | EdTech | `case9_student_performance.csv` | 800 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1-7RVtr_yZdilG4nurXmSjvvTyDqBLgM7TWo2kmFe-Gg/edit?usp=sharing) |
+| 10 | Sentiment Analysis UMKM | Retail | `case10_product_review.csv` | 6.000 | NLP multi-kelas | [Buka](https://docs.google.com/spreadsheets/d/1fqmF4T_j7K50HUVYb80pa2w4sRt_l7-5oxRfjAlJwIA/edit?usp=sharing) |
 
-Tanyakan kepada dosen paket mana yang berlaku untuk kelas Anda.
+Alternatif: bangkitkan dataset NusaShop baru seperti pada Part 1 dengan `np.random.seed(2026)` dan `n = 2000`.
 
-Penanda tingkat soal: **[D]** Dasar, **[M]** Menengah, **[T]** Tantangan. Kerjakan berurutan dalam satu dataset karena soal berikutnya memakai hasil soal sebelumnya.
+## Yang Dikerjakan
 
-## 4. Alur kerja per dataset
+| Tahap | Tugas | Bobot* |
+| --- | --- | --- |
+| 1. Data | Muat dataset pilihan, tampilkan `shape`, `info()`, dan `describe()` | — |
+| 2. Kualitas | Audit dengan fungsi `cek_kualitas`, lalu bersihkan: duplikat, missing value, outlier per grup, tipe data | 30% |
+| 3. Analisis | Sesuaikan dengan data: `groupby` lanjutan, tren waktu bila ada kolom tanggal, RFM bila ada pelanggan dan transaksi. Tulis **3 temuan** yang bisa ditindaklanjuti | 30% |
+| 4. Persiapan model | Split dengan `stratify` (klasifikasi), `ColumnTransformer`, tanpa leakage. Simpan CSV bersih dan kamus data | 25% |
+| 5. Kerapian | Sel berurutan, ada penjelasan singkat tiap langkah, hasil dapat direproduksi | 15% |
 
-Buat satu notebook per dataset, misalnya `A_nusashop.ipynb`, dengan enam bagian ini:
+\*Bobot adalah usulan dan dapat disesuaikan pengajar.
 
-1. **Inspeksi.** Muat data tanpa parameter tambahan, lalu jalankan `info()`, `describe(include='all')`, `isnull().sum()`, `duplicated().sum()`, dan `nunique()` untuk kolom kategori. Catat semua keanehan sebelum mengubah apa pun.
-2. **Pembersihan.** Selesaikan satu masalah per sel. Setiap selesai, buktikan hasilnya (mis. `nunique()` turun dari 40 menjadi 8).
-3. **Rekayasa fitur.** Buat kolom baru sesuai soal.
-4. **Analisis.** Agregasi, pivot, dan grafik, masing-masing dengan satu kalimat interpretasi.
-5. **Pipeline.** Rangkum langkah pembersihan dan fitur menjadi fungsi (pola Langkah 14).
-6. **Kesimpulan.** Tiga sampai lima kalimat tentang temuan dan keterbatasan.
+### Kerangka `cek_kualitas`
 
-Sel pembuka yang disarankan:
+Sesuaikan nama kolom grup dan kunci dengan dataset Anda.
 
 ```python
-import pandas as pd, numpy as np
-import matplotlib.pyplot as plt, seaborn as sns
-import warnings; warnings.filterwarnings('ignore')
+def cek_kualitas(d, kolom_num, kolom_grup, kunci):
+    """Ringkasan kualitas data: baris, duplikat, missing, dan outlier IQR per grup."""
+    g  = d.groupby(kolom_grup, observed=True)[kolom_num]
+    q1 = g.transform(lambda s: s.quantile(0.25))
+    q3 = g.transform(lambda s: s.quantile(0.75))
+    iqr = q3 - q1
+    outlier = (d[kolom_num] < q1 - 1.5 * iqr) | (d[kolom_num] > q3 + 1.5 * iqr)
+    return pd.Series({
+        'n_baris':    len(d),
+        'n_duplikat': d.duplicated(subset=kunci).sum(),
+        'n_missing':  d.isnull().sum().sum(),
+        'n_outlier':  outlier.sum(),
+    })
 
-df_raw = pd.read_csv('datasets/A_orders.csv')   # tanpa parameter tambahan dulu
-df = df_raw.copy()                              # jangan menimpa data mentah
-df.info()
+laporan = pd.DataFrame({
+    'sebelum': cek_kualitas(df_mentah, 'kolom_numerik', 'kolom_grup', 'kolom_kunci'),
+    'sesudah': cek_kualitas(df_bersih, 'kolom_numerik', 'kolom_grup', 'kolom_kunci'),
+})
+laporan
 ```
 
-## 5. Tabel keputusan (wajib)
+### Aturan Penting
 
-Pada bagian Pembersihan, buat satu sel Markdown berisi tabel ini dan isi setiap masalah yang Anda temukan:
+1. **Urutan pembersihan:** duplikat → missing value → outlier → tipe data.
+2. **Jangan menyunting data mentah secara manual.** Semua perubahan harus lewat kode.
+3. **Split dulu, baru** imputasi, scaling, dan encoding. Imputer, scaler, dan encoder hanya di-`fit` pada data train.
+4. Untuk target yang tidak seimbang (misalnya kasus 08), gunakan `stratify=y`.
+5. Kasus 10 (teks): bagian yang tidak relevan, seperti RFM atau scaling pada kolom teks, boleh dilewati dengan alasan tertulis.
 
-| Kolom | Masalah | Baris terdampak | Tindakan | Alasan |
-|---|---|---|---|---|
-| contoh: `qty` | bernilai 0 dan negatif | (isi hitungan Anda) | dihapus | tidak mungkin pada transaksi nyata |
+## Yang Dikumpulkan
 
-Banyak keputusan sah selama beralasan (menghapus, mengganti NaN, atau imputasi). Jawaban tanpa alasan tidak mendapat nilai penuh.
+```text
+tugas-hands-on-3/
+├── README.md                  # ringkasan: kasus yang dipilih, temuan, cara menjalankan
+├── notebook.ipynb             # dapat dijalankan dari atas ke bawah
+├── data/
+│   └── <nama_file>.csv        # dataset asli
+├── output/
+│   ├── data_bersih.csv        # hasil pembersihan
+│   └── kamus_data.csv         # kolom, tipe, n_missing, n_unik
+└── laporan_kualitas.csv       # tabel sebelum vs sesudah
+```
 
-## 6. Aturan penting
+## Checklist Sebelum Mengumpulkan
 
-- **Jangan menimpa data mentah.** Selalu bekerja pada `.copy()` dan simpan hasil ke file baru, mis. `A_orders_bersih.csv`.
-- **Jalankan berurutan.** Banyak sel memakai kolom dari sel sebelumnya. Sebelum mengumpulkan, pilih `Kernel > Restart & Run All` dan pastikan tidak ada error.
-- **Cegah kebocoran data.** Pada dataset B, E, dan F, lakukan `train_test_split(..., random_state=42)` lebih dulu, lalu `fit` scaler, encoder, dan nilai imputasi **hanya pada data latih**. Waspadai kolom yang baru diketahui setelah hasil terjadi.
-- **Setelah `merge`, periksa jumlah baris.** Dengan `how='left'`, jumlahnya tidak boleh bertambah.
-- **Grafik** harus berjudul, berlabel sumbu, dan diinterpretasi.
-- **Kerja mandiri.** Diskusi konsep boleh, tetapi kode dan interpretasi harus milik sendiri. Bila memakai bantuan AI atau sumber lain, sebutkan di akhir notebook.
+- [ ] Notebook berjalan dari atas ke bawah tanpa error (*Restart & Run All*).
+- [ ] Tabel kualitas sebelum vs sesudah ada dan diinterpretasikan.
+- [ ] Setiap keputusan pembersihan (buang, isi, clip) disertai alasan singkat.
+- [ ] Tidak ada data leakage pada tahap split dan preprocessing.
+- [ ] Tiga temuan ditulis dalam kalimat yang bisa ditindaklanjuti.
+- [ ] `data_bersih.csv` dan `kamus_data.csv` tersimpan.
 
-## 7. Tips debugging
+## Referensi
 
-| Gejala | Kemungkinan penyebab |
-|---|---|
-| `KeyError` | kolom dibuat di sel yang belum dijalankan, atau nama kolom salah ketik |
-| `to_datetime` gagal atau hasil aneh | format tanggal campuran; periksa `dayfirst` dan `format='mixed'` |
-| `ValueError: could not convert string to float` | masih ada `Rp`, titik ribuan, koma desimal, spasi, atau teks seperti `absen` |
-| Jumlah baris bertambah setelah `merge` | kunci duplikat pada tabel kanan |
-| `str` accessor error | kolom bertipe campuran; ubah dulu dengan `.astype(str)` atau tangani NaN |
-| Hasil `groupby` berbeda dari teman | ejaan kategori belum dinormalisasi atau duplikat belum dihapus |
-
-## 8. Pengumpulan
-
-Kumpulkan dalam satu folder atau zip bernama `NIM_Nama_TugasPandas`:
-
-- [ ] Notebook per dataset yang dikerjakan (`NIM_Nama_TugasPandas.ipynb` bila satu file)
-- [ ] File hasil bersih (`*_bersih.csv`) bila diminta
-- [ ] `pipeline.py` dan laporan 1–2 halaman (hanya untuk Proyek Akhir)
-- [ ] Notebook lolos `Restart & Run All`
-- [ ] Setiap keputusan pembersihan dijelaskan
-- [ ] Scaler dan encoder hanya di-`fit` pada data latih
-- [ ] Semua grafik berjudul, berlabel, dan diinterpretasi
-
-## 9. Penilaian (100 poin)
-
-| Komponen | Bobot |
-|---|---|
-| Inspeksi dan dokumentasi masalah | 15 |
-| Kebenaran pembersihan | 25 |
-| Kualitas rekayasa fitur | 20 |
-| Penerapan teknik materi | 15 |
-| Pipeline dan reproduksibilitas | 15 |
-| Interpretasi dan komunikasi | 10 |
-
-Pengurangan: kebocoran data (−10), notebook tidak bisa dijalankan ulang (−10), data mentah ditimpa (−5), jawaban tanpa penjelasan keputusan (−5 per dataset).
-
-## 10. Referensi cepat
-
-Rujuk kembali materi Hands-On Session 3 di Artificial-Intelegent-Course-Bank. Fungsi yang paling sering dipakai: `str.strip/lower/title/extract/replace/split`, `pd.to_datetime`, `.dt.*`, `pd.cut/qcut`, `groupby().agg/transform`, `pd.merge`, `pd.pivot_table`, `pd.melt`, `pd.get_dummies`, `MinMaxScaler`, `StandardScaler`, `resample`, `interpolate`.
-
-Selamat mengerjakan.
+- Repo materi: https://github.com/Muhammad-Ikhwan-Fathulloh/Artificial-Intelegent-Course-Bank
+- Dokumentasi pandas: https://pandas.pydata.org/docs/user_guide/index.html
+- Dokumentasi scikit-learn (ColumnTransformer): https://scikit-learn.org/stable/modules/compose.html
