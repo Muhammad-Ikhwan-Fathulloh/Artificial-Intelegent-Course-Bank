@@ -34,10 +34,13 @@ Pilih **1 dari 10** studi kasus. Buka tautan, lalu unduh lewat **File → Downlo
 | 04 | Hospital Readmission | Healthcare | `case4_hospital_readmission.csv` | 1.500 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1hLVdH6LyQWzUprUonRxpQB27ech7jQ4iZbi2_ZYtZVg/edit?usp=sharing) |
 | 05 | Employee Attrition | HR Analytics | `case5_employee_attrition.csv` | 1.200 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1otMROchKlVchMtEOIfcbhHGyeoPbliTRm4y9wA9mel0/edit?usp=sharing) |
 | 06 | Traffic Accident Severity | Smart City | `case6_traffic_accident.csv` | 3.000 | Klasifikasi multi-kelas | [Buka](https://docs.google.com/spreadsheets/d/1zz6-KTh2kBeexOeAjFpByb-ez_z0FN1bhabecwpPbr0/edit?usp=sharing) |
-| 07 | House Price Prediction | Properti | `case7_house_price.csv` | 2.000 | Regresi | [Buka](https://docs.google.com/spreadsheets/d/1hIO4vVxjf4-K2YHq9PF9NHsY-7VUyOgqijhuntxj1Kk/edit?usp=sharing) |
-| 08 | Fraud Detection | Banking | `case8_fraud_detection.csv` | 8.000 | Klasifikasi biner (imbalanced) | [Buka](https://docs.google.com/spreadsheets/d/1uZold6CUfeMdkUjjnintOM3DHqo0OQovYPO5V1RmAN0/edit?usp=sharing) |
-| 09 | Student Performance | EdTech | `case9_student_performance.csv` | 800 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1-7RVtr_yZdilG4nurXmSjvvTyDqBLgM7TWo2kmFe-Gg/edit?usp=sharing) |
-| 10 | Sentiment Analysis UMKM | Retail | `case10_product_review.csv` | 6.000 | NLP multi-kelas | [Buka](https://docs.google.com/spreadsheets/d/1fqmF4T_j7K50HUVYb80pa2w4sRt_l7-5oxRfjAlJwIA/edit?usp=sharing) |
+| 07 | Fraud Detection | Banking | `case8_fraud_detection.csv` | 8.000 | Klasifikasi biner (imbalanced) | [Buka](https://docs.google.com/spreadsheets/d/1uZold6CUfeMdkUjjnintOM3DHqo0OQovYPO5V1RmAN0/edit?usp=sharing) |
+| 08 | Student Performance | EdTech | `case9_student_performance.csv` | 800 | Klasifikasi biner | [Buka](https://docs.google.com/spreadsheets/d/1-7RVtr_yZdilG4nurXmSjvvTyDqBLgM7TWo2kmFe-Gg/edit?usp=sharing) |
+
+
+Ini sebagai contoh jangan pilih ini
+| 09 | House Price Prediction | Properti | `case7_house_price.csv` | 2.000 | Regresi | [Buka](https://docs.google.com/spreadsheets/d/1hIO4vVxjf4-K2YHq9PF9NHsY-7VUyOgqijhuntxj1Kk/edit?usp=sharing) |
+| 11 | Sentiment Analysis UMKM | Retail | `case10_product_review.csv` | 6.000 | NLP multi-kelas | [Buka](https://docs.google.com/spreadsheets/d/1fqmF4T_j7K50HUVYb80pa2w4sRt_l7-5oxRfjAlJwIA/edit?usp=sharing) |
 
 Alternatif: bangkitkan dataset NusaShop baru seperti pada Part 1 dengan `np.random.seed(2026)` dan `n = 2000`.
 
