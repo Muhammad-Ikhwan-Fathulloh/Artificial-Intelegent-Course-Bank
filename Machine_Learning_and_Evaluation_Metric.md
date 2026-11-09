@@ -656,7 +656,74 @@ label = "Lulus" if proba >= bundle["threshold"] else "Tidak Lulus"
 print(f"Prediksi: {label} (probabilitas lulus {proba:.1%})")
 ```
 
-### 6.4 Aturan agar deploy aman
+### 6.4 Deploy dengan pickle
+
+`pickle` adalah modul bawaan Python untuk menyimpan objek ke file. Cara pakainya mirip dengan joblib. Tidak perlu instal library tambahan.
+
+```python
+import pickle
+
+# Menyimpan bundle (pipeline + metadata)
+with open("models/klasifikasi_siswa.pkl", "wb") as f:
+    pickle.dump(bundle_klasifikasi, f, protocol=pickle.HIGHEST_PROTOCOL)
+
+# Memuat dan membuat prediksi
+with open("models/klasifikasi_siswa.pkl", "rb") as f:
+    bundle = pickle.load(f)
+
+proba = bundle["pipeline"].predict_proba(contoh)[0, 1]
+print(f"Probabilitas lulus {proba:.1%}")
+```
+
+Di aplikasi Streamlit, pemuatannya sama dengan joblib, hanya fungsi pemuatnya yang berbeda:
+
+```python
+@st.cache_resource
+def load_bundle(nama_file):
+    path = MODEL_DIR / nama_file
+    if not path.exists():
+        return None
+    with open(path, "rb") as f:
+        return pickle.load(f)
+```
+
+### 6.5 Joblib atau pickle: kapan dipakai
+
+Keduanya menyimpan objek Python ke file, dan `joblib.load` juga bisa membaca file yang dibuat dengan `pickle`. Perbedaannya ada pada cara penyimpanan dan kondisi penggunaan.
+
+| Aspek | Joblib | Pickle |
+| --- | --- | --- |
+| Asal | Library pihak ketiga (`pip install joblib`) | Modul bawaan Python |
+| Model sklearn yang berisi banyak array numpy | Lebih kecil dan lebih efisien, karena array ditulis secara khusus | Lebih besar |
+| Kompresi | Bawaan lewat `compress=3` | Perlu ditangani manual, misalnya dengan `gzip` |
+| Rekomendasi dokumentasi scikit-learn | Ya | Didukung, tetapi tidak disarankan sebagai pilihan utama untuk model sklearn |
+| Objek Python umum (dict, list, string) | Didukung | Didukung, dan lebih ringan dipakai |
+| Keamanan | Sama-sama tidak aman untuk file dari sumber tidak dipercaya | Sama-sama tidak aman untuk file dari sumber tidak dipercaya |
+| Kompatibilitas bahasa | Hanya Python | Hanya Python |
+
+Pada uji sederhana di lingkungan materi ini, satu Random Forest berukuran 534 KB dengan pickle dan 80 KB dengan joblib (`compress=3`). Untuk array numpy mentah berukuran besar, ukuran keduanya hampir sama.
+
+```mermaid
+flowchart TD
+    A["Model sudah dilatih"] --> B{"Isinya model sklearn<br/>atau array numpy besar?"}
+    B -->|"Ya"| C["Pakai joblib<br/>compress=3"]
+    B -->|"Tidak, hanya objek Python biasa"| D{"Ingin tanpa instal library?"}
+    D -->|"Ya"| E["Pakai pickle"]
+    D -->|"Tidak"| C
+    C --> F{"Dipakai lintas bahasa<br/>atau lingkungan lain?"}
+    E --> F
+    F -->|"Ya"| G["Ekspor ke format netral<br/>misalnya ONNX"]
+    F -->|"Tidak"| H["Simpan dan muat<br/>dengan versi library yang sama"]
+```
+
+Rekomendasi untuk materi ini:
+
+- **Gunakan joblib** untuk deploy model scikit-learn. Ini juga pilihan yang dipakai di repo Fraud Detection.
+- **Gunakan pickle** jika tidak ingin menambah dependensi, misalnya di lingkungan yang sangat dibatasi, atau untuk objek Python biasa yang tidak berisi array besar.
+- **Jangan dipakai lintas bahasa.** Jika model harus dijalankan di Java, JavaScript, atau aplikasi mobile, ekspor ke format netral seperti ONNX, lalu muat dengan runtime yang sesuai.
+- **Pilih satu format per proyek** dan tetapkan dalam dokumentasi, supaya tidak tercampur.
+
+### 6.6 Aturan agar deploy aman
 
 1. **Versi library harus sama** antara saat menyimpan dan memuat (`scikit-learn`, `numpy`, `pandas`). Simpan versinya di `requirements.txt` dengan nilai yang tepat, misalnya `scikit-learn==1.9.1`.
 2. **Input harus DataFrame dengan nama kolom yang sama.** Pipeline mengenali kolom lewat namanya, bukan urutan posisi. Jika kolom salah ketik, error akan muncul di tahap predict.
@@ -680,14 +747,14 @@ sequenceDiagram
     A-->>U: tampilkan hasil
 ```
 
-### 6.5 Struktur folder proyek
+### 6.7 Struktur folder proyek
 
 ```text
 proyek-ml/
 ├── data/
 │   └── case9_student_performance.csv
 ├── models/
-│   ├── klasifikasi_siswa.joblib
+│   ├── klasifikasi_siswa.joblib   # atau .pkl jika memakai pickle
 │   ├── regresi_housing.joblib
 │   └── segmen_grosir.joblib
 ├── latih_klasifikasi.py
