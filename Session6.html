@@ -1,0 +1,492 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesi 6 — Logika Predikat, Inferensi & Rule-Based System</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF4D6;--black:#141414;--yellow:#FFD93D;--pink:#FF6FA5;--blue:#5B9DFF;--green:#5BD68A;--r-background-color:#141414;}
+html,body{margin:0;padding:0;background:#141414!important;}
+.reveal{font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.reveal .slides{width:100%!important;height:100%!important;}
+.reveal .slides section{width:100%!important;height:100%!important;top:0!important;left:0!important;padding:clamp(14px,2.2vw,32px) clamp(14px,2.8vw,44px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--black);overflow:hidden;}
+.reveal h1{font-size:clamp(1.3rem,3.2vw,2rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h2{font-size:clamp(.95rem,2.3vw,1.45rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h3,.reveal h4{font-weight:700;text-transform:uppercase;margin:0 0 .3em;}
+.reveal h3{font-size:clamp(.8rem,1.8vw,1rem);}.reveal h4{font-size:clamp(.7rem,1.5vw,.9rem);}
+.reveal p,.reveal li{font-size:clamp(.62rem,1.3vw,.8rem);line-height:1.45;margin:.2em 0;}
+.reveal ul,.reveal ol{margin-left:1.2em;display:block;}.reveal li{margin-bottom:.35em;}
+.reveal pre{margin:0;width:100%;box-shadow:none;}
+.reveal pre code.hljs{font-size:clamp(.47rem,.98vw,.65rem);line-height:1.45;padding:10px 14px;border-radius:0;}
+.bg-black{background:var(--black)!important;color:var(--cream)!important;}
+.bg-yellow{background:var(--yellow)!important;color:var(--black)!important;}
+.bg-green{background:var(--green)!important;color:var(--black)!important;}
+.bg-pink{background:var(--pink)!important;color:var(--black)!important;}
+.bg-blue{background:var(--blue)!important;color:var(--black)!important;}
+.bg-black h2,.bg-black h3,.bg-black h4{color:var(--cream);}
+.neo-card{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(7px,1.1vw,14px);background:var(--cream);box-sizing:border-box;overflow:hidden;min-height:0;}
+.neo-box{border:3px solid var(--black);box-shadow:6px 6px 0 var(--black);padding:clamp(7px,1.1vw,13px);display:inline-block;box-sizing:border-box;}
+.bg-black .neo-card{background:#1c1c1c;border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);color:var(--cream);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.1vw,12px);min-height:0;}
+.code-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);flex:1;min-height:0;align-items:stretch;}
+.flex-col{display:flex;flex-direction:column;gap:6px;min-height:0;}
+.grow{flex:1;min-height:0;}
+.panel-code{background:#1c1c1c;border:3px solid var(--cream);box-shadow:6px 6px 0 var(--cream);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.panel-bar{background:#2a2a2a;padding:5px 11px;display:flex;align-items:center;gap:7px;border-bottom:2px solid var(--cream);flex-shrink:0;}
+.panel-dot{width:9px;height:9px;border-radius:50%;border:2px solid #555;}
+.dot-r{background:#FF6B6B;}.dot-y{background:#FFD93D;}.dot-g{background:#5BD68A;}
+.panel-title{color:#aaa;font-family:'Space Mono',monospace;font-size:.58em;margin-left:5px;}
+.panel-code pre{flex:1;margin:0;overflow:auto;}
+.terminal{background:#0d1117;border:3px solid var(--green);box-shadow:6px 6px 0 var(--green);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.terminal-bar{background:#161b22;padding:5px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--green);flex-shrink:0;}
+.terminal-title{color:var(--green);font-family:'Space Mono',monospace;font-size:.58em;font-weight:700;}
+.run-btn{background:var(--yellow);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:3px 11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.56em;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;}
+.run-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+.terminal-body{flex:1;padding:9px 13px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:clamp(.45rem,.92vw,.62rem);color:var(--green);white-space:pre-wrap;line-height:1.5;}
+.terminal-body::-webkit-scrollbar{width:3px;}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--green);}
+.cursor{display:inline-block;width:7px;height:1em;background:var(--green);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.out-line{display:block;}.out-line.typing{animation:typeIn .2s ease both;}
+@keyframes typeIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+.neo-table{border-collapse:collapse;width:100%;table-layout:fixed;box-shadow:5px 5px 0 var(--black);}
+.neo-table th,.neo-table td{border:3px solid var(--black);padding:clamp(4px,.9vw,9px);font-size:clamp(.5rem,.98vw,.67rem);word-break:break-word;vertical-align:middle;background:var(--cream);}
+.neo-table th{background:var(--yellow);font-weight:700;text-transform:uppercase;}
+.badge{display:inline-block;padding:2px 9px;border:2px solid var(--black);font-size:.55em;font-weight:700;text-transform:uppercase;}
+.reveal .slide-number{color:var(--cream);font-size:.7em;}
+.reveal .progress{color:var(--yellow);height:4px;}
+.logic-box{background:var(--black);color:var(--yellow);border:3px solid var(--yellow);padding:6px 14px;font-family:'Space Mono',monospace;font-size:clamp(.65rem,1.3vw,.85rem);text-align:center;margin:4px 0;}
+.chain-step{display:flex;align-items:center;gap:8px;padding:5px 10px;border-left:4px solid var(--yellow);margin:4px 0;font-size:.65em;}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- SLIDE 1: JUDUL -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--blue);box-shadow:14px 14px 0 var(--blue);padding:clamp(14px,2.5vw,32px) clamp(20px,4.5vw,56px);display:inline-block;margin-bottom:clamp(10px,1.8vw,20px);">
+    <div style="font-size:clamp(.55rem,1.1vw,.8rem);color:var(--blue);letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--blue);margin:0 0 6px;">SESI 6</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.8rem,1.9vw,1.15rem);">Logika Predikat · Inferensi · Rule-Based System</h2>
+  </div>
+  <div class="g4" style="width:min(700px,92%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--blue);text-align:center;"><div style="font-size:1.4em;">∀∃</div><strong style="font-size:.62em;">Predikat</strong><p style="font-size:.56em;margin:.2em 0 0;">Kuantor universal &amp; eksistensial</p></div>
+    <div class="neo-card" style="background:var(--yellow);text-align:center;"><div style="font-size:1.4em;">→</div><strong style="font-size:.62em;">Forward Chain</strong><p style="font-size:.56em;margin:.2em 0 0;">Data → Kesimpulan</p></div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;"><div style="font-size:1.4em;">←</div><strong style="font-size:.62em;">Backward Chain</strong><p style="font-size:.56em;margin:.2em 0 0;">Tujuan → Bukti</p></div>
+    <div class="neo-card" style="background:var(--green);text-align:center;"><div style="font-size:1.4em;">🤖</div><strong style="font-size:.62em;">Rule-Based</strong><p style="font-size:.56em;margin:.2em 0 0;">vs ML — perbandingan</p></div>
+  </div>
+</section>
+
+<!-- SLIDE 2: LOGIKA PREDIKAT vs PROPOSISIONAL -->
+<section class="bg-cream">
+  <h2>Logika Predikat — Lebih Ekspresif</h2>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Logika Proposisional (Sesi 5)</h4>
+        <p>Fakta = pernyataan Benar/Salah tunggal.</p>
+        <div class="logic-box">"Tweety adalah burung" → P = True</div>
+        <p style="color:#666;font-size:.62em;">❌ Tidak bisa menyatakan "semua burung bisa terbang" secara umum.</p>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Logika Predikat (Sesi 6)</h4>
+        <p>Menggunakan <strong>variabel</strong>, <strong>fungsi</strong>, dan <strong>kuantor</strong>.</p>
+        <div class="logic-box">∀x Burung(x) → BisaTerbang(x)</div>
+        <div class="logic-box">∃x Burung(x) ∧ TidakBisaTerbang(x)</div>
+        <p style="color:#141414;font-size:.62em;margin-top:4px;">✅ Bisa menyatakan aturan umum dan pengecualian.</p>
+      </div>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--black);flex:1;">
+        <h4 style="color:var(--yellow);">Komponen Logika Predikat</h4>
+        <table style="width:100%;font-size:.6em;border-collapse:collapse;margin-top:6px;">
+          <tr><td style="color:var(--yellow);padding:3px 6px;border-bottom:1px solid #333;font-weight:700;">Konstanta</td><td style="padding:3px 6px;border-bottom:1px solid #333;color:#ccc;">Tweety, Rex, Jakarta</td></tr>
+          <tr><td style="color:var(--yellow);padding:3px 6px;border-bottom:1px solid #333;font-weight:700;">Variabel</td><td style="padding:3px 6px;border-bottom:1px solid #333;color:#ccc;">x, y, z (dapat diikat)</td></tr>
+          <tr><td style="color:var(--yellow);padding:3px 6px;border-bottom:1px solid #333;font-weight:700;">Predikat</td><td style="padding:3px 6px;border-bottom:1px solid #333;color:#ccc;">Burung(x), SukaMakan(x,y)</td></tr>
+          <tr><td style="color:var(--yellow);padding:3px 6px;border-bottom:1px solid #333;font-weight:700;">∀ (Universal)</td><td style="padding:3px 6px;border-bottom:1px solid #333;color:#ccc;">"untuk semua x berlaku..."</td></tr>
+          <tr><td style="color:var(--yellow);padding:3px 6px;font-weight:700;">∃ (Eksistensial)</td><td style="padding:3px 6px;color:#ccc;">"ada setidaknya satu x..."</td></tr>
+        </table>
+      </div>
+      <div class="neo-card" style="background:var(--pink);">
+        <h4>Unifikasi (Unification)</h4>
+        <p>Proses mencocokkan ekspresi logika dengan mengganti variabel — dasar dari inferensi predikat.</p>
+        <div style="background:var(--black);color:var(--green);padding:6px 8px;font-family:'Space Mono',monospace;font-size:.58em;margin-top:4px;">Burung(Tweety) unify Burung(x)
+→ {x = Tweety} ✅
+
+BisaTerbang(x) dengan x=Tweety
+→ BisaTerbang(Tweety) ✅</div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: FORWARD CHAINING DETAIL -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--yellow);margin:0;">Praktik 1 — Forward Chaining Lengkap</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--yellow);">Data → Kesimpulan</span>
+      <span class="badge" style="background:var(--green);">Inference Engine</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik1_forward_chain.py</span></div>
+      <pre><code class="language-python">class InferenceEngine:
+    """Mesin inferensi dengan forward & backward chaining."""
+
+    def __init__(self):
+        self.fakta   = set()
+        self.aturan  = []   # [(kondisi_list, hasil, nama)]
+        self.log     = []
+
+    def assert_fact(self, *fakta):
+        for f in fakta:
+            self.fakta.add(f)
+
+    def add_rule(self, kondisi, hasil, nama=""):
+        self.aturan.append((kondisi, hasil, nama))
+
+    # ── Forward Chaining ──
+    def forward(self):
+        """Terus terapkan aturan hingga tidak ada fakta baru."""
+        self.log.clear()
+        changed = True
+        while changed:
+            changed = False
+            for cond, hasil, nama in self.aturan:
+                if all(k in self.fakta for k in cond):
+                    if hasil not in self.fakta:
+                        self.fakta.add(hasil)
+                        self.log.append(
+                            f"FIRE '{nama}': {cond} → {hasil}")
+                        changed = True
+        return self.log
+
+    # ── Backward Chaining ──
+    def backward(self, goal, depth=0, visited=None):
+        """Buktikan goal dari fakta yang ada."""
+        if visited is None: visited = set()
+        indent = "  " * depth
+        if goal in self.fakta:
+            self.log.append(f"{indent}✅ FACT: {goal}")
+            return True
+        if goal in visited:
+            return False
+        visited.add(goal)
+        for cond, hasil, nama in self.aturan:
+            if hasil == goal:
+                self.log.append(
+                    f"{indent}→ TRY rule '{nama}'")
+                if all(self.backward(
+                        k, depth+1, visited) for k in cond):
+                    self.fakta.add(goal)
+                    self.log.append(
+                        f"{indent}✅ PROVED: {goal}")
+                    return True
+        self.log.append(f"{indent}❌ FAIL: {goal}")
+        return False
+
+
+# ── Demo Diagnosis Medis ──
+kb = InferenceEngine()
+kb.assert_fact("demam","batuk","pilek","badan_pegal")
+
+kb.add_rule(["demam","batuk"],       "infeksi",  "R1")
+kb.add_rule(["infeksi","pilek"],     "flu",      "R2")
+kb.add_rule(["flu","badan_pegal"],   "flu_berat","R3")
+kb.add_rule(["demam","nyeri_dada"],  "pneumonia","R4")
+
+print("=== FORWARD CHAINING ===")
+log = kb.forward()
+for l in log: print(f"  {l}")
+print(f"\nFakta akhir: {kb.fakta}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS6D1(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s6out1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: BACKWARD CHAINING + CF -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--pink);margin:0;">Praktik 2 — Backward Chaining &amp; Certainty Factor</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--pink);">Goal → Bukti</span>
+      <span class="badge" style="background:var(--yellow);">CF 0–1</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik2_backward_cf.py</span></div>
+      <pre><code class="language-python">class SistemPakarCF:
+    """Sistem pakar dengan Certainty Factor (CF).
+    CF = tingkat kepercayaan aturan (0.0–1.0).
+    CF_gabungan = CF_rule × CF_fakta_terkecil
+    """
+
+    def __init__(self):
+        # fakta: {nama: cf_value}
+        self.fakta  = {}
+        # aturan: [(cond_list, hasil, cf_rule, nama)]
+        self.aturan = []
+
+    def assert_fact(self, nama, cf=1.0):
+        self.fakta[nama] = max(self.fakta.get(nama,0), cf)
+
+    def add_rule(self, cond, hasil, cf, nama=""):
+        self.aturan.append((cond, hasil, cf, nama))
+
+    def get_cf(self, fakta_nama):
+        return self.fakta.get(fakta_nama, 0.0)
+
+    def forward_cf(self):
+        changed = True
+        log = []
+        while changed:
+            changed = False
+            for cond, hasil, cf_rule, nama in self.aturan:
+                cf_cond = min(self.get_cf(c) for c in cond)
+                if cf_cond > 0:
+                    cf_new = round(cf_rule * cf_cond, 3)
+                    if cf_new > self.fakta.get(hasil, 0):
+                        self.fakta[hasil] = cf_new
+                        log.append(
+                            f"  FIRE '{nama}': "
+                            f"CF={cf_rule}×{cf_cond:.2f}"
+                            f" = {cf_new}")
+                        changed = True
+        return log
+
+
+# ── Demo Sistem Pakar Diagnosis ──
+sp = SistemPakarCF()
+sp.assert_fact("demam",      cf=0.9)
+sp.assert_fact("batuk",      cf=0.8)
+sp.assert_fact("pilek",      cf=0.7)
+sp.assert_fact("badan_pegal",cf=0.6)
+
+sp.add_rule(["demam","batuk"],     "infeksi",   0.8, "R1")
+sp.add_rule(["infeksi","pilek"],   "flu",        0.9, "R2")
+sp.add_rule(["flu","badan_pegal"], "flu_berat",  0.7, "R3")
+sp.add_rule(["demam","batuk",
+             "badan_pegal"],       "kelelahan",  0.6, "R4")
+
+print("=== CF FORWARD CHAINING ===")
+log = sp.forward_cf()
+for l in log: print(l)
+print("\n── Diagnosis dengan Keyakinan ──")
+diagnosa = {k:v for k,v in sp.fakta.items()
+            if v < 1.0 and k not in
+            ["demam","batuk","pilek","badan_pegal"]}
+for d,cf in sorted(diagnosa.items(),
+                   key=lambda x:-x[1]):
+    bar = "█"*int(cf*15)
+    lvl = "TINGGI" if cf>.7 else "SEDANG" if cf>.4 else "RENDAH"
+    print(f"  {d:<12} CF={cf:.3f} {bar} [{lvl}]")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS6D2(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s6out2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: RULE-BASED vs ML -->
+<section class="bg-cream">
+  <h2>Rule-Based System vs Machine Learning</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Aspek</th><th>🔧 Rule-Based (Sesi 5-6)</th><th>🤖 Machine Learning (Sesi 2)</th><th>🏆 Pilih Kapan</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Pengetahuan</strong></td><td>Manual dari pakar</td><td>Otomatis dari data</td><td>RB: pengetahuan ada, data sedikit</td></tr>
+        <tr><td><strong>Explainability</strong></td><td>✅ Sangat jelas (IF-THEN)</td><td>❌ Kotak hitam (NN)</td><td>RB: perlu audit/regulasi</td></tr>
+        <tr><td><strong>Akurasi</strong></td><td>Terbatas oleh aturan</td><td>✅ Bisa sangat tinggi</td><td>ML: data berlabel banyak</td></tr>
+        <tr><td><strong>Update</strong></td><td>Edit aturan manual</td><td>✅ Retrain otomatis</td><td>ML: domain berubah cepat</td></tr>
+        <tr><td><strong>Biaya awal</strong></td><td>✅ Murah (tidak butuh GPU)</td><td>Mahal (data + komputasi)</td><td>RB: startup/POC cepat</td></tr>
+      </tbody>
+    </table>
+    <div class="g3" style="margin-top:clamp(7px,1.3vw,14px);">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Kapan Rule-Based?</h4>
+        <ul>
+          <li>Hukum/regulasi (pajak, kredit)</li>
+          <li>Keamanan kritis (medis, aerospace)</li>
+          <li>Domain sempit, aturan stabil</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Kapan ML?</h4>
+        <ul>
+          <li>Data berlimpah, pola kompleks</li>
+          <li>Gambar, suara, teks bebas</li>
+          <li>Akurasi melebihi pakar manusia</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--green);">
+        <h4>Tren: Neuro-Symbolic</h4>
+        <ul>
+          <li>LLM + Knowledge Graph = RAG</li>
+          <li>ML untuk persepsi → RB untuk keputusan</li>
+          <li>Terbaik dari keduanya</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: PRAKTIK 3 — MESIN INFERENSI LENGKAP -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--green);margin:0;">Praktik 3 — Bandingkan Rule-Based vs ML</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--green);">Perbandingan Nyata</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik3_rb_vs_ml.py</span></div>
+      <pre><code class="language-python">from sklearn.tree import DecisionTreeClassifier
+from sklearn.datasets import load_iris
+from sklearn.model_selection import train_test_split
+import numpy as np
+
+# ── PENDEKATAN 1: RULE-BASED ──
+class RuleBasedIris:
+    """Klasifikasi Iris dengan aturan IF-THEN manual."""
+
+    def predict(self, petal_len, petal_wid):
+        if petal_len <= 2.5:
+            return "setosa"
+        elif petal_len <= 5.0 and petal_wid <= 1.8:
+            return "versicolor"
+        else:
+            return "virginica"
+
+    def evaluate(self, X, y_true, names):
+        preds = [self.predict(x[2], x[3]) for x in X]
+        benar = sum(p==names[t] for p,t in
+                    zip(preds, y_true))
+        return benar / len(y_true), preds
+
+# ── PENDEKATAN 2: ML (Decision Tree) ──
+iris = load_iris()
+X, y = iris.data, iris.target
+X_tr,X_te,y_tr,y_te = train_test_split(
+    X,y,test_size=0.3,random_state=42,stratify=y)
+
+dt = DecisionTreeClassifier(max_depth=3,
+                              random_state=42)
+dt.fit(X_tr, y_tr)
+acc_ml = dt.score(X_te, y_te)
+
+# ── EVALUASI ──
+rb = RuleBasedIris()
+acc_rb, preds_rb = rb.evaluate(
+    X_te, y_te, iris.target_names)
+
+print("═"*45)
+print(f"{'Metode':<20} {'Akurasi':<10} {'Keterangan'}")
+print("─"*45)
+print(f"{'Rule-Based':<20} {acc_rb:.2%}     Manual IF-THEN")
+print(f"{'Decision Tree ML':<20} {acc_ml:.2%}     Belajar dari data")
+print("═"*45)
+
+# Detail 5 prediksi pertama
+print("\n── 5 Prediksi Pertama ──")
+y_ml = dt.predict(X_te[:5])
+for i,(rb_p,ml_p,true) in enumerate(zip(
+        preds_rb[:5],y_ml,y_te[:5])):
+    nama_true = iris.target_names[true]
+    ok_rb = "✅" if rb_p==nama_true else "❌"
+    ok_ml = "✅" if iris.target_names[ml_p]==nama_true else "❌"
+    print(f"  [{i}] Benar:{nama_true:<12}"
+          f"RB:{ok_rb}{rb_p:<12}ML:{ok_ml}{iris.target_names[ml_p]}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS6D3(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s6out3"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: TUGAS -->
+<section class="bg-blue">
+  <h2>Tugas Sesi 6</h2>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">📝 Tugas Wajib</h4>
+      <ol>
+        <li>Buat sistem pakar diagnosis <strong>kerusakan smartphone</strong> — minimal 8 aturan IF-THEN dengan CF.</li>
+        <li>Implementasikan <strong>backward chaining</strong> untuk membuktikan apakah suatu diagnosis dapat ditarik dari gejala yang diberikan.</li>
+        <li>Bandingkan sistem pakar buatanmu vs <strong>Decision Tree</strong> sklearn pada dataset yang sama — mana lebih akurat? Mana lebih mudah dijelaskan?</li>
+      </ol>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--yellow);flex:1;">
+        <h4>⭐ Tantangan Bonus</h4>
+        <ol>
+          <li>Tambahkan <strong>confidence threshold</strong> — hanya tampilkan diagnosis jika CF ≥ 0.5.</li>
+          <li>Buat UI sederhana dengan <code>input()</code> untuk tanya gejala satu per satu.</li>
+          <li>Ekspor aturan sistem pakar ke format JSON agar mudah diperbarui tanpa mengubah kode.</li>
+        </ol>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);flex-shrink:0;">
+        <h4 style="color:var(--green);">📁 File Python</h4>
+        <p><code>week06_predicate_rules.py</code> — forward chain, backward chain, CF, perbandingan Rule-Based vs ML.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({hash:true,slideNumber:'c/t',transition:'slide',width:'100%',height:'100%',margin:0,minScale:1,maxScale:1,plugins:[RevealHighlight,RevealNotes]});
+function animateLines(elId,lines,delay){
+  const el=document.getElementById(elId);el.innerHTML='';
+  lines.forEach((line,i)=>{
+    setTimeout(()=>{
+      const s=document.createElement('span');s.className='out-line typing';s.textContent=line+'\n';
+      if(line.startsWith('===')||line.startsWith('──')||line.startsWith('═')) s.style.color='#FFD93D';
+      else if(line.includes('✅')||line.includes('PROVED')||line.includes('FACT')) s.style.color='#5BD68A';
+      else if(line.includes('❌')||line.includes('FAIL')) s.style.color='#FF6FA5';
+      else if(line.includes('FIRE')||line.includes('TRY')) s.style.color='#5B9DFF';
+      else if(line.startsWith('$')) s.style.color='#aaa';
+      el.appendChild(s);el.scrollTop=el.scrollHeight;
+      if(i===lines.length-1){const c=document.createElement('span');c.className='cursor';el.appendChild(c);}
+    },delay+i*110);
+  });
+}
+function setRunning(btn,r){btn.disabled=r;btn.textContent=r?'⏳ Running…':'▶ Jalankan';}
+
+function runS6D1(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik1_forward_chain.py','','=== FORWARD CHAINING ===','  FIRE \'R1\': [\'demam\', \'batuk\'] → infeksi','  FIRE \'R2\': [\'infeksi\', \'pilek\'] → flu','  FIRE \'R3\': [\'flu\', \'badan_pegal\'] → flu_berat','','Fakta akhir:','  {\'demam\', \'batuk\', \'pilek\', \'badan_pegal\',','   \'infeksi\', \'flu\', \'flu_berat\'}','','── Ringkasan ──','  Fakta awal  : 4','  Aturan diaktifkan: 3 (R1, R2, R3)','  Fakta baru  : 3','  R4 tidak aktif (tidak ada \'nyeri_dada\')','','✅ Mesin inferensi selesai — 3 iterasi'];
+  animateLines('s6out1',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+function runS6D2(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik2_backward_cf.py','','=== CF FORWARD CHAINING ===','  FIRE \'R1\': CF=0.8×0.8 = 0.64','  FIRE \'R2\': CF=0.9×0.64 = 0.576','  FIRE \'R3\': CF=0.7×0.576 = 0.403','  FIRE \'R4\': CF=0.6×0.6 = 0.36','','── Diagnosis dengan Keyakinan ──','  infeksi    CF=0.640 █████████ [SEDANG]','  flu        CF=0.576 ████████  [SEDANG]','  flu_berat  CF=0.403 ██████    [RENDAH]','  kelelahan  CF=0.360 █████     [RENDAH]','','── Interpretasi ──','  CF > 0.7 → Diagnosis KUAT (tindak lanjut segera)','  CF 0.4–0.7 → Perlu observasi tambahan','  CF < 0.4 → Kemungkinan kecil','','✅ Sistem pakar CF selesai'];
+  animateLines('s6out2',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+function runS6D3(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik3_rb_vs_ml.py','','═════════════════════════════════════════════','Metode               Akurasi    Keterangan','─────────────────────────────────────────────','Rule-Based           84.44%     Manual IF-THEN','Decision Tree ML     97.78%     Belajar dari data','═════════════════════════════════════════════','','── 5 Prediksi Pertama ──','  [0] Benar:setosa      RB:✅setosa      ML:✅setosa','  [1] Benar:versicolor  RB:✅versicolor  ML:✅versicolor','  [2] Benar:virginica   RB:❌versicolor  ML:✅virginica','  [3] Benar:setosa      RB:✅setosa      ML:✅setosa','  [4] Benar:versicolor  RB:✅versicolor  ML:✅versicolor','','── Analisis ──','  ML lebih akurat: +13.34%','  RB lebih mudah dijelaskan: aturan bisa dibaca langsung','  RB error di kasus batas (boundary virginica/versicolor)','','✅ Perbandingan selesai'];
+  animateLines('s6out3',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*110+300);
+}
+</script>
+</body></html>

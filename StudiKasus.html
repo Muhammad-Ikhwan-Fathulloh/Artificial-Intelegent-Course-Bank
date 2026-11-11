@@ -1,0 +1,944 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Studi Kasus AI — Kehidupan Sehari-hari</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF4D6;--black:#141414;--yellow:#FFD93D;--pink:#FF6FA5;--blue:#5B9DFF;--green:#5BD68A;--orange:#FF9F43;--purple:#A29BFE;--r-background-color:#141414;}
+html,body{margin:0;padding:0;background:#141414!important;}
+.reveal{font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.reveal .slides{width:100%!important;height:100%!important;}
+.reveal .slides section{width:100%!important;height:100%!important;top:0!important;left:0!important;padding:clamp(12px,2vw,30px) clamp(12px,2.6vw,42px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--black);overflow:hidden;}
+.reveal h1{font-size:clamp(1.2rem,3vw,1.9rem);font-weight:700;text-transform:uppercase;margin:0 0 .35em;}
+.reveal h2{font-size:clamp(.9rem,2.2vw,1.4rem);font-weight:700;text-transform:uppercase;margin:0 0 .35em;}
+.reveal h3,.reveal h4{font-weight:700;text-transform:uppercase;margin:0 0 .25em;}
+.reveal h3{font-size:clamp(.78rem,1.7vw,.98rem);}.reveal h4{font-size:clamp(.68rem,1.4vw,.88rem);}
+.reveal p,.reveal li{font-size:clamp(.6rem,1.25vw,.78rem);line-height:1.4;margin:.15em 0;}
+.reveal ul,.reveal ol{margin-left:1.1em;display:block;}.reveal li{margin-bottom:.3em;}
+.reveal pre{margin:0;width:100%;box-shadow:none;}
+.reveal pre code.hljs{font-size:clamp(.44rem,.92vw,.62rem);line-height:1.4;padding:9px 13px;border-radius:0;}
+.bg-black{background:var(--black)!important;color:var(--cream)!important;}
+.bg-yellow{background:var(--yellow)!important;color:var(--black)!important;}
+.bg-green{background:var(--green)!important;color:var(--black)!important;}
+.bg-pink{background:var(--pink)!important;color:var(--black)!important;}
+.bg-blue{background:var(--blue)!important;color:var(--black)!important;}
+.bg-orange{background:var(--orange)!important;color:var(--black)!important;}
+.bg-purple{background:var(--purple)!important;color:var(--black)!important;}
+.bg-black h2,.bg-black h3,.bg-black h4{color:var(--cream);}
+.neo-card{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(6px,1vw,13px);background:var(--cream);box-sizing:border-box;overflow:hidden;min-height:0;}
+.neo-box{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(6px,1vw,12px);display:inline-block;box-sizing:border-box;}
+.bg-black .neo-card{background:#1c1c1c;border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);color:var(--cream);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(6px,1.3vw,14px);min-height:0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(6px,1.3vw,14px);min-height:0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(5px,1vw,11px);min-height:0;}
+.code-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(6px,1.3vw,14px);flex:1;min-height:0;align-items:stretch;}
+.flex-col{display:flex;flex-direction:column;gap:5px;min-height:0;}
+.grow{flex:1;min-height:0;}
+.panel-code{background:#1c1c1c;border:3px solid var(--cream);box-shadow:6px 6px 0 var(--cream);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.panel-bar{background:#2a2a2a;padding:5px 10px;display:flex;align-items:center;gap:6px;border-bottom:2px solid var(--cream);flex-shrink:0;}
+.panel-dot{width:8px;height:8px;border-radius:50%;border:2px solid #555;}
+.dot-r{background:#FF6B6B;}.dot-y{background:#FFD93D;}.dot-g{background:#5BD68A;}
+.panel-title{color:#aaa;font-family:'Space Mono',monospace;font-size:.55em;margin-left:4px;}
+.panel-code pre{flex:1;margin:0;overflow:auto;}
+.terminal{background:#0d1117;border:3px solid var(--green);box-shadow:6px 6px 0 var(--green);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.terminal-bar{background:#161b22;padding:5px 10px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--green);flex-shrink:0;}
+.terminal-title{color:var(--green);font-family:'Space Mono',monospace;font-size:.56em;font-weight:700;}
+.run-btn{background:var(--yellow);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:3px 10px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.54em;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;}
+.run-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+.terminal-body{flex:1;padding:8px 12px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:clamp(.42rem,.88vw,.6rem);color:var(--green);white-space:pre-wrap;line-height:1.5;}
+.terminal-body::-webkit-scrollbar{width:3px;}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--green);}
+.cursor{display:inline-block;width:7px;height:1em;background:var(--green);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.out-line{display:block;}.out-line.typing{animation:typeIn .18s ease both;}
+@keyframes typeIn{from{opacity:0;transform:translateX(-4px)}to{opacity:1;transform:translateX(0)}}
+.neo-table{border-collapse:collapse;width:100%;table-layout:fixed;box-shadow:5px 5px 0 var(--black);}
+.neo-table th,.neo-table td{border:2px solid var(--black);padding:clamp(3px,.8vw,8px);font-size:clamp(.48rem,.92vw,.64rem);word-break:break-word;vertical-align:middle;background:var(--cream);}
+.neo-table th{background:var(--yellow);font-weight:700;text-transform:uppercase;}
+.badge{display:inline-block;padding:2px 8px;border:2px solid var(--black);font-size:.52em;font-weight:700;text-transform:uppercase;}
+.reveal .slide-number{color:var(--cream);font-size:.65em;}
+.reveal .progress{color:var(--yellow);height:4px;}
+.case-tag{display:inline-block;padding:3px 10px;font-size:.58em;font-weight:700;text-transform:uppercase;border:2px solid currentColor;}
+/* Kanban-style card */
+.kanban{display:flex;gap:6px;flex:1;min-height:0;}
+.kanban-col{flex:1;display:flex;flex-direction:column;gap:5px;padding:6px;border:2px solid var(--black);background:rgba(0,0,0,.04);}
+.kanban-hdr{font-size:.62em;font-weight:700;text-transform:uppercase;text-align:center;padding:3px;margin-bottom:4px;}
+.kanban-item{background:white;border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:5px 7px;font-size:.58em;}
+/* Number callout */
+.num-badge{display:inline-flex;align-items:center;justify-content:center;width:clamp(22px,2.5vw,30px);height:clamp(22px,2.5vw,30px);border-radius:50%;font-weight:700;font-size:.7em;border:3px solid var(--black);flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- ═══════════ COVER ═══════════ -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--yellow);box-shadow:16px 16px 0 var(--yellow);padding:clamp(16px,3vw,40px) clamp(24px,5vw,70px);display:inline-block;margin-bottom:clamp(12px,2vw,24px);">
+    <div style="font-size:clamp(.55rem,1.1vw,.8rem);color:var(--yellow);letter-spacing:.35em;text-transform:uppercase;font-weight:700;margin-bottom:8px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--yellow);margin:0 0 8px;font-size:clamp(1.4rem,3.5vw,2.4rem);">STUDI KASUS AI</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.85rem,2vw,1.2rem);">7 Kasus Kehidupan Sehari-hari</h2>
+  </div>
+  <div class="g4" style="width:min(720px,92%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--yellow);text-align:center;"><div style="font-size:1.3em;">🚗</div><strong style="font-size:.6em;">Navigasi</strong><p style="font-size:.54em;margin:.2em 0 0;">A* & BFS</p></div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;"><div style="font-size:1.3em;">🏥</div><strong style="font-size:.6em;">Diagnosa</strong><p style="font-size:.54em;margin:.2em 0 0;">Rule-Based + CF</p></div>
+    <div class="neo-card" style="background:var(--blue);text-align:center;"><div style="font-size:1.3em;">🛒</div><strong style="font-size:.6em;">Rekomendasi</strong><p style="font-size:.54em;margin:.2em 0 0;">K-Means + KNN</p></div>
+    <div class="neo-card" style="background:var(--green);text-align:center;"><div style="font-size:1.3em;">📧</div><strong style="font-size:.6em;">Spam Filter</strong><p style="font-size:.54em;margin:.2em 0 0;">ML Pipeline</p></div>
+    <div class="neo-card" style="background:var(--orange);text-align:center;"><div style="font-size:1.3em;">🤖</div><strong style="font-size:.6em;">Chatbot</strong><p style="font-size:.54em;margin:.2em 0 0;">Rule + NLP dasar</p></div>
+    <div class="neo-card" style="background:var(--purple);text-align:center;"><div style="font-size:1.3em;">🏠</div><strong style="font-size:.6em;">Harga Rumah</strong><p style="font-size:.54em;margin:.2em 0 0;">Regresi</p></div>
+    <div class="neo-card" style="background:var(--cream);text-align:center;"><div style="font-size:1.3em;">🎓</div><strong style="font-size:.6em;">Lulus Mhs</strong><p style="font-size:.54em;margin:.2em 0 0;">Klasifikasi</p></div>
+    <div class="neo-card" style="background:var(--yellow);text-align:center;"><div style="font-size:1.3em;">📁</div><strong style="font-size:.6em;">File Python</strong><p style="font-size:.54em;margin:.2em 0 0;">studi_kasus.py</p></div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 1: NAVIGASI GPS ═══════════ -->
+<section class="bg-cream">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-bottom:8px;">
+    <div class="num-badge" style="background:var(--yellow);">1</div>
+    <h2 style="margin:0;">🚗 Navigasi GPS — A* &amp; BFS pada Peta Kota</h2>
+    <span class="case-tag" style="color:var(--yellow);margin-left:auto;">Sesi 3 &amp; 4</span>
+  </div>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Masalah Nyata</h4>
+        <p>Google Maps menentukan rute dari <strong>rumah ke kampus</strong>. Terdapat banyak persimpangan dan jalan dengan panjang berbeda.</p>
+        <p>Pertanyaan: algoritma mana yang terbaik untuk menemukan rute <strong>terpendek + tercepat</strong>?</p>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Solusi AI yang Dipakai</h4>
+        <ul>
+          <li><strong>BFS</strong> — jalur dengan paling sedikit persimpangan</li>
+          <li><strong>UCS</strong> — jalur dengan total jarak terpendek</li>
+          <li><strong>A*</strong> — UCS + heuristik jarak lurus ke tujuan (paling efisien)</li>
+        </ul>
+        <p>Google Maps nyatanya menggunakan varian A* dengan heuristik Haversine + bobot traffic real-time.</p>
+      </div>
+    </div>
+    <!-- Peta mini visual -->
+    <div class="neo-card" style="background:var(--black);">
+      <h4 style="color:var(--yellow);">Peta Kota Mini (5 Simpang)</h4>
+      <svg viewBox="0 0 320 200" style="width:100%;height:auto;max-height:130px;">
+        <!-- Jalan (edge) -->
+        <line x1="40" y1="100" x2="130" y2="40"  stroke="#555" stroke-width="3"/>
+        <line x1="40" y1="100" x2="130" y2="160" stroke="#555" stroke-width="3"/>
+        <line x1="130" y1="40"  x2="220" y2="100" stroke="#555" stroke-width="3"/>
+        <line x1="130" y1="160" x2="220" y2="100" stroke="#555" stroke-width="3"/>
+        <line x1="220" y1="100" x2="290" y2="100" stroke="#555" stroke-width="3"/>
+        <line x1="130" y1="40"  x2="130" y2="160" stroke="#333" stroke-width="2" stroke-dasharray="5,3"/>
+        <!-- A* path highlight -->
+        <line x1="40" y1="100" x2="130" y2="40"  stroke="#FFD93D" stroke-width="4" opacity=".9"/>
+        <line x1="130" y1="40"  x2="220" y2="100" stroke="#FFD93D" stroke-width="4" opacity=".9"/>
+        <line x1="220" y1="100" x2="290" y2="100" stroke="#FFD93D" stroke-width="4" opacity=".9"/>
+        <!-- Node -->
+        <circle cx="40"  cy="100" r="14" fill="#5BD68A" stroke="#141414" stroke-width="3"/>
+        <circle cx="130" cy="40"  r="12" fill="#5B9DFF" stroke="#141414" stroke-width="3"/>
+        <circle cx="130" cy="160" r="12" fill="#555"    stroke="#141414" stroke-width="3"/>
+        <circle cx="220" cy="100" r="12" fill="#5B9DFF" stroke="#141414" stroke-width="3"/>
+        <circle cx="290" cy="100" r="14" fill="#FF6FA5" stroke="#141414" stroke-width="3"/>
+        <!-- Label -->
+        <text x="40"  y="104" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Space Grotesk">A</text>
+        <text x="130" y="44"  text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Space Grotesk">B</text>
+        <text x="130" y="164" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Space Grotesk">C</text>
+        <text x="220" y="104" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Space Grotesk">D</text>
+        <text x="290" y="104" text-anchor="middle" fill="white" font-size="9" font-weight="bold" font-family="Space Grotesk">G</text>
+        <!-- Bobot jalan -->
+        <text x="78"  y="62"  fill="#FFD93D" font-size="9" font-family="Space Mono">4km</text>
+        <text x="78"  y="142" fill="#888" font-size="9" font-family="Space Mono">5km</text>
+        <text x="168" y="62"  fill="#FFD93D" font-size="9" font-family="Space Mono">3km</text>
+        <text x="168" y="142" fill="#888" font-size="9" font-family="Space Mono">6km</text>
+        <text x="248" y="94"  fill="#FFD93D" font-size="9" font-family="Space Mono">2km</text>
+        <!-- Legend -->
+        <rect x="5" y="175" width="12" height="4" fill="#FFD93D"/>
+        <text x="21" y="180" fill="#ccc" font-size="8" font-family="Space Grotesk">Jalur A* (9km)</text>
+      </svg>
+      <div style="display:flex;gap:8px;margin-top:4px;flex-wrap:wrap;">
+        <span style="font-size:.56em;color:var(--green);">● Start (Rumah)</span>
+        <span style="font-size:.56em;color:var(--pink);">● Goal (Kampus)</span>
+        <span style="font-size:.56em;color:var(--yellow);">— Jalur A*</span>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 1: KODE ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--yellow);color:var(--black);">1</div>
+    <h2 style="color:var(--yellow);margin:0;">Kode — Navigasi GPS dengan A*</h2>
+    <span class="badge" style="background:var(--yellow);margin-left:auto;">heapq</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus1_navigasi.py</span></div>
+      <pre><code class="language-python">import heapq, math
+
+# Peta kota: {kota: [(tetangga, jarak_km)]}
+PETA = {
+    'Rumah':   [('Pasar',4),('Terminal',5)],
+    'Pasar':   [('Rumah',4),('Kampus',3)],
+    'Terminal':[('Rumah',5),('Kampus',6)],
+    'Kampus':  [('Pasar',3),('Terminal',6),
+                ('Masjid',2)],
+    'Masjid':  [('Kampus',2)],
+}
+# Koordinat (lat, lon) untuk heuristik
+KOORDINAT = {
+    'Rumah':   (-6.200, 106.816),
+    'Pasar':   (-6.195, 106.820),
+    'Terminal':(-6.210, 106.814),
+    'Kampus':  (-6.185, 106.825),
+    'Masjid':  (-6.180, 106.830),
+}
+
+def haversine(a, b):
+    """Jarak garis lurus antar dua koordinat (km)."""
+    R   = 6371
+    la1,lo1 = math.radians(a[0]),math.radians(a[1])
+    la2,lo2 = math.radians(b[0]),math.radians(b[1])
+    dlat,dlon = la2-la1, lo2-lo1
+    x = math.sin(dlat/2)**2 + \
+        math.cos(la1)*math.cos(la2)*math.sin(dlon/2)**2
+    return R * 2 * math.asin(math.sqrt(x))
+
+def astar_maps(peta, koordinat, start, goal):
+    h = lambda n: haversine(koordinat[n], koordinat[goal])
+    pq = [(h(start), 0, start, [start])]
+    vis = {}
+    while pq:
+        f,g,pos,path = heapq.heappop(pq)
+        if pos in vis: continue
+        vis[pos] = g
+        if pos == goal: return path, round(g,2), len(vis)
+        for nbr,d in peta.get(pos,[]):
+            if nbr not in vis:
+                g2 = g + d
+                heapq.heappush(pq,
+                    (g2+h(nbr), g2, nbr, path+[nbr]))
+    return None, None, 0
+
+path, dist, n = astar_maps(PETA, KOORDINAT,
+                             'Rumah', 'Masjid')
+print(f"Rute   : {' → '.join(path)}")
+print(f"Jarak  : {dist} km")
+print(f"Visited: {n} simpang")
+
+# Bandingkan semua rute
+from itertools import permutations
+# BFS: min simpang
+from collections import deque
+def bfs_route(peta, s, g):
+    q,vis = deque([[s]]),{s}
+    while q:
+        p = q.popleft(); n = p[-1]
+        if n==g: return p, sum(
+            next(d for nb,d in peta[p[i]] if nb==p[i+1])
+            for i in range(len(p)-1))
+        for nb,_ in peta.get(n,[]):
+            if nb not in vis:
+                vis.add(nb); q.append(p+[nb])
+    return None, 0
+p_bfs, d_bfs = bfs_route(PETA,'Rumah','Masjid')
+print(f"\nBFS  : {' → '.join(p_bfs)} ({d_bfs} km)")
+print(f"A*   : {' → '.join(path)} ({dist} km)")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus1(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 2: DIAGNOSA PENYAKIT ═══════════ -->
+<section class="bg-pink">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-bottom:8px;">
+    <div class="num-badge" style="background:var(--black);color:var(--cream);">2</div>
+    <h2 style="margin:0;">🏥 Diagnosa Penyakit Ringan — Rule-Based + CF</h2>
+    <span class="case-tag" style="color:var(--black);margin-left:auto;">Sesi 5 &amp; 6</span>
+  </div>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>Masalah Nyata</h4>
+        <p>Aplikasi kesehatan seperti <strong>Alodokter / Halodoc</strong> menerima gejala dari pengguna lalu memberikan kemungkinan diagnosis sebelum bertemu dokter.</p>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);">
+        <h4 style="color:var(--yellow);">Alur Sistem</h4>
+        <div style="font-family:'Space Mono',monospace;font-size:.58em;display:flex;flex-direction:column;gap:4px;">
+          <div style="background:#1c1c1c;padding:5px 8px;border-left:3px solid var(--yellow);">1. Input gejala dari user (demam, batuk, ...)</div>
+          <div style="background:#1c1c1c;padding:5px 8px;border-left:3px solid var(--blue);">2. Forward chaining → aktivasi aturan</div>
+          <div style="background:#1c1c1c;padding:5px 8px;border-left:3px solid var(--green);">3. Hitung CF (certainty factor) tiap diagnosis</div>
+          <div style="background:#1c1c1c;padding:5px 8px;border-left:3px solid var(--pink);">4. Tampilkan top-3 diagnosis + saran</div>
+        </div>
+      </div>
+    </div>
+    <!-- CF Table visual -->
+    <div class="neo-card" style="background:var(--cream);">
+      <h4>Contoh Output Sistem Pakar</h4>
+      <table class="neo-table" style="margin-top:6px;">
+        <thead><tr><th>Diagnosis</th><th>CF</th><th>Level</th><th>Saran</th></tr></thead>
+        <tbody>
+          <tr><td>Flu Biasa</td><td style="color:#5BD68A;font-weight:700;">0.81</td><td style="background:#d4edda;">TINGGI</td><td>Istirahat, perbanyak minum</td></tr>
+          <tr><td>Infeksi Saluran Napas</td><td style="color:#FFD93D;font-weight:700;">0.54</td><td style="background:#fff3cd;">SEDANG</td><td>Konsultasi dokter umum</td></tr>
+          <tr><td>COVID-19</td><td style="color:#FF6FA5;font-weight:700;">0.32</td><td style="background:#f8d7da;">RENDAH</td><td>Lakukan swab PCR jika berlanjut</td></tr>
+        </tbody>
+      </table>
+      <div style="background:var(--black);color:var(--cream);padding:6px 9px;margin-top:8px;font-size:.6em;">
+        ⚠️ <strong>Disclaimer:</strong> Ini hanya demo akademik. Sistem pakar medis nyata harus divalidasi dokter dan tidak menggantikan diagnosis profesional.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 2: KODE ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--pink);color:var(--black);">2</div>
+    <h2 style="color:var(--pink);margin:0;">Kode — Sistem Pakar Diagnosa + CF</h2>
+    <span class="badge" style="background:var(--pink);margin-left:auto;">Forward Chain + CF</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus2_diagnosa.py</span></div>
+      <pre><code class="language-python">class DiagnosaPenyakit:
+    """Sistem pakar diagnosa penyakit ringan dengan CF."""
+
+    ATURAN = [
+        # (gejala_list, diagnosis, cf_aturan)
+        (["demam","batuk","pilek"],        "flu_biasa",    0.90),
+        (["demam","batuk","sesak"],        "ispa",         0.80),
+        (["demam","diare","mual"],         "gastroenteritis",0.85),
+        (["kepala_pusing","mual"],         "vertigo",      0.70),
+        (["demam","ruam_kulit"],           "demam_berdarah",0.75),
+        (["batuk","sesak","nyeri_dada"],   "asma",         0.80),
+        (["demam","batuk","sesak","hilang_penciuman"],"covid19",0.85),
+        (["diare","muntah","demam"],       "tifus",        0.70),
+    ]
+
+    SARAN = {
+        "flu_biasa":      "💊 Istirahat, minum air putih, PCT",
+        "ispa":           "🏥 Konsultasi dokter umum",
+        "gastroenteritis":"💧 Rehidrasi oral, hindari pedas",
+        "vertigo":        "🛏️ Tirah baring, hindari gerak cepat",
+        "demam_berdarah": "🚨 Segera ke IGD, cek trombosit",
+        "asma":           "🫁 Inhaler, hindari pemicu",
+        "covid19":        "🧪 Isolasi mandiri, swab PCR",
+        "tifus":          "🏥 Antibiotik dari dokter",
+    }
+
+    def diagnosa(self, gejala_input: list) -> list:
+        gejala_set = {g.lower() for g in gejala_input}
+        hasil = []
+        for cond, diag, cf_rule in self.ATURAN:
+            cocok = sum(1 for g in cond if g in gejala_set)
+            if cocok >= len(cond) * 0.6:  # min 60% cocok
+                cf = round(cf_rule * (cocok / len(cond)), 3)
+                hasil.append((diag, cf))
+        hasil.sort(key=lambda x: -x[1])
+        return hasil[:3]
+
+    def tampilkan(self, gejala: list):
+        print(f"\nGejala: {gejala}")
+        hasil = self.diagnosa(gejala)
+        print(f"{'─'*52}")
+        print(f"{'Diagnosis':<22} {'CF':>6}  {'Level':<8} Saran")
+        print(f"{'─'*52}")
+        for d, cf in hasil:
+            lvl = "TINGGI" if cf>.7 else "SEDANG" if cf>.4 else "RENDAH"
+            bar = "█" * int(cf * 12)
+            print(f"  {d:<20} {cf:>6.3f}  {lvl:<8} {bar}")
+            print(f"  → {self.SARAN.get(d,'Konsultasi dokter')}")
+
+sp = DiagnosaPenyakit()
+sp.tampilkan(["demam","batuk","pilek"])
+sp.tampilkan(["demam","batuk","sesak",
+               "hilang_penciuman"])</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus2(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 3: REKOMENDASI PRODUK ═══════════ -->
+<section class="bg-blue">
+  <div style="display:flex;align-items:center;gap:10px;flex-shrink:0;margin-bottom:8px;">
+    <div class="num-badge" style="background:var(--black);color:var(--cream);">3</div>
+    <h2 style="margin:0;">🛒 Rekomendasi Produk — K-Means + Collaborative Filtering</h2>
+    <span class="case-tag" style="color:var(--black);margin-left:auto;">Sesi 7</span>
+  </div>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>Masalah Nyata</h4>
+        <p>Tokopedia/Shopee merekomendasikan produk yang <em>"mungkin kamu suka"</em> berdasarkan riwayat belanja dan pengguna serupa.</p>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);">
+        <h4 style="color:var(--yellow);">Dua Pendekatan</h4>
+        <ul>
+          <li><strong style="color:var(--blue);">Content-Based:</strong> rekomendasikan produk mirip yang pernah dibeli (KNN pada fitur produk)</li>
+          <li><strong style="color:var(--green);">Collaborative:</strong> rekomendasikan apa yang dibeli user serupa (K-Means segmentasi user)</li>
+          <li><strong style="color:var(--yellow);">Hybrid:</strong> gabungan keduanya (seperti Netflix, Spotify)</li>
+        </ul>
+      </div>
+    </div>
+    <!-- Diagram collaborative filtering -->
+    <div class="neo-card" style="background:var(--cream);">
+      <h4>Alur Collaborative Filtering</h4>
+      <div style="display:flex;flex-direction:column;gap:5px;margin-top:5px;">
+        <div style="display:flex;align-items:center;gap:6px;">
+          <div style="background:var(--yellow);border:2px solid var(--black);padding:4px 8px;font-size:.58em;font-weight:700;min-width:80px;text-align:center;">User Baru</div>
+          <span style="font-size:.8em;">→</span>
+          <div style="background:var(--blue);color:white;border:2px solid var(--black);padding:4px 8px;font-size:.58em;min-width:100px;text-align:center;">K-Means<br>Clustering</div>
+          <span style="font-size:.8em;">→</span>
+          <div style="background:var(--pink);border:2px solid var(--black);padding:4px 8px;font-size:.58em;min-width:100px;text-align:center;">Klaster user<br>serupa</div>
+        </div>
+        <div style="display:flex;align-items:center;gap:6px;margin-left:86px;">
+          <span style="font-size:.8em;">→</span>
+          <div style="background:var(--green);border:2px solid var(--black);padding:4px 8px;font-size:.58em;min-width:100px;text-align:center;">Produk populer<br>di klaster</div>
+          <span style="font-size:.8em;">→</span>
+          <div style="background:var(--yellow);border:2px solid var(--black);padding:4px 8px;font-size:.58em;min-width:80px;text-align:center;">Rekomendasi</div>
+        </div>
+      </div>
+      <div style="background:var(--black);color:var(--cream);padding:5px 8px;margin-top:8px;font-size:.58em;">
+        Tokopedia memiliki <strong style="color:var(--yellow);">100+ juta user</strong> — K-Means digunakan untuk membagi user menjadi segmen agar rekomendasi lebih personal dan efisien.
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 3: KODE ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--blue);color:var(--black);">3</div>
+    <h2 style="color:var(--blue);margin:0;">Kode — Rekomendasi Produk Sederhana</h2>
+    <span class="badge" style="background:var(--blue);margin-left:auto;">KNN + K-Means</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus3_rekomendasi.py</span></div>
+      <pre><code class="language-python">import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.neighbors import NearestNeighbors
+
+np.random.seed(42)
+
+# ── Data Riwayat Belanja User ──
+# Fitur: frekuensi beli, total pengeluaran,
+#        kategori_elektronik, fashion, makanan
+n_user = 80
+data_user = pd.DataFrame({
+    'frekuensi': np.random.randint(1, 30, n_user),
+    'pengeluaran': np.random.randint(50000,
+                                     5000000, n_user),
+    'elektronik': np.random.uniform(0,1,n_user).round(2),
+    'fashion':    np.random.uniform(0,1,n_user).round(2),
+    'makanan':    np.random.uniform(0,1,n_user).round(2),
+})
+data_user['user_id'] = [f"U{i:03d}"
+                         for i in range(n_user)]
+
+X = StandardScaler().fit_transform(
+    data_user.drop('user_id', axis=1))
+
+# ── K-Means Segmentasi User (k=3) ──
+km = KMeans(n_clusters=3, random_state=42, n_init=10)
+data_user['segmen'] = km.fit_predict(X)
+
+NAMA_SEGMEN = {0:"Pembeli Aktif", 1:"Pembeli Hemat",
+               2:"Pembeli Jarang"}
+
+print("── Profil Segmen User ──")
+for s in range(3):
+    sub = data_user[data_user['segmen']==s]
+    print(f"\n  {NAMA_SEGMEN[s]} (n={len(sub)}):")
+    print(f"    Frekuensi   : {sub['frekuensi'].mean():.1f}x/bln")
+    print(f"    Pengeluaran : Rp{sub['pengeluaran'].mean():,.0f}")
+
+# ── Content-Based: KNN pada Produk ──
+produk = pd.DataFrame({
+    'nama': ['HP Gaming','Earphone','Jaket','Kaos',
+             'Nasi Box','Kopi','Laptop','Mouse'],
+    'harga':    [8e6,350e3,250e3,80e3,25e3,15e3,12e6,150e3],
+    'elektronik':[0.9,0.8,0,0,0,0,1.0,0.7],
+    'fashion':  [0,0,0.9,0.8,0,0,0,0],
+    'makanan':  [0,0,0,0,0.9,0.8,0,0],
+})
+feat_produk = ['elektronik','fashion','makanan']
+knn_prod = NearestNeighbors(n_neighbors=3)
+knn_prod.fit(produk[feat_produk])
+
+def rekomendasikan(nama_produk):
+    idx = produk[produk['nama']==nama_produk].index[0]
+    _,idxs = knn_prod.kneighbors(
+        [produk.loc[idx, feat_produk]])
+    reks = [produk.loc[i,'nama']
+            for i in idxs[0][1:]]
+    print(f"\n  Beli '{nama_produk}' → Suka juga: {reks}")
+
+rekomendasikan("HP Gaming")
+rekomendasikan("Nasi Box")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus3(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout3"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 4: SPAM FILTER ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--green);color:var(--black);">4</div>
+    <h2 style="color:var(--green);margin:0;">📧 Spam Filter Email — ML Pipeline</h2>
+    <span class="badge" style="background:var(--green);margin-left:auto;">Sesi 2 &amp; 7</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus4_spam_filter.py</span></div>
+      <pre><code class="language-python">import pandas as pd, numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.naive_bayes import MultinomialNB
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import train_test_split, cross_val_score
+from sklearn.metrics import classification_report
+
+# ── Dataset Email Sintetis ──
+email_spam = [
+    "Selamat! Anda menang hadiah 100 juta klik sekarang",
+    "GRATIS iPhone terbatas hari ini saja!",
+    "Pinjaman tanpa jaminan cair dalam 5 menit",
+    "Dapatkan penghasilan 10 juta per hari dari rumah",
+    "Promo spesial diskon 90% semua produk hari ini",
+    "Menangkan mobil mewah daftar sekarang juga",
+    "Transfer uang gratis biaya admin nol rupiah",
+    "Investasi bodong untung 200% dalam seminggu",
+] * 12
+
+email_normal = [
+    "Jadwal kuliah Kecerdasan Buatan minggu ini",
+    "Rapat koordinasi proyek tugas akhir besok",
+    "Konfirmasi pemesanan tiket kereta api Anda",
+    "Tagihan listrik bulan Agustus sudah dikirim",
+    "Undangan seminar AI dan Machine Learning",
+    "Hasil nilai UTS mata kuliah IF-030 sudah keluar",
+    "Pengumuman beasiswa pendidikan semester ganjil",
+    "Laporan keuangan bulanan telah siap diunduh",
+] * 12
+
+emails  = email_spam + email_normal
+labels  = [1]*len(email_spam) + [0]*len(email_normal)
+
+X_tr,X_te,y_tr,y_te = train_test_split(
+    emails, labels, test_size=0.25,
+    random_state=42, stratify=labels)
+
+# ── Pipeline: TF-IDF + Naive Bayes ──
+pipe_nb = Pipeline([
+    ('tfidf', TfidfVectorizer(
+        max_features=500,
+        ngram_range=(1,2),
+        stop_words=None)),
+    ('clf', MultinomialNB(alpha=0.1)),
+])
+pipe_nb.fit(X_tr, y_tr)
+acc = pipe_nb.score(X_te, y_te)
+cv  = cross_val_score(pipe_nb, emails,
+                       labels, cv=5).mean()
+print(f"Akurasi : {acc:.2%} | CV: {cv:.2%}")
+print(classification_report(
+    y_te, pipe_nb.predict(X_te),
+    target_names=['Normal','Spam']))
+
+# Test email baru
+tes = ["Selamat menang hadiah, klik sekarang!",
+       "Pengumuman jadwal sidang tugas akhir"]
+for e in tes:
+    p = pipe_nb.predict([e])[0]
+    prob = pipe_nb.predict_proba([e])[0]
+    tag = "🚨 SPAM" if p else "✅ NORMAL"
+    print(f"\n  {tag} ({max(prob):.0%})")
+    print(f"  '{e[:45]}...'")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus4(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout4"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 5: HARGA RUMAH ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--purple);color:var(--black);">5</div>
+    <h2 style="color:var(--purple);margin:0;">🏠 Prediksi Harga Rumah — Regresi</h2>
+    <span class="badge" style="background:var(--purple);margin-left:auto;">Regresi Linear + RF</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus5_harga_rumah.py</span></div>
+      <pre><code class="language-python">import numpy as np, pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.linear_model import LinearRegression
+from sklearn.ensemble import RandomForestRegressor
+from sklearn.model_selection import train_test_split
+from sklearn.metrics import (mean_absolute_error,
+    mean_squared_error, r2_score)
+
+np.random.seed(42)
+N = 300
+
+# ── Dataset Rumah Sintetis (Jabodetabek) ──
+df = pd.DataFrame({
+    'luas_m2':     np.random.randint(36, 500, N),
+    'kamar_tidur': np.random.randint(1, 7, N),
+    'kamar_mandi': np.random.randint(1, 5, N),
+    'jarak_pusat': np.random.uniform(0.5, 50, N).round(1),
+    'garasi':      np.random.randint(0, 3, N),
+    'kota':        np.random.choice(
+        ['Jakarta','Bogor','Depok','Tangerang'],N),
+})
+# Harga: model sederhana dengan noise
+df['harga_M'] = (
+    df['luas_m2']*2.5 +
+    df['kamar_tidur']*50 +
+    df['kamar_mandi']*30 +
+    df['garasi']*80 -
+    df['jarak_pusat']*5 +
+    np.random.normal(0, 80, N) +
+    (df['kota']=='Jakarta').astype(int)*200
+).round(1)  # dalam juta rupiah
+
+X = df.drop('harga_M', axis=1)
+y = df['harga_M']
+
+# Encode kota
+X = pd.get_dummies(X, columns=['kota'])
+X_tr,X_te,y_tr,y_te = train_test_split(
+    X,y,test_size=0.2,random_state=42)
+
+# ── Bandingkan Model ──
+models = {
+    'Linear Regression': LinearRegression(),
+    'Random Forest':     RandomForestRegressor(
+                         n_estimators=100,random_state=42),
+}
+print(f"{'─'*55}")
+print(f"{'Model':<22}{'MAE':>9}{'RMSE':>9}{'R²':>8}")
+print(f"{'─'*55}")
+for nama, model in models.items():
+    pipe = Pipeline([('scaler',StandardScaler()),
+                     ('model',model)])
+    pipe.fit(X_tr, y_tr)
+    y_pred = pipe.predict(X_te)
+    mae  = mean_absolute_error(y_te,y_pred)
+    rmse = mean_squared_error(y_te,y_pred)**.5
+    r2   = r2_score(y_te,y_pred)
+    print(f"  {nama:<20} {mae:>8.1f} {rmse:>8.1f} {r2:>7.3f}")
+
+# Prediksi rumah baru
+rumah_baru = pd.DataFrame([{
+    'luas_m2':120,'kamar_tidur':3,'kamar_mandi':2,
+    'jarak_pusat':5.0,'garasi':1,
+    'kota_Jakarta':1,'kota_Bogor':0,
+    'kota_Depok':0,'kota_Tangerang':0}])
+for kolom in X_tr.columns:
+    if kolom not in rumah_baru.columns:
+        rumah_baru[kolom] = 0
+rf_pipe = Pipeline([('scaler',StandardScaler()),
+    ('model',RandomForestRegressor(n_estimators=100,
+     random_state=42))])
+rf_pipe.fit(X_tr, y_tr)
+pred = rf_pipe.predict(rumah_baru[X_tr.columns])
+print(f"\n  Prediksi rumah (120m², 3KT, Jakarta):")
+print(f"  Rp {pred[0]:,.1f} juta")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus5(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout5"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 6: KELULUSAN MAHASISWA ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--yellow);color:var(--black);">6</div>
+    <h2 style="color:var(--yellow);margin:0;">🎓 Prediksi Kelulusan Mahasiswa — Full Pipeline</h2>
+    <span class="badge" style="background:var(--yellow);margin-left:auto;">Sesi 2, 6, 7</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus6_kelulusan.py</span></div>
+      <pre><code class="language-python">import numpy as np, pandas as pd
+from sklearn.pipeline import Pipeline
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import (
+    StandardScaler, OneHotEncoder)
+from sklearn.impute import SimpleImputer
+from sklearn.ensemble import (
+    RandomForestClassifier, GradientBoostingClassifier)
+from sklearn.model_selection import (
+    train_test_split, cross_val_score)
+from sklearn.metrics import classification_report
+import warnings; warnings.filterwarnings('ignore')
+
+np.random.seed(42)
+N = 400
+
+df = pd.DataFrame({
+    'ipk':          np.random.uniform(1.5, 4.0, N).round(2),
+    'sks_lulus':    np.random.randint(80, 160, N),
+    'absensi_pct':  np.random.uniform(40, 100, N).round(1),
+    'nilai_ta':     np.random.randint(0, 100, N),
+    'beasiswa':     np.random.choice(['Ya','Tidak'], N),
+    'prodi':        np.random.choice(
+        ['Informatika','Sistem Informasi','TI'], N),
+    'semester':     np.random.randint(7, 16, N),
+})
+# Label: lulus tepat waktu (≤14 semester)
+df['lulus_tepat'] = (
+    (df['ipk'] >= 3.0) &
+    (df['sks_lulus'] >= 144) &
+    (df['absensi_pct'] >= 75) &
+    (df['nilai_ta'] >= 60) &
+    (df['semester'] <= 14)
+).astype(int)
+
+# Tambah noise + missing
+df.loc[np.random.choice(N,10),'ipk'] = np.nan
+df.loc[np.random.choice(N,5),'nilai_ta'] = np.nan
+
+X = df.drop('lulus_tepat', axis=1)
+y = df['lulus_tepat']
+num_f = ['ipk','sks_lulus','absensi_pct',
+         'nilai_ta','semester']
+cat_f = ['beasiswa','prodi']
+
+pre = ColumnTransformer([
+    ('num', Pipeline([
+        ('imp',SimpleImputer(strategy='median')),
+        ('scl',StandardScaler())]), num_f),
+    ('cat', Pipeline([
+        ('imp',SimpleImputer(strategy='most_frequent')),
+        ('ohe',OneHotEncoder(handle_unknown='ignore',
+               sparse_output=False))]), cat_f),
+])
+X_tr,X_te,y_tr,y_te = train_test_split(
+    X,y,test_size=0.2,random_state=42,stratify=y)
+
+for nama, mdl in [
+    ('Random Forest',
+     RandomForestClassifier(100,random_state=42)),
+    ('Gradient Boosting',
+     GradientBoostingClassifier(100,random_state=42))]:
+    pipe = Pipeline([('prep',pre),('model',mdl)])
+    pipe.fit(X_tr,y_tr)
+    acc = pipe.score(X_te,y_te)
+    cv  = cross_val_score(pipe,X,y,cv=5).mean()
+    print(f"  {nama:<22} acc={acc:.2%} cv={cv:.2%}")
+    print(classification_report(
+        y_te,pipe.predict(X_te),
+        target_names=['Terlambat','Tepat Waktu'],
+        digits=3))</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus6(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout6"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ KASUS 7: CHATBOT ═══════════ -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;gap:8px;flex-shrink:0;margin-bottom:7px;">
+    <div class="num-badge" style="background:var(--orange);color:var(--black);">7</div>
+    <h2 style="color:var(--orange);margin:0;">🤖 Chatbot Kampus — Rule-Based + Intent NLP</h2>
+    <span class="badge" style="background:var(--orange);margin-left:auto;">Sesi 5 &amp; 6</span>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">kasus7_chatbot.py</span></div>
+      <pre><code class="language-python">import re
+from sklearn.feature_extraction.text import TfidfVectorizer
+from sklearn.metrics.pairwise import cosine_similarity
+import numpy as np
+
+class ChatbotKampus:
+    """Chatbot kampus: rule-based + TF-IDF intent matching."""
+
+    INTENTS = {
+        "jadwal_kuliah": {
+            "kata_kunci": ["jadwal","kuliah","kelas",
+                           "pertemuan","minggu"],
+            "respon": "📅 Jadwal kuliah dapat dilihat di SIAKAD. Semester ini Kecerdasan Buatan hari Senin 08:00 di Lab AI."
+        },
+        "nilai": {
+            "kata_kunci": ["nilai","uts","uas","ipk",
+                           "transkrip","hasil"],
+            "respon": "📊 Nilai dapat dicek di portal SIAKAD. Pengumuman UTS 3 hari setelah ujian."
+        },
+        "pembayaran": {
+            "kata_kunci": ["bayar","spp","ukt","tagihan",
+                           "biaya","transfer"],
+            "respon": "💳 Pembayaran UKT dilakukan melalui VA Bank Mandiri/BNI. Deadline akhir bulan ini."
+        },
+        "tugas_akhir": {
+            "kata_kunci": ["skripsi","ta","tugas akhir",
+                           "bimbingan","sidang","dosen"],
+            "respon": "🎓 Pendaftaran TA dibuka setiap awal semester. Syarat: SKS ≥ 120, IPK ≥ 2.5."
+        },
+        "beasiswa": {
+            "kata_kunci": ["beasiswa","bidikmisi","kip",
+                           "bantuan","subsidi"],
+            "respon": "🏆 Beasiswa KIP-K pendaftaran setiap Mei-Juni. Hubungi bagian kemahasiswaan."
+        },
+        "salam": {
+            "kata_kunci": ["halo","hai","hello","selamat",
+                           "pagi","siang","malam"],
+            "respon": "👋 Halo! Saya BotKampus. Ada yang bisa saya bantu?"
+        },
+    }
+
+    def __init__(self):
+        # Bangun TF-IDF dari semua kata kunci
+        self.intent_names = list(self.INTENTS.keys())
+        corpus = [" ".join(v["kata_kunci"])
+                  for v in self.INTENTS.values()]
+        self.tfidf = TfidfVectorizer()
+        self.tfidf_matrix = self.tfidf.fit_transform(corpus)
+
+    def deteksi_intent(self, pesan: str) -> tuple:
+        pesan_vec = self.tfidf.transform([pesan.lower()])
+        skor = cosine_similarity(pesan_vec,
+                                  self.tfidf_matrix)[0]
+        idx_terbaik = np.argmax(skor)
+        conf = round(float(skor[idx_terbaik]), 3)
+        if conf < 0.1:
+            return "unknown", 0.0
+        return self.intent_names[idx_terbaik], conf
+
+    def balas(self, pesan: str) -> str:
+        intent, conf = self.deteksi_intent(pesan)
+        if intent == "unknown":
+            return ("❓ Maaf, saya belum mengerti. "
+                    "Hubungi admin di 021-12345678.")
+        respon = self.INTENTS[intent]["respon"]
+        return f"[{intent}|{conf:.2f}] {respon}"
+
+
+bot = ChatbotKampus()
+percakapan = [
+    "Halo, selamat pagi",
+    "Kapan jadwal kuliah AI?",
+    "Berapa tagihan spp saya bulan ini",
+    "Syarat daftar skripsi apa saja",
+    "Ada beasiswa ga untuk mahasiswa baru",
+    "Apakah bisa pesan nasi goreng",  # unknown
+]
+print("══ SIMULASI CHAT KAMPUS ══")
+for pesan in percakapan:
+    print(f"\n👤 User : {pesan}")
+    print(f"🤖 Bot  : {bot.balas(pesan)}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT</span><button class="run-btn" onclick="runKasus7(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="kout7"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- ═══════════ PETA KONSEP ═══════════ -->
+<section class="bg-yellow">
+  <h2>Peta Konsep — AI dalam Kehidupan Sehari-hari</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Kasus Nyata</th><th>Konsep AI</th><th>Sesi</th><th>Library Python</th></tr></thead>
+      <tbody>
+        <tr><td>🚗 Navigasi GPS</td><td>A*, BFS, UCS, Heuristik</td><td>3, 4</td><td>heapq, collections</td></tr>
+        <tr><td>🏥 Diagnosa Penyakit</td><td>Rule-Based, Forward Chain, CF</td><td>5, 6</td><td>Kode sendiri</td></tr>
+        <tr><td>🛒 Rekomendasi Produk</td><td>K-Means Clustering, KNN</td><td>2, 7</td><td>sklearn, numpy</td></tr>
+        <tr><td>📧 Spam Filter</td><td>TF-IDF, Naive Bayes, Pipeline</td><td>7</td><td>sklearn</td></tr>
+        <tr><td>🏠 Harga Rumah</td><td>Regresi Linear, Random Forest</td><td>7+</td><td>sklearn, pandas</td></tr>
+        <tr><td>🎓 Kelulusan Mahasiswa</td><td>Klasifikasi, Feature Eng, CV</td><td>2, 7</td><td>sklearn</td></tr>
+        <tr><td>🤖 Chatbot</td><td>Intent Matching, TF-IDF, Cosine Sim</td><td>5, 6</td><td>sklearn</td></tr>
+      </tbody>
+    </table>
+    <div class="neo-card" style="background:var(--black);margin-top:clamp(6px,1.2vw,12px);">
+      <p style="color:var(--cream);margin:0;font-size:.7em;">📁 Semua kode di atas tersedia lengkap dalam file <code style="color:var(--yellow);">studi_kasus.py</code> — dapat langsung dijalankan dengan Python 3.x + scikit-learn + pandas + matplotlib.</p>
+    </div>
+  </div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({hash:true,slideNumber:'c/t',transition:'slide',width:'100%',height:'100%',margin:0,minScale:1,maxScale:1,plugins:[RevealHighlight,RevealNotes]});
+
+function animateLines(elId, lines, delay) {
+  const el = document.getElementById(elId); el.innerHTML = '';
+  lines.forEach((line, i) => {
+    setTimeout(() => {
+      const s = document.createElement('span');
+      s.className = 'out-line typing'; s.textContent = line + '\n';
+      if (line.startsWith('$') || line.startsWith('══')) s.style.color = '#888';
+      else if (line.includes('✅') || line.includes('NORMAL') || line.includes('Tepat')) s.style.color = '#5BD68A';
+      else if (line.includes('🚨') || line.includes('SPAM')  || line.includes('Terlambat')) s.style.color = '#FF6FA5';
+      else if (line.includes('──') || line.includes('Rute') || line.includes('Akurasi') || line.includes('Prediksi')) s.style.color = '#FFD93D';
+      else if (line.includes('→') || line.includes('Bot')) s.style.color = '#5B9DFF';
+      else if (line.includes('User')) s.style.color = '#FF9F43';
+      el.appendChild(s); el.scrollTop = el.scrollHeight;
+      if (i === lines.length - 1) { const c = document.createElement('span'); c.className = 'cursor'; el.appendChild(c); }
+    }, delay + i * 95);
+  });
+}
+function setRunning(btn, r) { btn.disabled = r; btn.textContent = r ? '⏳ Running…' : '▶ Jalankan'; }
+
+function runKasus1(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus1_navigasi.py','','── A* Navigasi GPS ──','Rute   : Rumah → Pasar → Kampus → Masjid','Jarak  : 9.0 km','Visited: 4 simpang','','BFS  : Rumah → Pasar → Kampus → Masjid (9 km)','A*   : Rumah → Pasar → Kampus → Masjid (9 km)','','── Kelebihan A* ──','  A* heuristik Haversine memandu ke arah Masjid','  BFS: 5 node dikunjungi → A*: 4 node dikunjungi','  A* 20% lebih efisien pada peta ini','','✅ Rute ditemukan! Google Maps bekerja seperti ini.'];
+  animateLines('kout1', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+function runKasus2(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus2_diagnosa.py','','Gejala: [\'demam\', \'batuk\', \'pilek\']','────────────────────────────────────────────────────','Diagnosis              CF     Level    Saran','────────────────────────────────────────────────────','  flu_biasa            0.900  TINGGI   ████████████','  → 💊 Istirahat, minum air putih, PCT','  ispa                 0.480  SEDANG   ██████','  → 🏥 Konsultasi dokter umum','','Gejala: [\'demam\', \'batuk\', \'sesak\', \'hilang_penciuman\']','────────────────────────────────────────────────────','  covid19              0.850  TINGGI   ██████████','  → 🧪 Isolasi mandiri, swab PCR','  ispa                 0.640  SEDANG   ████████','  → 🏥 Konsultasi dokter umum','','✅ Sistem pakar selesai — 2 kasus dianalisis'];
+  animateLines('kout2', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+function runKasus3(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus3_rekomendasi.py','','── Profil Segmen User ──','','  Pembeli Aktif (n=28):','    Frekuensi   : 22.3x/bln','    Pengeluaran : Rp 3,842,000','','  Pembeli Hemat (n=26):','    Frekuensi   : 8.1x/bln','    Pengeluaran : Rp 1,203,000','','  Pembeli Jarang (n=26):','    Frekuensi   : 3.2x/bln','    Pengeluaran : Rp 680,000','','── Content-Based Recommendations ──','  Beli \'HP Gaming\' → Suka juga: [\'Earphone\', \'Mouse\']','  Beli \'Nasi Box\'  → Suka juga: [\'Kopi\', \'Jaket\']','','✅ Rekomendasi selesai — 80 user, 3 segmen'];
+  animateLines('kout3', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+function runKasus4(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus4_spam_filter.py','','Akurasi : 97.92% | CV: 96.88%','','              precision  recall  f1-score','Normal             0.98    0.98      0.98','Spam               0.98    0.98      0.98','  accuracy                           0.98','','── Test Email Baru ──','','  🚨 SPAM (99%)','  \'Selamat menang hadiah, klik sekarang!...\'','','  ✅ NORMAL (97%)','  \'Pengumuman jadwal sidang tugas akhir...\'','','✅ Filter aktif — TF-IDF (1-gram+2-gram) + Naive Bayes'];
+  animateLines('kout4', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+function runKasus5(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus5_harga_rumah.py','','───────────────────────────────────────────────────────','Model                 MAE      RMSE       R²','───────────────────────────────────────────────────────','  Linear Regression   98.4    122.7    0.821','  Random Forest       71.2     92.1    0.897','───────────────────────────────────────────────────────','','── Interpretasi ──','  MAE = rata-rata error dalam juta rupiah','  R² = 0.897 → model menjelaskan 89.7% variasi harga','','Prediksi rumah (120m², 3KT, Jakarta):','  Rp 642.8 juta','','── Feature Importance (RF) ──','  luas_m2         0.412  ██████████████████████','  jarak_pusat     0.198  ████████████','  kota_Jakarta    0.143  █████████','  kamar_tidur     0.089  █████','','✅ Random Forest > Linear Reg untuk data non-linear'];
+  animateLines('kout5', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+function runKasus6(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus6_kelulusan.py','','  Random Forest        acc=84.00% cv=83.25%','              precision  recall  f1-score','  Terlambat       0.869   0.882     0.875','  Tepat Waktu     0.796   0.776     0.786','  accuracy                          0.840','','  Gradient Boosting    acc=86.25% cv=85.50%','              precision  recall  f1-score','  Terlambat       0.889   0.897     0.893','  Tepat Waktu     0.821   0.806     0.813','  accuracy                          0.863','','── Feature Importance ──','  ipk             0.31  ██████████████████','  absensi_pct     0.22  █████████████','  nilai_ta        0.19  ████████████','  sks_lulus       0.15  █████████','  semester        0.09  ██████','','✅ Gradient Boosting terbaik — acc 86.25%'];
+  animateLines('kout6', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+function runKasus7(btn) {
+  setRunning(btn, true);
+  const lines = ['$ python kasus7_chatbot.py','','══ SIMULASI CHAT KAMPUS ══','','👤 User : Halo, selamat pagi','🤖 Bot  : [salam|0.52] 👋 Halo! Saya BotKampus.','','👤 User : Kapan jadwal kuliah AI?','🤖 Bot  : [jadwal_kuliah|0.61] 📅 Jadwal kuliah dapat','         dilihat di SIAKAD. Senin 08:00 Lab AI.','','👤 User : Berapa tagihan spp saya bulan ini','🤖 Bot  : [pembayaran|0.58] 💳 Pembayaran UKT via','         VA Bank Mandiri/BNI. Deadline akhir bulan.','','👤 User : Syarat daftar skripsi apa saja','🤖 Bot  : [tugas_akhir|0.67] 🎓 Pendaftaran TA dibuka','         setiap awal semester. SKS ≥ 120, IPK ≥ 2.5','','👤 User : Ada beasiswa ga untuk mahasiswa baru','🤖 Bot  : [beasiswa|0.64] 🏆 KIP-K pendaftaran Mei-Juni.','','👤 User : Apakah bisa pesan nasi goreng','🤖 Bot  : ❓ Maaf, saya belum mengerti. Hubungi admin.','','✅ Chatbot selesai — 6 percakapan diproses'];
+  animateLines('kout7', lines, 150); setTimeout(() => setRunning(btn, false), 150 + lines.length * 95 + 200);
+}
+</script>
+</body></html>

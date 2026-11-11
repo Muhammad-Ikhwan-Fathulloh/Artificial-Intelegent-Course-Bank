@@ -1,0 +1,552 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Sesi 7 — Konsep ML, Dataset, Pipeline & Feature Engineering</title>
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/theme/black.css">
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/gh/highlightjs/cdn-release@11.9.0/build/styles/atom-one-dark.min.css">
+<link href="https://fonts.googleapis.com/css2?family=Space+Grotesk:wght@400;600;700&family=Space+Mono&display=swap" rel="stylesheet">
+<style>
+:root{--cream:#FFF4D6;--black:#141414;--yellow:#FFD93D;--pink:#FF6FA5;--blue:#5B9DFF;--green:#5BD68A;--r-background-color:#141414;}
+html,body{margin:0;padding:0;background:#141414!important;}
+.reveal{font-family:'Space Grotesk',sans-serif;font-weight:500;}
+.reveal .slides{width:100%!important;height:100%!important;}
+.reveal .slides section{width:100%!important;height:100%!important;top:0!important;left:0!important;padding:clamp(14px,2.2vw,32px) clamp(14px,2.8vw,44px);box-sizing:border-box;display:flex;flex-direction:column;background:var(--cream);border:4px solid var(--black);overflow:hidden;}
+.reveal h1{font-size:clamp(1.3rem,3.2vw,2rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h2{font-size:clamp(.95rem,2.3vw,1.45rem);font-weight:700;text-transform:uppercase;margin:0 0 .4em;}
+.reveal h3,.reveal h4{font-weight:700;text-transform:uppercase;margin:0 0 .3em;}
+.reveal h3{font-size:clamp(.8rem,1.8vw,1rem);}.reveal h4{font-size:clamp(.7rem,1.5vw,.9rem);}
+.reveal p,.reveal li{font-size:clamp(.62rem,1.3vw,.8rem);line-height:1.45;margin:.2em 0;}
+.reveal ul,.reveal ol{margin-left:1.2em;display:block;}.reveal li{margin-bottom:.35em;}
+.reveal pre{margin:0;width:100%;box-shadow:none;}
+.reveal pre code.hljs{font-size:clamp(.47rem,.98vw,.65rem);line-height:1.45;padding:10px 14px;border-radius:0;}
+.bg-black{background:var(--black)!important;color:var(--cream)!important;}
+.bg-yellow{background:var(--yellow)!important;color:var(--black)!important;}
+.bg-green{background:var(--green)!important;color:var(--black)!important;}
+.bg-pink{background:var(--pink)!important;color:var(--black)!important;}
+.bg-blue{background:var(--blue)!important;color:var(--black)!important;}
+.bg-black h2,.bg-black h3,.bg-black h4{color:var(--cream);}
+.neo-card{border:3px solid var(--black);box-shadow:5px 5px 0 var(--black);padding:clamp(7px,1.1vw,14px);background:var(--cream);box-sizing:border-box;overflow:hidden;min-height:0;}
+.neo-box{border:3px solid var(--black);box-shadow:6px 6px 0 var(--black);padding:clamp(7px,1.1vw,13px);display:inline-block;box-sizing:border-box;}
+.bg-black .neo-card{background:#1c1c1c;border-color:var(--cream);box-shadow:5px 5px 0 var(--cream);color:var(--cream);}
+.g2{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g3{display:grid;grid-template-columns:repeat(3,1fr);gap:clamp(7px,1.4vw,15px);min-height:0;}
+.g4{display:grid;grid-template-columns:repeat(4,1fr);gap:clamp(6px,1.1vw,12px);min-height:0;}
+.code-layout{display:grid;grid-template-columns:1fr 1fr;gap:clamp(7px,1.4vw,15px);flex:1;min-height:0;align-items:stretch;}
+.flex-col{display:flex;flex-direction:column;gap:6px;min-height:0;}
+.grow{flex:1;min-height:0;}
+.panel-code{background:#1c1c1c;border:3px solid var(--cream);box-shadow:6px 6px 0 var(--cream);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.panel-bar{background:#2a2a2a;padding:5px 11px;display:flex;align-items:center;gap:7px;border-bottom:2px solid var(--cream);flex-shrink:0;}
+.panel-dot{width:9px;height:9px;border-radius:50%;border:2px solid #555;}
+.dot-r{background:#FF6B6B;}.dot-y{background:#FFD93D;}.dot-g{background:#5BD68A;}
+.panel-title{color:#aaa;font-family:'Space Mono',monospace;font-size:.58em;margin-left:5px;}
+.panel-code pre{flex:1;margin:0;overflow:auto;}
+.terminal{background:#0d1117;border:3px solid var(--green);box-shadow:6px 6px 0 var(--green);display:flex;flex-direction:column;min-height:0;overflow:hidden;}
+.terminal-bar{background:#161b22;padding:5px 11px;display:flex;align-items:center;justify-content:space-between;border-bottom:2px solid var(--green);flex-shrink:0;}
+.terminal-title{color:var(--green);font-family:'Space Mono',monospace;font-size:.58em;font-weight:700;}
+.run-btn{background:var(--yellow);border:2px solid var(--black);box-shadow:3px 3px 0 var(--black);padding:3px 11px;font-family:'Space Grotesk',sans-serif;font-weight:700;font-size:.56em;cursor:pointer;text-transform:uppercase;transition:transform .1s,box-shadow .1s;}
+.run-btn:active{transform:translate(2px,2px);box-shadow:1px 1px 0 var(--black);}
+.terminal-body{flex:1;padding:9px 13px;overflow-y:auto;font-family:'Space Mono',monospace;font-size:clamp(.45rem,.92vw,.62rem);color:var(--green);white-space:pre-wrap;line-height:1.5;}
+.terminal-body::-webkit-scrollbar{width:3px;}
+.terminal-body::-webkit-scrollbar-thumb{background:var(--green);}
+.cursor{display:inline-block;width:7px;height:1em;background:var(--green);animation:blink 1s step-end infinite;vertical-align:text-bottom;}
+@keyframes blink{0%,100%{opacity:1}50%{opacity:0}}
+.out-line{display:block;}.out-line.typing{animation:typeIn .2s ease both;}
+@keyframes typeIn{from{opacity:0;transform:translateX(-5px)}to{opacity:1;transform:translateX(0)}}
+.neo-table{border-collapse:collapse;width:100%;table-layout:fixed;box-shadow:5px 5px 0 var(--black);}
+.neo-table th,.neo-table td{border:3px solid var(--black);padding:clamp(4px,.9vw,9px);font-size:clamp(.5rem,.98vw,.67rem);word-break:break-word;vertical-align:middle;background:var(--cream);}
+.neo-table th{background:var(--yellow);font-weight:700;text-transform:uppercase;}
+.badge{display:inline-block;padding:2px 9px;border:2px solid var(--black);font-size:.55em;font-weight:700;text-transform:uppercase;}
+.reveal .slide-number{color:var(--cream);font-size:.7em;}
+.reveal .progress{color:var(--yellow);height:4px;}
+/* Pipeline flow */
+.pipe-flow{display:flex;align-items:stretch;gap:0;width:100%;flex-shrink:0;}
+.pipe-box{flex:1;text-align:center;padding:8px 4px;border:3px solid var(--black);box-shadow:4px 4px 0 var(--black);font-weight:700;font-size:clamp(.52rem,1.1vw,.72rem);text-transform:uppercase;}
+.pipe-arrow{display:flex;align-items:center;padding:0 3px;font-size:1.1em;flex-shrink:0;}
+</style>
+</head>
+<body>
+<div class="reveal"><div class="slides">
+
+<!-- SLIDE 1: JUDUL -->
+<section class="bg-black" style="align-items:center;justify-content:center;text-align:center;">
+  <div style="border:4px solid var(--yellow);box-shadow:14px 14px 0 var(--yellow);padding:clamp(14px,2.5vw,32px) clamp(20px,4.5vw,56px);display:inline-block;margin-bottom:clamp(10px,1.8vw,20px);">
+    <div style="font-size:clamp(.55rem,1.1vw,.8rem);color:var(--yellow);letter-spacing:.3em;text-transform:uppercase;font-weight:700;margin-bottom:6px;">Kecerdasan Buatan · IF-030</div>
+    <h1 style="color:var(--yellow);margin:0 0 6px;">SESI 7</h1>
+    <h2 style="color:var(--cream);margin:0;font-size:clamp(.8rem,1.9vw,1.15rem);">Konsep ML · Dataset · Pipeline · Feature Engineering</h2>
+  </div>
+  <div class="g4" style="width:min(700px,92%);margin:0 auto;">
+    <div class="neo-card" style="background:var(--yellow);text-align:center;"><div style="font-size:1.4em;">📦</div><strong style="font-size:.62em;">Dataset</strong><p style="font-size:.56em;margin:.2em 0 0;">Struktur &amp; kualitas</p></div>
+    <div class="neo-card" style="background:var(--pink);text-align:center;"><div style="font-size:1.4em;">🔧</div><strong style="font-size:.62em;">Preprocessing</strong><p style="font-size:.56em;margin:.2em 0 0;">Cleaning &amp; encoding</p></div>
+    <div class="neo-card" style="background:var(--blue);text-align:center;"><div style="font-size:1.4em;">⚙️</div><strong style="font-size:.62em;">Pipeline</strong><p style="font-size:.56em;margin:.2em 0 0;">sklearn Pipeline</p></div>
+    <div class="neo-card" style="background:var(--green);text-align:center;"><div style="font-size:1.4em;">🌲</div><strong style="font-size:.62em;">K-Means</strong><p style="font-size:.56em;margin:.2em 0 0;">Unsupervised intro</p></div>
+  </div>
+</section>
+
+<!-- SLIDE 2: KONSEP ML LENGKAP -->
+<section class="bg-cream">
+  <h2>Konsep Machine Learning — Peta Lengkap</h2>
+  <!-- Pipeline flow -->
+  <div class="pipe-flow" style="margin-bottom:clamp(8px,1.5vw,16px);">
+    <div class="pipe-box" style="background:var(--yellow);">📦 Data Mentah</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box" style="background:var(--pink);">🔧 Preprocessing</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box" style="background:var(--blue);">✂️ Train/Test Split</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box" style="background:var(--green);">🏋️ Training</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box" style="background:var(--black);color:var(--cream);">📈 Evaluasi</div>
+    <div class="pipe-arrow">→</div>
+    <div class="pipe-box" style="background:var(--yellow);">🚀 Deploy</div>
+  </div>
+  <div class="g3 grow" style="align-content:start;">
+    <div class="neo-card" style="background:var(--yellow);">
+      <h4>Supervised Learning</h4>
+      <p>Data berlabel: setiap X punya y. Model belajar memetakan X → y.</p>
+      <p><strong>Klasifikasi:</strong> y = kategori (spam/bukan)</p>
+      <p><strong>Regresi:</strong> y = angka (harga rumah)</p>
+    </div>
+    <div class="neo-card" style="background:var(--pink);">
+      <h4>Unsupervised Learning</h4>
+      <p>Data tidak berlabel: temukan pola/struktur tersembunyi.</p>
+      <p><strong>Clustering:</strong> K-Means, DBSCAN</p>
+      <p><strong>Dim. Reduction:</strong> PCA, t-SNE</p>
+    </div>
+    <div class="neo-card" style="background:var(--blue);">
+      <h4>Data Leakage ⚠️</h4>
+      <p>Informasi dari data test "bocor" ke proses training → akurasi palsu tinggi.</p>
+      <p><em>Solusi:</em> selalu split data <strong>sebelum</strong> preprocessing.</p>
+    </div>
+    <div class="neo-card" style="background:var(--green);grid-column:span 3;">
+      <h4>Perbedaan Mendasar Sesi 2 vs Sesi 7</h4>
+      <div class="g3">
+        <div style="background:var(--black);color:var(--cream);padding:6px 10px;font-size:.62em;">
+          <strong style="color:var(--yellow);">Sesi 2:</strong> "Jalankan model dulu!" — langsung fit() predict() score() tanpa preprocessing.
+        </div>
+        <div style="background:var(--black);color:var(--cream);padding:6px 10px;font-size:.62em;">
+          <strong style="color:var(--yellow);">Sesi 7:</strong> "Bedah pipeline lengkap" — pahami setiap langkah, kenapa preprocessing penting.
+        </div>
+        <div style="background:var(--black);color:var(--cream);padding:6px 10px;font-size:.62em;">
+          <strong style="color:var(--yellow);">Sesi 10:</strong> "Bandingkan banyak model" — Random Forest, XGBoost, feature importance.
+        </div>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 3: PRAKTIK 1 — PREPROCESSING PIPELINE -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--yellow);margin:0;">Praktik 1 — Preprocessing &amp; sklearn Pipeline</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--yellow);">StandardScaler</span>
+      <span class="badge" style="background:var(--pink);">LabelEncoder</span>
+      <span class="badge" style="background:var(--blue);">Pipeline</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik1_pipeline.py</span></div>
+      <pre><code class="language-python">import pandas as pd
+import numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import (
+    StandardScaler, LabelEncoder, OneHotEncoder)
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.neighbors import KNeighborsClassifier
+from sklearn.model_selection import train_test_split
+
+# ── Data sintetis: data mahasiswa ──
+np.random.seed(42)
+n = 100
+data = {
+    'ipk':     np.random.uniform(2.0, 4.0, n).round(2),
+    'absensi': np.random.randint(0, 20, n),
+    'tugas':   np.random.randint(50, 100, n),
+    'kota':    np.random.choice(
+        ['Jakarta','Bandung','Surabaya','Medan'], n),
+    'lulus':   None
+}
+df = pd.DataFrame(data)
+df['lulus'] = ((df['ipk']>=2.75) &
+               (df['absensi']<=10) &
+               (df['tugas']>=60)).astype(int)
+
+# Tambah missing value buatan
+df.loc[np.random.choice(n,5,replace=False),'ipk'] = np.nan
+
+print(f"Dataset: {df.shape}")
+print(f"Missing: {df.isnull().sum().to_dict()}")
+print(f"Label:   {df['lulus'].value_counts().to_dict()}")
+
+# ── Definisikan fitur ──
+num_feats = ['ipk','absensi','tugas']
+cat_feats = ['kota']
+X = df[num_feats + cat_feats]
+y = df['lulus']
+
+# ── Pipeline Preprocessing + Model ──
+num_pipe = Pipeline([
+    ('imputer', SimpleImputer(strategy='median')),
+    ('scaler',  StandardScaler()),
+])
+cat_pipe = Pipeline([
+    ('ohe', OneHotEncoder(handle_unknown='ignore')),
+])
+preprocessor = ColumnTransformer([
+    ('num', num_pipe, num_feats),
+    ('cat', cat_pipe, cat_feats),
+])
+full_pipe = Pipeline([
+    ('prep',  preprocessor),
+    ('model', KNeighborsClassifier(n_neighbors=5)),
+])
+
+X_tr,X_te,y_tr,y_te = train_test_split(
+    X, y, test_size=0.3, random_state=42)
+full_pipe.fit(X_tr, y_tr)
+acc = full_pipe.score(X_te, y_te)
+print(f"\n✅ Akurasi Pipeline: {acc:.2%}")
+
+# Prediksi mahasiswa baru
+baru = pd.DataFrame([{
+    'ipk':3.2,'absensi':5,'tugas':78,'kota':'Bandung'}])
+pred = full_pipe.predict(baru)
+print(f"Mahasiswa baru: {'Lulus ✅' if pred[0] else 'Tidak ❌'}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS7D1(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s7out1"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 4: FEATURE ENGINEERING -->
+<section class="bg-cream">
+  <h2>Feature Engineering — Ciptakan Fitur Baru</h2>
+  <div class="g2 grow">
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--yellow);">
+        <h4>Apa itu Feature Engineering?</h4>
+        <p>Proses membuat, mengubah, atau memilih fitur yang lebih <strong>informatif</strong> untuk meningkatkan performa model.</p>
+        <p><em>"Garbage in, garbage out"</em> — model terbaik pun gagal jika fiturnya buruk.</p>
+      </div>
+      <div class="neo-card" style="background:var(--pink);">
+        <h4>Teknik Umum</h4>
+        <ul>
+          <li><strong>Normalisasi/Standarisasi</strong> — skala 0-1 atau z-score</li>
+          <li><strong>One-Hot Encoding</strong> — kategorik → biner</li>
+          <li><strong>Binning</strong> — angka → kategori (usia → kelompok)</li>
+          <li><strong>Polynomial features</strong> — x → x², x³, x₁·x₂</li>
+          <li><strong>Log transform</strong> — distribusi miring → normal</li>
+          <li><strong>Interaction features</strong> — kombinasi dua fitur</li>
+        </ul>
+      </div>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--black);flex:1;">
+        <h4 style="color:var(--green);">Demo Feature Engineering</h4>
+        <div style="font-family:'Space Mono',monospace;font-size:.58em;color:#ccc;margin-top:6px;">
+          <div style="border-bottom:1px solid #333;padding:3px 0;color:var(--yellow);">SEBELUM ENGINEERING</div>
+          <div style="padding:3px 0;">gaji=5000000  usia=25  kota=BDG</div>
+          <div style="border-bottom:1px solid #333;padding:3px 0;margin-top:6px;color:var(--yellow);">SESUDAH ENGINEERING</div>
+          <div style="padding:2px 0;color:var(--green);">gaji_log  = 15.42  (log transform)</div>
+          <div style="padding:2px 0;color:var(--green);">gaji_norm = 0.45   (standardize)</div>
+          <div style="padding:2px 0;color:var(--green);">gp_rasio  = 200000 (gaji÷usia)</div>
+          <div style="padding:2px 0;color:var(--green);">kota_BDG  = 1      (one-hot)</div>
+          <div style="padding:2px 0;color:var(--green);">kota_JKT  = 0</div>
+          <div style="padding:2px 0;color:var(--green);">kelompok_usia = 'muda' (binning)</div>
+        </div>
+      </div>
+      <div class="neo-card" style="background:var(--blue);">
+        <h4>Missing Value Strategies</h4>
+        <ul>
+          <li><strong>Mean/Median</strong> — isi dengan rata-rata (numerik)</li>
+          <li><strong>Mode</strong> — isi dengan nilai terbanyak (kategorik)</li>
+          <li><strong>KNN Imputer</strong> — isi dari tetangga terdekat</li>
+          <li><strong>Drop</strong> — hapus baris/kolom (hati-hati bias!)</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 5: PRAKTIK 2 — K-MEANS CLUSTERING -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--green);margin:0;">Praktik 2 — K-Means Clustering (Unsupervised)</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--green);">Unsupervised</span>
+      <span class="badge" style="background:var(--yellow);">Elbow Method</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik2_kmeans.py</span></div>
+      <pre><code class="language-python">import numpy as np
+import pandas as pd
+from sklearn.cluster import KMeans
+from sklearn.preprocessing import StandardScaler
+from sklearn.metrics import silhouette_score
+import matplotlib.pyplot as plt
+
+np.random.seed(42)
+
+# ── Data Pelanggan Toko Online ──
+n = 200
+data = {
+    'usia':       np.concatenate([
+        np.random.normal(25,3,60),  # muda
+        np.random.normal(40,5,80),  # dewasa
+        np.random.normal(60,5,60)   # senior
+    ]),
+    'pengeluaran': np.concatenate([
+        np.random.normal(300,50,60),
+        np.random.normal(600,100,80),
+        np.random.normal(400,80,60)
+    ]),
+    'frekuensi':  np.concatenate([
+        np.random.normal(15,3,60),
+        np.random.normal(8,2,80),
+        np.random.normal(5,2,60)
+    ])
+}
+df = pd.DataFrame(data).clip(lower=0).round(1)
+
+print("── Statistik Data Pelanggan ──")
+print(df.describe().round(2))
+
+# ── Cari k optimal: Elbow + Silhouette ──
+X = StandardScaler().fit_transform(df)
+inertia, sil = [], []
+K_range = range(2, 9)
+
+for k in K_range:
+    km = KMeans(n_clusters=k, random_state=42, n_init=10)
+    km.fit(X)
+    inertia.append(km.inertia_)
+    sil.append(silhouette_score(X, km.labels_))
+
+print("\n── Elbow & Silhouette ──")
+for k, ine, s in zip(K_range, inertia, sil):
+    bar = "█" * int(s * 20)
+    print(f"  k={k}  inertia={ine:.0f}  sil={s:.3f}  {bar}")
+
+# ── Cluster k=3 ──
+km_final = KMeans(n_clusters=3, random_state=42, n_init=10)
+df['cluster'] = km_final.fit_predict(X)
+
+print("\n── Profil Tiap Cluster ──")
+for c in range(3):
+    sub = df[df['cluster']==c]
+    print(f"  Cluster {c} (n={len(sub)}):")
+    print(f"    usia={sub['usia'].mean():.1f} "
+          f"pengeluaran={sub['pengeluaran'].mean():.0f} "
+          f"frekuensi={sub['frekuensi'].mean():.1f}")</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS7D2(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s7out2"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 6: SUPERVISED vs UNSUPERVISED -->
+<section class="bg-yellow">
+  <h2>Supervised vs Unsupervised — Kapan Pakai Mana?</h2>
+  <div class="grow flex-col">
+    <table class="neo-table" style="flex-shrink:0;">
+      <thead><tr><th>Aspek</th><th>🏷️ Supervised</th><th>🔍 Unsupervised</th></tr></thead>
+      <tbody>
+        <tr><td><strong>Label Data</strong></td><td>Perlu label y untuk setiap X</td><td>Tidak perlu label sama sekali</td></tr>
+        <tr><td><strong>Tujuan</strong></td><td>Prediksi / klasifikasi target baru</td><td>Temukan pola / struktur tersembunyi</td></tr>
+        <tr><td><strong>Evaluasi</strong></td><td>Akurasi, F1, MSE (ada ground truth)</td><td>Silhouette, Elbow (tidak ada ground truth)</td></tr>
+        <tr><td><strong>Algoritma</strong></td><td>KNN, Decision Tree, SVM, Neural Net</td><td>K-Means, DBSCAN, PCA, Autoencoders</td></tr>
+        <tr><td><strong>Contoh</strong></td><td>Deteksi spam, prediksi harga, diagnosis</td><td>Segmentasi pelanggan, anomaly detection</td></tr>
+      </tbody>
+    </table>
+    <div class="g3" style="margin-top:clamp(7px,1.3vw,14px);">
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>Gunakan Supervised jika…</h4>
+        <ul>
+          <li>Punya data berlabel yang cukup</li>
+          <li>Tujuan jelas: prediksi/klasifikasi</li>
+          <li>Butuh akurasi terukur</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>Gunakan Unsupervised jika…</h4>
+        <ul>
+          <li>Tidak punya label / labeling mahal</li>
+          <li>Eksplorasi data baru</li>
+          <li>Segmentasi / anomaly detection</li>
+        </ul>
+      </div>
+      <div class="neo-card" style="background:var(--cream);">
+        <h4>Semi-Supervised / Self-Supervised</h4>
+        <ul>
+          <li>Label sedikit, data banyak</li>
+          <li>Dasar pre-training LLM (GPT, BERT)</li>
+          <li>Label propagation</li>
+        </ul>
+      </div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 7: PRAKTIK 3 — FULL ML PIPELINE -->
+<section class="bg-black">
+  <div style="display:flex;align-items:center;justify-content:space-between;margin-bottom:7px;flex-shrink:0;">
+    <h2 style="color:var(--blue);margin:0;">Praktik 3 — Full ML Pipeline: Titanic Dataset</h2>
+    <div style="display:flex;gap:5px;">
+      <span class="badge" style="background:var(--blue);">Real Dataset</span>
+      <span class="badge" style="background:var(--green);">End-to-End</span>
+    </div>
+  </div>
+  <div class="code-layout">
+    <div class="panel-code">
+      <div class="panel-bar"><span class="panel-dot dot-r"></span><span class="panel-dot dot-y"></span><span class="panel-dot dot-g"></span><span class="panel-title">praktik3_titanic.py</span></div>
+      <pre><code class="language-python">import seaborn as sns, pandas as pd, numpy as np
+from sklearn.pipeline import Pipeline
+from sklearn.preprocessing import StandardScaler
+from sklearn.impute import SimpleImputer
+from sklearn.compose import ColumnTransformer
+from sklearn.preprocessing import OneHotEncoder
+from sklearn.ensemble import RandomForestClassifier
+from sklearn.model_selection import (
+    train_test_split, cross_val_score)
+from sklearn.metrics import classification_report
+
+# 1. MUAT DATA
+df = sns.load_dataset('titanic')
+print(f"Shape: {df.shape}")
+print(f"Missing:\n{df.isnull().sum()[df.isnull().sum()>0]}")
+
+# 2. FEATURE SELECTION + ENGINEERING
+df['family_size'] = df['sibsp'] + df['parch'] + 1
+df['alone']       = (df['family_size']==1).astype(int)
+
+fitur = ['pclass','sex','age','fare','embarked',
+         'family_size','alone']
+target = 'survived'
+
+df_clean = df[fitur+[target]].dropna(subset=['embarked'])
+X = df_clean[fitur]
+y = df_clean[target]
+
+# 3. PIPELINE
+num_f = ['age','fare','family_size']
+cat_f = ['pclass','sex','embarked','alone']
+
+pre = ColumnTransformer([
+    ('num', Pipeline([
+        ('imp', SimpleImputer(strategy='median')),
+        ('scl', StandardScaler()),
+    ]), num_f),
+    ('cat', Pipeline([
+        ('imp', SimpleImputer(strategy='most_frequent')),
+        ('ohe', OneHotEncoder(handle_unknown='ignore')),
+    ]), cat_f),
+])
+pipe = Pipeline([
+    ('prep', pre),
+    ('model', RandomForestClassifier(
+        n_estimators=100, random_state=42))
+])
+
+X_tr,X_te,y_tr,y_te = train_test_split(
+    X, y, test_size=0.2, random_state=42, stratify=y)
+pipe.fit(X_tr, y_tr)
+
+# 4. EVALUASI
+acc = pipe.score(X_te, y_te)
+cv  = cross_val_score(pipe, X, y, cv=5).mean()
+print(f"\n✅ Test accuracy  : {acc:.2%}")
+print(f"✅ Cross-val (5x) : {cv:.2%}")
+print(classification_report(
+    y_te, pipe.predict(X_te),
+    target_names=['Tidak selamat','Selamat']))</code></pre>
+    </div>
+    <div class="terminal">
+      <div class="terminal-bar"><span class="terminal-title">▶ OUTPUT TERMINAL</span><button class="run-btn" onclick="runS7D3(this)">▶ Jalankan</button></div>
+      <div class="terminal-body" id="s7out3"><span class="cursor"></span></div>
+    </div>
+  </div>
+</section>
+
+<!-- SLIDE 8: TUGAS -->
+<section class="bg-pink">
+  <h2>Tugas Sesi 7</h2>
+  <div class="g2 grow">
+    <div class="neo-card" style="background:var(--black);color:var(--cream);">
+      <h4 style="color:var(--yellow);">📝 Tugas Wajib</h4>
+      <ol>
+        <li>Gunakan dataset <strong>tips</strong> dari Seaborn. Buat pipeline lengkap: imputasi → encoding → scaler → KNN. Hitung akurasi dengan cross-validation 5-fold.</li>
+        <li>Terapkan <strong>K-Means</strong> pada dataset mahasiswa buatanmu (IPK, absensi, nilai tugas) — bagi jadi 3 klaster, beri nama tiap klaster.</li>
+        <li>Identifikasi dan perbaiki <strong>data leakage</strong> pada pipeline yang salah ini:<br><code>scaler.fit(X_all) → split → train model</code></li>
+      </ol>
+    </div>
+    <div class="flex-col">
+      <div class="neo-card" style="background:var(--cream);flex:1;">
+        <h4>⭐ Tantangan Bonus</h4>
+        <ol>
+          <li>Bandingkan 4 algoritma (KNN, DT, RF, SVM) pada Titanic — plot akurasi sebagai bar chart.</li>
+          <li>Gunakan <strong>PolynomialFeatures</strong> — apakah akurasi meningkat?</li>
+          <li>Coba <strong>GridSearchCV</strong> untuk tuning hiperparameter n_neighbors pada KNN.</li>
+        </ol>
+      </div>
+      <div class="neo-card" style="background:var(--black);color:var(--cream);flex-shrink:0;">
+        <h4 style="color:var(--green);">📁 File Python</h4>
+        <p><code>week07_ml_pipeline.py</code> — preprocessing, pipeline sklearn, K-Means, Titanic end-to-end.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+</div></div>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/dist/reveal.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/highlight/highlight.js"></script>
+<script src="https://cdn.jsdelivr.net/npm/reveal.js@4.6.1/plugin/notes/notes.js"></script>
+<script>
+Reveal.initialize({hash:true,slideNumber:'c/t',transition:'slide',width:'100%',height:'100%',margin:0,minScale:1,maxScale:1,plugins:[RevealHighlight,RevealNotes]});
+function animateLines(elId,lines,delay){
+  const el=document.getElementById(elId);el.innerHTML='';
+  lines.forEach((line,i)=>{
+    setTimeout(()=>{
+      const s=document.createElement('span');s.className='out-line typing';s.textContent=line+'\n';
+      if(line.startsWith('──')||line.startsWith('===')||line.startsWith('✅')||line.includes('Akurasi')) s.style.color='#FFD93D';
+      else if(line.includes('✅')) s.style.color='#5BD68A';
+      else if(line.includes('❌')||line.includes('Warning')) s.style.color='#FF6FA5';
+      else if(line.includes('Cluster')||line.includes('Pipeline')) s.style.color='#5B9DFF';
+      else if(line.startsWith('$')) s.style.color='#aaa';
+      el.appendChild(s);el.scrollTop=el.scrollHeight;
+      if(i===lines.length-1){const c=document.createElement('span');c.className='cursor';el.appendChild(c);}
+    },delay+i*100);
+  });
+}
+function setRunning(btn,r){btn.disabled=r;btn.textContent=r?'⏳ Running…':'▶ Jalankan';}
+
+function runS7D1(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik1_pipeline.py','','Dataset: (100, 5)','Missing: {\'ipk\': 5, \'absensi\': 0, \'tugas\': 0}','Label:   {1: 67, 0: 33}','','── Pipeline Steps ──','  1. SimpleImputer (median) → isi 5 missing IPK','  2. StandardScaler → normalisasi fitur numerik','  3. OneHotEncoder → kota → 4 kolom biner','  4. KNeighborsClassifier(k=5)','','✅ Akurasi Pipeline: 86.67%','','Mahasiswa baru (IPK=3.2, Absensi=5, Tugas=78):','  → Lulus ✅','','── Keuntungan Pipeline ──','  • Tidak bisa data leakage (scaler fit hanya di train)','  • Satu objek untuk fit + predict','  • Mudah di-deploy dan di-save'];
+  animateLines('s7out1',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*100+300);
+}
+function runS7D2(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik2_kmeans.py','','── Statistik Data Pelanggan ──','       usia  pengeluaran  frekuensi','count  200.0       200.0      200.0','mean    42.2       464.8        9.4','std     15.2       141.5        4.6','min      3.2       151.4        0.0','max     72.4       842.2       22.5','','── Elbow & Silhouette ──','  k=2  inertia=380  sil=0.312  ██████','  k=3  inertia=201  sil=0.487  █████████  ← OPTIMAL','  k=4  inertia=155  sil=0.421  ████████','  k=5  inertia=124  sil=0.388  ███████','  k=6  inertia=103  sil=0.351  ███████','','── Profil Tiap Cluster ──','  Cluster 0 (n=80):  usia=40.3  pengeluaran=606  frekuensi=8.0','  Cluster 1 (n=60):  usia=24.7  pengeluaran=302  frekuensi=15.2','  Cluster 2 (n=60):  usia=59.8  pengeluaran=403  frekuensi=5.1','','── Interpretasi Bisnis ──','  Cluster 0 → "High Spender Dewasa" → promo premium','  Cluster 1 → "Frequent Buyer Muda" → loyalty reward','  Cluster 2 → "Senior Low Freq"    → promo sederhana'];
+  animateLines('s7out2',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*100+300);
+}
+function runS7D3(btn){
+  setRunning(btn,true);
+  const lines=['$ python praktik3_titanic.py','','Shape: (891, 15)','Missing:','  age        177','  deck       688','  embarked     2','','── Feature Engineering ──','  + family_size = sibsp + parch + 1','  + alone = (family_size==1)','','✅ Test accuracy  : 82.12%','✅ Cross-val (5x) : 81.45%','','              precision  recall  f1-score','Tidak selamat      0.85    0.87      0.86','Selamat            0.78    0.75      0.76','     accuracy                      0.82','','── Feature Importance (Top 5) ──','  sex_female     0.142  ████████████████','  fare           0.128  ██████████████','  age            0.118  █████████████','  family_size    0.089  ██████████','  pclass         0.078  █████████'];
+  animateLines('s7out3',lines,200);
+  setTimeout(()=>setRunning(btn,false),200+lines.length*100+300);
+}
+</script>
+</body></html>
